@@ -1,11 +1,13 @@
-
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 
 #include <glm/glm.hpp>
 #include <iostream>
+
+#include "Assets/Camera/Camera.h"
+#include "Assets/Model/Model.h"
+#include "Assets/Shader/Shader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -14,18 +16,40 @@ void processInput(GLFWwindow* window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+Camera camera = (glm::vec3(0.f, 0.f, 3.f));
+float mouseLastX = SCR_WIDTH / 2.f;
+float mouseLastY = SCR_HEIGHT / 2.f;
+bool bFirstMouse = true;
+
+//very ugly time global variables
+float deltaTime = 0.1f; // the time between the current and last frame
+float lastFrame = 0.0f; // the of last frame
+
+
+// TODO delete shaders
 const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
 const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n\0";
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
+
+// decalring functions
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+void processInput(GLFWwindow* window);
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
 
 int main()
 {
@@ -52,7 +76,6 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glm::vec3 test;
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -60,7 +83,23 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    
+
+    // callbacks
+
+    //mouse settings
+    //------------------------------------------------
+    //hide and capture mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //setup mouse input callback
+
+    glfwSetCursorPosCallback(window, mouseCallback);
+
+    //scroll callback
+    glfwSetScrollCallback(window, scrollCallback);
+
+
+    // setup camera
+    // -----------------------------------------------------------------------------------------------------------------
 
     // build and compile our shader program
     // ------------------------------------
@@ -95,7 +134,8 @@ int main()
     glLinkProgram(shaderProgram);
     // check for linking errors
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
+    if (!success)
+    {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
@@ -105,14 +145,15 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
+        0.5f, 0.5f, 0.0f, // top right
+        0.5f, -0.5f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f // top left 
     };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
+    unsigned int indices[] = {
+        // note that we start from 0!
+        0, 1, 3, // first Triangle
+        1, 2, 3 // second Triangle
     };
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -141,25 +182,50 @@ int main()
     glBindVertexArray(0);
 
 
+    Shader mainShader = Shader("Assets/Art/Shaders/SSimpleEmissionV.glsl", "Assets/Art/Shaders/SSimpleEmissionF.glsl");
+
+    glm::mat4x4 model = glm::mat4x4(1.f);
+    glm::mat4x4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+                                              100.f);
+
+
+    // OTHER ENABLES
+    // -----------------------------------------------------------------------------------------------------------------
+    
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // render loop
-    // -----------
+    //setting up depth test
+    // glEnable(GL_DEPTH_TEST);
+    
+    // RENDER LOOP
+    // -----------------------------------------------------------------------------------------------------------------
     while (!glfwWindowShouldClose(window))
     {
+        float time = glfwGetTime();
+        deltaTime = time - lastFrame;
+        lastFrame = time;
         // input
         // -----
         processInput(window);
 
+        glm::mat4x4 view = camera.GetViewMatrix();
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // main loop, use program, bind, draw
         // draw our first triangle
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        mainShader.use();
+        mainShader.setVec3("lightColor", glm::vec3(1, 1, 1));
+        mainShader.setMat4("projection", projection);
+        mainShader.setMat4("view", view);
+        mainShader.setMat4("model", model);
+
+        glBindVertexArray(VAO);
+        // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         //glDrawArrays(GL_TRIANGLES, 0, 6);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glBindVertexArray(0); // no need to unbind it every time 
@@ -189,6 +255,50 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    //movement
+    glm::vec3 keyboardAxis = glm::vec3(0.f);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        keyboardAxis.z += 1.f;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        keyboardAxis.z += -1.f;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        keyboardAxis.x += -1.f;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        keyboardAxis.x += 1.f;
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        keyboardAxis.y += -1.f;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        keyboardAxis.y += 1.f;
+    camera.ProcessKeyboard(keyboardAxis, deltaTime);
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (bFirstMouse)
+    {
+        bFirstMouse = false;
+        mouseLastX = xpos;
+        mouseLastY = ypos;
+    }
+    float offsetX = xpos - mouseLastX;
+    float offsetY = ypos - mouseLastY;
+    mouseLastX = xpos;
+    mouseLastY = ypos;
+
+    camera.ProcessMouseMovement(offsetX, offsetY, true, true);
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+        camera.ProcessMouseScroll(yoffset, true);
+    }
+    else
+    {
+        camera.ProcessMouseScroll(yoffset, false);
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -199,4 +309,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-

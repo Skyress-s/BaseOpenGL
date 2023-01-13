@@ -1,9 +1,6 @@
 ﻿#pragma once
 
-class Axis
+class GameObject
 {
 public:
-
-    
-    
 };

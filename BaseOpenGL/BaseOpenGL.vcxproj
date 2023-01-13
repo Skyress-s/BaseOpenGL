@@ -138,11 +138,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Assets\Axis\Axis.cpp" />
-    <ClCompile Include="BaseOpenGL.cpp" />
+    <ClCompile Include="Assets\Axis\GameObject.cpp" />
+    <ClCompile Include="Assets\Shader\Shader.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="glad.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\Axis\Axis.h" />
+    <ClInclude Include="Assets\Axis\GameObject.h" />
+    <ClInclude Include="Assets\Camera\Camera.h" />
+    <ClInclude Include="Assets\Model\Mesh.h" />
+    <ClInclude Include="Assets\Model\Model.h" />
+    <ClInclude Include="Assets\Shader\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Art\Shaders\SSimpleEmissionF.glsl" />
+    <Content Include="Assets\Art\Shaders\SSimpleEmissionV.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
