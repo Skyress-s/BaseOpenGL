@@ -202,19 +202,28 @@ int main()
     // -----------------------------------------------------------------------------------------------------------------
     while (!glfwWindowShouldClose(window))
     {
+        // TIME
+        // -----------------------------------------------------------------------------------------------------------------
         float time = glfwGetTime();
         deltaTime = time - lastFrame;
         lastFrame = time;
+        
         // input
         // -----
         processInput(window);
 
         glm::mat4x4 view = camera.GetViewMatrix();
-        // render
-        // ------
+        projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
+        
+        // RENDER
+        // -----------------------------------------------------------------------------------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+
+        // THIS IS THE SECTION WHERE WE RENDER AND DO OUR LOGIC
+        // -----------------------------------------------------------------------------------------------------------------
+        
         // main loop, use program, bind, draw
         // draw our first triangle
         glUseProgram(shaderProgram);
@@ -230,6 +239,9 @@ int main()
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glBindVertexArray(0); // no need to unbind it every time 
 
+
+        // CLEAN UP / END OF FRAME RELEATED
+        // -----------------------------------------------------------------------------------------------------------------
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
