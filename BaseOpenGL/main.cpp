@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+
 
 
 #include <glm/glm.hpp>
@@ -17,12 +17,18 @@
 #include "Vendor/imgui/imgui_impl_glfw.h"
 #include "Vendor/imgui/imgui_impl_opengl3.h"
 #include <stdio.h>
+
+
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
+#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
+#pragma comment(lib, "legacy_stdio_definitions")
+#endif
 // #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
+#include <GLFW/glfw3.h>
 
 
 
@@ -86,8 +92,8 @@ int main() {
     // Decide GL+GLSL versions
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
     
@@ -101,6 +107,7 @@ int main() {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSwapInterval(1);
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -135,8 +142,7 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     
     //setup mouse input callback
-
-    glfwSetCursorPosCallback(window, mouseCallback);
+    // glfwSetCursorPosCallback(window, mouseCallback); //TODO NOTE THIS DISABLES IMGUI
 
     //scroll callback
     glfwSetScrollCallback(window, scrollCallback);
@@ -189,7 +195,6 @@ int main() {
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
     while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
         // TIME
         // -----------------------------------------------------------------------------------------------------------------
         float time = glfwGetTime();
@@ -265,6 +270,7 @@ int main() {
         // -----------------------------------------------------------------------------------------------------------------
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
+        glfwPollEvents();
         glfwSwapBuffers(window);
     }
 
