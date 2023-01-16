@@ -143,7 +143,7 @@ int main() {
     
     //setup mouse input callback
     // glfwSetCursorPosCallback(window, mouseCallback); //TODO NOTE THIS DISABLES IMGUI
-
+    
     //scroll callback
     glfwSetScrollCallback(window, scrollCallback);
 
@@ -195,6 +195,11 @@ int main() {
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
     while (!glfwWindowShouldClose(window)) {
+        double* x = new double();
+        double* y = new double();
+        glfwGetCursorPos(window, x, y);
+        mouseCallback(window,*x, *y);
+        
         // TIME
         // -----------------------------------------------------------------------------------------------------------------
         float time = glfwGetTime();
