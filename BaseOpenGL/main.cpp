@@ -174,11 +174,15 @@ int main()
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
 
-        for (auto m_object : mObjects) {
-            m_object->draw();
+        for (VisualObject* object : mObjects) {
+            object->draw();
         }
+        // for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
+        //     (*it)->draw();
+        // }
+        
 
-
+        
         // CLEAN UP / END OF FRAME RELEATED
         // -----------------------------------------------------------------------------------------------------------------
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

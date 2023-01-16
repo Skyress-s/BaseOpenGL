@@ -93,15 +93,17 @@ namespace MM {
         mVertices.clear();
         const float k_pi = glm::pi<float>();
         
-        float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f, h = 0.25f;
-        for (auto x = xmin; x < xmax; x += h)
-            for (auto y = ymin; y < ymax; y += h) {
+        float xmin = 0.0f, xmax = 10.0f, ymin = 0.0f, ymax = 10.0f;
+        float h = 0.5f/(2 << 2);
+        for (float x = xmin; x < xmax; x += h)
+            for (float y = ymin; y < ymax; y += h) {
                 float z = sin( k_pi * x) * sin(k_pi * y);
                 mVertices.push_back(Vertex{x, y, z, x, y, z});
                 z = sin(k_pi * (x + h)) * sin(k_pi * y);
                 mVertices.push_back(Vertex{x + h, y, z, x, y, z});
                 z = sin(k_pi * x) * sin(k_pi * (y + h));
                 mVertices.push_back(Vertex{x, y + h, z, x, y, z});
+                
                 mVertices.push_back(Vertex{x, y + h, z, x, y, z});
                 z = sin(k_pi * (x + h)) * sin(k_pi * y);
                 mVertices.push_back(Vertex{x + h, y, z, x, y, z});
