@@ -8,6 +8,7 @@
 #include "Assets/Camera/Camera.h"
 #include "Assets/Model/Model.h"
 #include "Assets/Shader/Shader.h"
+#include "Assets/Structure/XYZ.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -187,8 +188,7 @@ int main()
     glm::mat4x4 model = glm::mat4x4(1.f);
     glm::mat4x4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
                                               100.f);
-
-
+    
     // OTHER ENABLES
     // -----------------------------------------------------------------------------------------------------------------
     
@@ -197,6 +197,13 @@ int main()
 
     //setting up depth test
     // glEnable(GL_DEPTH_TEST);
+
+    Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl", 
+"Assets/Art/Shaders/Lek2F.glsl");
+    leksjon2Shader.use();
+    GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
+    MM::XYZ xyz = MM::XYZ();
+    xyz.init(matrixUniform);
     
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
@@ -220,23 +227,24 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-
+        leksjon2Shader.use();
+        xyz.draw();
         // THIS IS THE SECTION WHERE WE RENDER AND DO OUR LOGIC
         // -----------------------------------------------------------------------------------------------------------------
         
-        // main loop, use program, bind, draw
-        // draw our first triangle
+        // // main loop, use program, bind, draw
+        // // draw our first triangle
         glUseProgram(shaderProgram);
         mainShader.use();
         mainShader.setVec3("lightColor", glm::vec3(1, 1, 1));
         mainShader.setMat4("projection", projection);
         mainShader.setMat4("view", view);
         mainShader.setMat4("model", model);
-
+        
         glBindVertexArray(VAO);
         // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, 0);
         // glBindVertexArray(0); // no need to unbind it every time 
 
 
