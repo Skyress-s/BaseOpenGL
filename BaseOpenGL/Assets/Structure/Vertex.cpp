@@ -11,6 +11,8 @@ namespace MM {
         m_normal[0] = r;
         m_normal[1] = g;
         m_normal[2] = b;
+        m_st[0] = 0;
+        m_st[1] = 0;
     }
 
     std::ostream& operator<<(std::ostream& os, const Vertex& v) {

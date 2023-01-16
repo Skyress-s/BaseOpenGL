@@ -164,6 +164,7 @@
     <Content Include="Assets\Art\Shaders\Lek2V.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionF.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionV.glsl" />
+    <Content Include="Assets\Geometry\cubeTri.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

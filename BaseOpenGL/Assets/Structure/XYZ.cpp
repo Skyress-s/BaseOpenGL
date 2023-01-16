@@ -1,5 +1,7 @@
 ﻿#include "XYZ.h"
 
+#include <glm/ext/matrix_transform.hpp>
+
 namespace MM {
     XYZ::XYZ() {
         mVertices.push_back(Vertex{0, 0, 0, 1, 0, 0});
@@ -41,6 +43,7 @@ namespace MM {
 
     void XYZ::draw() {
         glBindVertexArray(mVAO);
+        mMatrix = glm::mat4x4(1.f);
         glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE,&mMatrix[0][0]);
         glDrawArrays(GL_LINES, 0, mVertices.size());
     }

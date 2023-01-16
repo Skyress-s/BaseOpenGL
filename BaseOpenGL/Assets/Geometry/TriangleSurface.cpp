@@ -1,6 +1,7 @@
 ﻿#include "TriangleSurface.h"
 
 #include <fstream>
+#include <glm/ext/scalar_constants.hpp>
 
 namespace MM {
     TriangleSurface::TriangleSurface() {
@@ -33,7 +34,7 @@ namespace MM {
     void TriangleSurface::readFile(std::string fileName) {
         std::ifstream inn;
         inn.open(fileName.c_str());
-
+        mVertices.clear();
         if (inn.is_open()) {
             int n;
             MM::Vertex vertex;
@@ -42,8 +43,19 @@ namespace MM {
             for (int i = 0; i < n; ++i) {
                 inn >> vertex;
                 mVertices.push_back(vertex);
+                std::cout << vertex << std::endl;
             }
         }
+    }
+
+    void TriangleSurface::toFile(std::string fileName) {
+        std::fstream o;
+        o.open(fileName.c_str());
+        o << mVertices.size() << std::endl;
+        for (int i = 0; i < mVertices.size(); ++i) {
+            o << mVertices[i] << std::endl;
+        }
+        o.close();
     }
 
     void TriangleSurface::init(GLint matrixUniform) {
@@ -75,5 +87,26 @@ namespace MM {
         glBindVertexArray(mVAO);
         glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mMatrix[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
+    }
+
+    void TriangleSurface::construct() {
+        mVertices.clear();
+        const float k_pi = glm::pi<float>();
+        
+        float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f, h = 0.25f;
+        for (auto x = xmin; x < xmax; x += h)
+            for (auto y = ymin; y < ymax; y += h) {
+                float z = sin( k_pi * x) * sin(k_pi * y);
+                mVertices.push_back(Vertex{x, y, z, x, y, z});
+                z = sin(k_pi * (x + h)) * sin(k_pi * y);
+                mVertices.push_back(Vertex{x + h, y, z, x, y, z});
+                z = sin(k_pi * x) * sin(k_pi * (y + h));
+                mVertices.push_back(Vertex{x, y + h, z, x, y, z});
+                mVertices.push_back(Vertex{x, y + h, z, x, y, z});
+                z = sin(k_pi * (x + h)) * sin(k_pi * y);
+                mVertices.push_back(Vertex{x + h, y, z, x, y, z});
+                z = sin(k_pi * (x + h)) * sin(k_pi * (y + h));
+                mVertices.push_back(Vertex{x + h, y + h, z, x, y, z});
+            }
     }
 }
