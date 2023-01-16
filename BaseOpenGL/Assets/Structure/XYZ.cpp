@@ -36,7 +36,7 @@ namespace MM {
         glEnableVertexAttribArray(1);
 
         // Good practice to unbind vertex arrays
-        // glBindVertexArray(0);
+        glBindVertexArray(0);
     }
 
     void XYZ::draw() {

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <ostream>
+#include <iostream>
 
 namespace MM {
     class Vertex {

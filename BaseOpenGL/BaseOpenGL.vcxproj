@@ -139,7 +139,9 @@
   <ItemGroup>
     <ClCompile Include="Assets\Axis\Axis.cpp" />
     <ClCompile Include="Assets\Axis\VisualObject.cpp" />
+    <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
     <ClCompile Include="Assets\Shader\Shader.cpp" />
+    <ClCompile Include="Assets\Structure\Tetrahedron.cpp" />
     <ClCompile Include="Assets\Structure\Vertex.cpp" />
     <ClCompile Include="Assets\Structure\XYZ.cpp" />
     <ClCompile Include="main.cpp" />
@@ -149,9 +151,11 @@
     <ClInclude Include="Assets\Axis\Axis.h" />
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
+    <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
     <ClInclude Include="Assets\Model\Mesh.h" />
     <ClInclude Include="Assets\Model\Model.h" />
     <ClInclude Include="Assets\Shader\Shader.h" />
+    <ClInclude Include="Assets\Structure\Tetrahedron.h" />
     <ClInclude Include="Assets\Structure\Vertex.h" />
     <ClInclude Include="Assets\Structure\XYZ.h" />
   </ItemGroup>

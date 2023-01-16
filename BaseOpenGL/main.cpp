@@ -6,8 +6,10 @@
 #include <iostream>
 
 #include "Assets/Camera/Camera.h"
+#include "Assets/Geometry/TriangleSurface.h"
 #include "Assets/Model/Model.h"
 #include "Assets/Shader/Shader.h"
+#include "Assets/Structure/Tetrahedron.h"
 #include "Assets/Structure/XYZ.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -61,9 +63,9 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
+// #ifdef __APPLE__
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+// #endif
 
     // glfw window creation
     // --------------------
@@ -196,14 +198,23 @@ int main()
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //setting up depth test
-    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl", 
 "Assets/Art/Shaders/Lek2F.glsl");
     leksjon2Shader.use();
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
+    
     MM::XYZ xyz = MM::XYZ();
     xyz.init(matrixUniform);
+
+    MM::Tetrahedron tet = MM::Tetrahedron();
+    tet.init(matrixUniform);
+
+    MM::TriangleSurface tri = MM::TriangleSurface();
+    tri.init(matrixUniform);
+    
+    glm::mat4x4 model2 = glm::mat4x4(1.f);
     
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
@@ -225,10 +236,17 @@ int main()
         // RENDER
         // -----------------------------------------------------------------------------------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         leksjon2Shader.use();
+        leksjon2Shader.setMat4("projection", projection);
+        leksjon2Shader.setMat4("view", view);
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE,&model2[0][0]);
         xyz.draw();
+        // tet.draw();
+        tri.draw();
+
+        model2 = glm::rotate(model2,1.f, glm::vec3(0,1,0));
         // THIS IS THE SECTION WHERE WE RENDER AND DO OUR LOGIC
         // -----------------------------------------------------------------------------------------------------------------
         

@@ -9,7 +9,7 @@ class VisualObject
 {
 public:
     VisualObject();
-    ~VisualObject();
+    virtual ~VisualObject();
     virtual void init( GLint matrixUniform ) = 0;
     virtual void draw() = 0;
 protected:
