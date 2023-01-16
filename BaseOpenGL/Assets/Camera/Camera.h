@@ -89,7 +89,7 @@ public:
         }
         else {
             speed += yoffset;
-            speed = speed > 115.f ? 115.f : speed;
+            speed = speed > 145.f ? 145.f : speed;
             speed = speed < 1.f ? 1.f : speed;
         }
     }

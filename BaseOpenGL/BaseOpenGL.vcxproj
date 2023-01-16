@@ -146,6 +146,13 @@
     <ClCompile Include="Assets\Structure\XYZ.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Vendor\imgui\imgui.cpp" />
+    <ClCompile Include="Vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Vendor\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Vendor\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\Axis\Axis.h" />
@@ -158,6 +165,14 @@
     <ClInclude Include="Assets\Structure\Tetrahedron.h" />
     <ClInclude Include="Assets\Structure\Vertex.h" />
     <ClInclude Include="Assets\Structure\XYZ.h" />
+    <ClInclude Include="Vendor\imgui\imconfig.h" />
+    <ClInclude Include="Vendor\imgui\imgui.h" />
+    <ClInclude Include="Vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="Vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="Vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Art\Shaders\Lek2F.glsl" />

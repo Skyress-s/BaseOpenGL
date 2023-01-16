@@ -25,6 +25,7 @@ namespace MM {
     TriangleSurface::TriangleSurface(std::string fileName) {
         readFile(fileName);
         mMatrix = glm::mat4x4(1.f);
+        
     }
 
 
@@ -92,6 +93,10 @@ namespace MM {
     void TriangleSurface::construct() {
         mVertices.clear();
         const float k_pi = glm::pi<float>();
+        auto aaa = [k_pi](float x, float y)
+        {
+            return sin(k_pi * x) * sin(k_pi * y);
+        };
         
         float xmin = 0.0f, xmax = 10.0f, ymin = 0.0f, ymax = 10.0f;
         float h = 0.5f/(2 << 2);

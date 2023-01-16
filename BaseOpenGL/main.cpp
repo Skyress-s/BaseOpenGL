@@ -12,12 +12,23 @@
 #include "Assets/Structure/Tetrahedron.h"
 #include "Assets/Structure/XYZ.h"
 
+// imgui
+#include "Vendor/imgui/imgui.h"
+#include "Vendor/imgui/imgui_impl_glfw.h"
+#include "Vendor/imgui/imgui_impl_opengl3.h"
+#include <stdio.h>
+#define GL_SILENCE_DEPRECATION
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <GLES2/gl2.h>
+#endif
+// #include <GLFW/glfw3.h> // Will drag system OpenGL headers
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 800;
 
 Camera camera = (glm::vec3(0.f, 0.f, 3.f));
 float mouseLastX = SCR_WIDTH / 2.f;
@@ -43,6 +54,11 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\n\0";
 
+
+  // Our state
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 // decalring functions
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -54,8 +70,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-int main()
-{
+int main() {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -63,15 +78,14 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-// #ifdef __APPLE__
+    // #ifdef __APPLE__
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-// #endif
+    // #endif
 
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
+    if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -81,18 +95,60 @@ int main()
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // callbacks
+    // IMGUI
+    // ----------------------------------------
+
+    // Decide GL+GLSL versions
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+    // GL ES 2.0 + GLSL 100
+    const char* glsl_version = "#version 100";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+#elif defined(__APPLE__)
+    // GL 3.2 + GLSL 150
+    const char* glsl_version = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#else
+    // GL 3.0 + GLSL 130
+    const char* glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+#endif
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Imgui style
+    ImGui::StyleColorsDark();
+    // ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // CALLBACKS
+    // ----------------------------------------
 
     //mouse settings
     //------------------------------------------------
     //hide and capture mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     //setup mouse input callback
 
     glfwSetCursorPosCallback(window, mouseCallback);
@@ -109,11 +165,11 @@ int main()
     mObjects.push_back(new MM::XYZ());
     mObjects.push_back(new MM::Tetrahedron());
     mObjects.push_back(new MM::TriangleSurface());
-    static_cast<MM::TriangleSurface*>(mObjects[mObjects.size()-1])->construct();
+    static_cast<MM::TriangleSurface*>(mObjects[mObjects.size() - 1])->construct();
 
     // Getting shader
-    Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl", 
-"Assets/Art/Shaders/Lek2F.glsl");
+    Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
+                                   "Assets/Art/Shaders/Lek2F.glsl");
     leksjon2Shader.use();
 
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
@@ -122,10 +178,9 @@ int main()
     for (VisualObject* m_object : mObjects) {
         m_object->init(matrixUniform);
     }
-    
+
     // Good pratice to unbind vertex arrays
     glBindVertexArray(0);
-    
 
 
     Shader mainShader = Shader("Assets/Art/Shaders/SSimpleEmissionV.glsl", "Assets/Art/Shaders/SSimpleEmissionF.glsl");
@@ -144,24 +199,52 @@ int main()
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
 
-    
+
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
         // TIME
         // -----------------------------------------------------------------------------------------------------------------
         float time = glfwGetTime();
         deltaTime = time - lastFrame;
         lastFrame = time;
-        
+
         // input
-        // -----
+        // ----------------------------------------
         processInput(window);
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // ImGui::ShowDemoWindow();
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Checkbox("Another Window", &show_another_window);
+
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
 
         glm::mat4x4 view = camera.GetViewMatrix();
         projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
-        
+
         // RENDER
         // -----------------------------------------------------------------------------------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -169,7 +252,7 @@ int main()
 
         // THIS IS THE SECTION WHERE WE RENDER AND DO OUR LOGIC
         // -----------------------------------------------------------------------------------------------------------------
-        
+
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
@@ -180,17 +263,30 @@ int main()
         // for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
         //     (*it)->draw();
         // }
-        
 
-        
+        // IMGUI RENDER
+        // Rendering
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        // glViewport(0, 0, display_w, display_h);
+        // glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        // glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
         // CLEAN UP / END OF FRAME RELEATED
         // -----------------------------------------------------------------------------------------------------------------
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 
+    // IMGUI CLEANUP
+    // ----------------------------------------
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -200,8 +296,7 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
-{
+void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -222,10 +317,8 @@ void processInput(GLFWwindow* window)
     camera.ProcessKeyboard(keyboardAxis, deltaTime);
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos)
-{
-    if (bFirstMouse)
-    {
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (bFirstMouse) {
         bFirstMouse = false;
         mouseLastX = xpos;
         mouseLastY = ypos;
@@ -238,22 +331,18 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
     camera.ProcessMouseMovement(offsetX, offsetY, true, true);
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         camera.ProcessMouseScroll(yoffset, true);
     }
-    else
-    {
+    else {
         camera.ProcessMouseScroll(yoffset, false);
     }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
