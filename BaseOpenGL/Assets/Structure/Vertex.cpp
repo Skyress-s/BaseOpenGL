@@ -5,6 +5,12 @@ namespace MM {
     }
 
     Vertex::Vertex(float x, float y, float z, float r, float g, float b) {
+        m_xyz[0] = x;
+        m_xyz[1] = y;
+        m_xyz[2] = z;
+        m_normal[0] = r;
+        m_normal[1] = g;
+        m_normal[2] = b;
     }
 
     std::ostream& operator<<(std::ostream& os, const Vertex& v) {
