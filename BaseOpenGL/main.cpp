@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 
 
-
 #include <glm/glm.hpp>
 #include <iostream>
 
@@ -29,8 +28,6 @@
 // #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 #include <GLFW/glfw3.h>
-
-
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -65,10 +62,10 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "}\n\0";
 
 
-  // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+// Our state
+bool show_demo_window = true;
+bool show_another_window = false;
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 // decalring functions
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -81,14 +78,13 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 int main() {
-    
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
+
     // Decide GL+GLSL versions
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
@@ -96,7 +92,7 @@ int main() {
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-    
+
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -139,23 +135,22 @@ int main() {
     //mouse settings
     //------------------------------------------------
     //hide and capture mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     //setup mouse input callback
     // glfwSetCursorPosCallback(window, mouseCallback); //TODO NOTE THIS DISABLES IMGUI
-    
+
     //scroll callback
     glfwSetScrollCallback(window, scrollCallback);
 
-    
 
     // USER STUFF
     // ----------------------------------------
 
     // objects in scene
     std::vector<VisualObject*> mObjects{};
-    mObjects.push_back(new MM::XYZ());
-    mObjects.push_back(new MM::Tetrahedron());
+    // mObjects.push_back(new MM::XYZ());
+    // mObjects.push_back(new MM::Tetrahedron());
     mObjects.push_back(new MM::TriangleSurface());
     static_cast<MM::TriangleSurface*>(mObjects[mObjects.size() - 1])->construct();
 
@@ -181,6 +176,9 @@ int main() {
     glm::mat4x4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
                                               100.f);
 
+    projection = glm::ortho(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+                            100.f);
+
     // LEKSJON 2
     // ----------------------------------------
     // OTHER ENABLES
@@ -198,8 +196,8 @@ int main() {
         double* x = new double();
         double* y = new double();
         glfwGetCursorPos(window, x, y);
-        mouseCallback(window,*x, *y);
-        
+        mouseCallback(window, *x, *y);
+
         // TIME
         // -----------------------------------------------------------------------------------------------------------------
         float time = glfwGetTime();
@@ -212,26 +210,30 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+
         // ImGui::ShowDemoWindow();
         {
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            if (ImGui::Button("Button"))
+                // Buttons return true when clicked (most widgets return true when edited/activated)
                 counter++;
+
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+                        ImGui::GetIO().Framerate);
             ImGui::End();
         }
 
@@ -266,7 +268,8 @@ int main() {
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
+                     clear_color.w);
         // glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -293,9 +296,28 @@ int main() {
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
+static bool UI_enabled;
+static bool bbbb = false;
+
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        if (!bbbb) {
+            bbbb = true;
+            UI_enabled = !UI_enabled;
+            if (UI_enabled) {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
+            else {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+        }
+    }
+    else {
+        bbbb = false;
+    }
 
     //movement
     glm::vec3 keyboardAxis = glm::vec3(0.f);

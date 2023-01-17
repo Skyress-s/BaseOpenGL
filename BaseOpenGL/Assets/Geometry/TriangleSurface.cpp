@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <glm/ext/scalar_constants.hpp>
+#include <glm/gtc/constants.hpp>
 
 namespace MM {
     TriangleSurface::TriangleSurface() {
@@ -25,7 +26,6 @@ namespace MM {
     TriangleSurface::TriangleSurface(std::string fileName) {
         readFile(fileName);
         mMatrix = glm::mat4x4(1.f);
-        
     }
 
 
@@ -93,26 +93,40 @@ namespace MM {
     void TriangleSurface::construct() {
         mVertices.clear();
         const float k_pi = glm::pi<float>();
+        const float e = glm::e<float>();
         auto aaa = [k_pi](float x, float y)
         {
-            return sin(k_pi * x) * sin(k_pi * y);
+            return sin(x * k_pi) * sin(y * k_pi);
         };
-        
-        float xmin = 0.0f, xmax = 10.0f, ymin = 0.0f, ymax = 10.0f;
-        float h = 0.5f/(2 << 2);
+
+        auto franke = [e](float x, float y)
+        {
+            float f1 = -(pow(9.f * x - 2.f, 2.f) + pow(9.f * y - 2.f, 2.f)) / 4.f;
+            float f2 = -(pow(9.f * x + 1.f, 2.f) / 49.f + (9.f * y + 1.f)/10.f); 
+            float f3 = -(pow(9.f * x - 7.f, 2.f) + pow(9.f * y - 3.f, 2.f)) / 4.f;
+            float f4 = -(pow(9.f * x - 4.f, 2.f) + pow(9.f * y - 7.f, 2.f));
+            return 3.f / 4.f * pow(e,f1) +
+                3.f / 4.f * pow(e,f2) +
+                0.5f * pow(e,f3) -
+                1.f / 5.f * pow(e,f4);
+        };
+
+        float xmin = -0.f, xmax = 1.0f, ymin = -0.f, ymax = 1.0f;
+        float h = 0.5f / (2 << 3);
         for (float x = xmin; x < xmax; x += h)
             for (float y = ymin; y < ymax; y += h) {
-                float z = sin( k_pi * x) * sin(k_pi * y);
+                float z = franke(x, y);
                 mVertices.push_back(Vertex{x, y, z, x, y, z});
-                z = sin(k_pi * (x + h)) * sin(k_pi * y);
+                z = franke(x + h, y);
                 mVertices.push_back(Vertex{x + h, y, z, x, y, z});
-                z = sin(k_pi * x) * sin(k_pi * (y + h));
+                z = franke(x, y + h);
                 mVertices.push_back(Vertex{x, y + h, z, x, y, z});
-                
+
+
                 mVertices.push_back(Vertex{x, y + h, z, x, y, z});
-                z = sin(k_pi * (x + h)) * sin(k_pi * y);
+                z = franke(x + h, y);
                 mVertices.push_back(Vertex{x + h, y, z, x, y, z});
-                z = sin(k_pi * (x + h)) * sin(k_pi * (y + h));
+                z = franke(x + h, y + h);
                 mVertices.push_back(Vertex{x + h, y + h, z, x, y, z});
             }
     }
