@@ -11,5 +11,5 @@ void main() {
   color = colorIn;                       //passing on the vertex color
   //gl_Position = matrix * positionIn;      //calculate the position of the model
   //gl_Position =  positionIn;
-  gl_Position = projection * view * matrix * positionIn;
+  gl_Position = projection * view * matrix * (positionIn);
 }

@@ -102,33 +102,75 @@ namespace MM {
         auto franke = [e](float x, float y)
         {
             float f1 = -(pow(9.f * x - 2.f, 2.f) + pow(9.f * y - 2.f, 2.f)) / 4.f;
-            float f2 = -(pow(9.f * x + 1.f, 2.f) / 49.f + (9.f * y + 1.f)/10.f); 
+            float f2 = -(pow(9.f * x + 1.f, 2.f) / 49.f + (9.f * y + 1.f) / 10.f);
             float f3 = -(pow(9.f * x - 7.f, 2.f) + pow(9.f * y - 3.f, 2.f)) / 4.f;
             float f4 = -(pow(9.f * x - 4.f, 2.f) + pow(9.f * y - 7.f, 2.f));
-            return 3.f / 4.f * pow(e,f1) +
-                3.f / 4.f * pow(e,f2) +
-                0.5f * pow(e,f3) -
-                1.f / 5.f * pow(e,f4);
+            return 3.f / 4.f * pow(e, f1) +
+                3.f / 4.f * pow(e, f2) +
+                0.5f * pow(e, f3) -
+                1.f / 5.f * pow(e, f4);
+        };
+
+        // auto frankeDerived = [franke](float x, float y)
+        // {
+        //     float diff = 0.05f;
+        //     float x1 = franke(x)
+        // };
+
+        auto myFunc = [](float x, float y)
+        {
+            return x * x * y;
+        };
+
+        auto funcX = [](float x, float y)
+        {
+            return 2.f * x * y;
+        };
+
+        auto funcY = [](float x, float y)
+        {
+            return x * x;
+        };
+
+        auto myFuncNormal = [funcX, funcY](float x, float y)
+        {
+            float xx = funcX(x, y);
+            float yy = funcY(x, y);
+
+            return normalize(glm::cross( glm::vec3(1, 0, xx), glm::vec3(0, 1, yy)));
         };
 
         float xmin = -0.f, xmax = 1.0f, ymin = -0.f, ymax = 1.0f;
         float h = 1.f / (2 << 3);
         for (float x = xmin; x < xmax; x += h)
             for (float y = ymin; y < ymax; y += h) {
-                float z = franke(x, y);
-                mVertices.push_back(Vertex{x, y, z, x, y, z});
+                float z = myFunc(x, y);
+                glm::vec3 n = myFuncNormal(x, y);
+                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
                 
-                z = franke(x + h, y);
-                mVertices.push_back(Vertex{x + h, y, z, x, y, z});
-                z = franke(x, y + h);
-                mVertices.push_back(Vertex{x, y + h, z, x, y, z});
+                z = myFunc(x + h, y);
+                n = myFuncNormal(x+h,y);
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+                
+                z = myFunc(x, y + h);
+                n = myFuncNormal(x,y+h);
+                mVertices.push_back(Vertex{x, y + h, z, n.x, n.y, n.z});
 
 
-                mVertices.push_back(Vertex{x, y + h, z, x, y, z});
-                z = franke(x + h, y);
-                mVertices.push_back(Vertex{x + h, y, z, x, y, z});
-                z = franke(x + h, y + h);
-                mVertices.push_back(Vertex{x + h, y + h, z, x, y, z});
+                // second triangle
+                // ----------------------------------------
+                
+                z = myFunc(x, y + h);
+                n = myFuncNormal(x,y+h);
+                mVertices.push_back(Vertex{x, y + h, z, n.x, n.y, n.z});
+                
+                z = myFunc(x + h, y);
+                n = myFuncNormal(x+h,y);
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+                
+                z = myFunc(x + h, y + h);
+                n = myFuncNormal(x+h,y+h);
+                mVertices.push_back(Vertex{x + h, y + h, z, n.x, n.y, n.z});
             }
     }
 }

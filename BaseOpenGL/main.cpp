@@ -153,12 +153,13 @@ int main() {
     // mObjects.push_back(new MM::Tetrahedron());
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     tri1->construct();
-    tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/Franke.txt");
+    // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/Franke.txt");
+    mObjects.push_back(tri1);
+    mObjects.push_back(new MM::XYZ());
     
-    
-    MM::TriangleSurface* tri = new MM::TriangleSurface();
-    tri->readFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/Franke.txt");
-    mObjects.push_back(tri);
+    // MM::TriangleSurface* tri = new MM::TriangleSurface();
+    // tri->readFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/Franke.txt");
+    // mObjects.push_back(tri);
     
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
