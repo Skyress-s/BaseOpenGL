@@ -51,7 +51,7 @@ namespace MM {
 
     void TriangleSurface::toFile(std::string fileName) {
         std::fstream o;
-        o.open(fileName.c_str());
+        o.open(fileName.c_str(), std::ios::out);
         o << mVertices.size() << std::endl;
         for (int i = 0; i < mVertices.size(); ++i) {
             o << mVertices[i] << std::endl;
@@ -112,11 +112,12 @@ namespace MM {
         };
 
         float xmin = -0.f, xmax = 1.0f, ymin = -0.f, ymax = 1.0f;
-        float h = 0.5f / (2 << 3);
+        float h = 1.f / (2 << 3);
         for (float x = xmin; x < xmax; x += h)
             for (float y = ymin; y < ymax; y += h) {
                 float z = franke(x, y);
                 mVertices.push_back(Vertex{x, y, z, x, y, z});
+                
                 z = franke(x + h, y);
                 mVertices.push_back(Vertex{x + h, y, z, x, y, z});
                 z = franke(x, y + h);
