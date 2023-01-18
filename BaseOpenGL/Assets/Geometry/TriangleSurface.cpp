@@ -28,7 +28,6 @@ namespace MM {
         mMatrix = glm::mat4x4(1.f);
     }
 
-
     TriangleSurface::~TriangleSurface() {
     }
 
@@ -136,12 +135,15 @@ namespace MM {
         {
             float xx = funcX(x, y);
             float yy = funcY(x, y);
-
+            
+            // new Anders amazing way, see proof in camera roll
+            return glm::normalize(glm::vec3( -funcX(x,y), -funcY(x,y), 1));
+            // old stinky stinky method >:(
             return normalize(glm::cross( glm::vec3(1, 0, xx), glm::vec3(0, 1, yy)));
         };
 
-        float xmin = -0.f, xmax = 1.0f, ymin = -0.f, ymax = 1.0f;
-        float h = 1.f / (2 << 3);
+        float xmin = 0.f, xmax = 1.0f, ymin = 0.f, ymax = 1.0f;
+        float h = 1.f / (2 << 2);
         for (float x = xmin; x < xmax; x += h)
             for (float y = ymin; y < ymax; y += h) {
                 float z = myFunc(x, y);

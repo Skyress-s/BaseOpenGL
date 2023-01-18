@@ -149,17 +149,18 @@ int main() {
 
     // objects in scene
     std::vector<VisualObject*> mObjects{};
-    // mObjects.push_back(new MM::XYZ());
-    // mObjects.push_back(new MM::Tetrahedron());
-    MM::TriangleSurface* tri1 = new MM::TriangleSurface();
-    tri1->construct();
-    // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/Franke.txt");
-    mObjects.push_back(tri1);
     mObjects.push_back(new MM::XYZ());
+    // mObjects.push_back(new MM::Tetrahedron());
     
-    // MM::TriangleSurface* tri = new MM::TriangleSurface();
-    // tri->readFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/Franke.txt");
-    // mObjects.push_back(tri);
+    MM::TriangleSurface* tri1 = new MM::TriangleSurface();
+    tri1->construct(); // makes the functions from task 2
+    // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/xxyy.txt");
+    tri1->toFile("xxyy.txt");
+    
+    
+    MM::TriangleSurface* tri = new MM::TriangleSurface();
+    tri->readFile("xxyy.txt");
+    mObjects.push_back(tri);
     
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
