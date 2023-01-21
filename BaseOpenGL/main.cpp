@@ -29,6 +29,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Assets/Structure/Graph2D.h"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -77,7 +79,15 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-int main() {
+float f(float x)
+{
+    return cos(4.f * x) * 1.f / exp(x);
+}
+
+int main()
+{
+
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -96,7 +106,8 @@ int main() {
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL) {
+    if (window == NULL)
+    {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -106,29 +117,31 @@ int main() {
     glfwSwapInterval(1);
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
     // IMGUI
     // ----------------------------------------
+    {
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        // Setup Imgui style
+        ImGui::StyleColorsDark();
+        // ImGui::StyleColorsLight();
 
-    // Setup Imgui style
-    ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init(glsl_version);
+    }
+    
     // CALLBACKS
     // ----------------------------------------
 
@@ -149,18 +162,55 @@ int main() {
 
     // objects in scene
     std::vector<VisualObject*> mObjects{};
-    mObjects.push_back(new MM::XYZ());
+    // mObjects.push_back(new MM::XYZ());
     // mObjects.push_back(new MM::Tetrahedron());
     
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     // tri1->construct(); // makes the functions from task 2
     // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/xxyy.txt");
     tri1->readFile("Ved2.txt");
+
     
-    
+
     // MM::TriangleSurface* tri = new MM::TriangleSurface();
     // tri->readFile("xxyy.txt");
     mObjects.push_back(tri1);
+
+
+    
+    auto ff = [](float x)
+    {
+        return cos(4.f * x) * 1.f / exp(x);
+    };
+    // TEMP TEST
+    MM::Graph2D* graph_2d = new MM::Graph2D(ff, 20, 0.f, 5.f);
+    graph_2d->toFile("FalloffGraph.txt");
+    graph_2d->readFile("FalloffGraph.txt");
+    // mObjects.push_back(graph_2d);
+
+    auto lissa = [](float t)
+    {
+        float d = glm::pi<float>()/2.f;
+        float a = 3.f;
+        float b = 4.f;
+        float x = 1.f * sin(a * t + d);
+        float y = 1.f * sin(b*t);
+
+        return MM::Vertex(x,y,0.f, 1.f,1.f,1.f);
+    };
+    std::vector<MM::Vertex> lissaVerts{};
+    for (float i = 0; i < glm::pi<float>()*2.f; i+= 0.1f)
+    {
+       lissaVerts.push_back(lissa(i));
+    }
+
+    MM::Graph2D* lissaGraph = new MM::Graph2D(lissaVerts);
+    // lissaGraph->toFile("LissaGraph.txt");
+    // lissaGraph->readFile("LissaGraph.txt");
+    // mObjects.push_back(lissaGraph);
+
+    
+    
     
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
@@ -169,7 +219,8 @@ int main() {
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
     // Initializing Visual Objects
-    for (VisualObject* m_object : mObjects) {
+    for (VisualObject* m_object : mObjects)
+    {
         m_object->init(matrixUniform);
     }
 
@@ -177,8 +228,8 @@ int main() {
     glBindVertexArray(0);
 
     // binding geometry shader
-    Shader normalGeoShader = Shader("Assets/Art/Shaders/NormalGeoV.glsl", "Assets/Art/Shaders/NormalGeoF.glsl", 
-"Assets/Art/Shaders/NormalGeoG.glsl");
+    Shader normalGeoShader = Shader("Assets/Art/Shaders/NormalGeoV.glsl", "Assets/Art/Shaders/NormalGeoF.glsl",
+                                    "Assets/Art/Shaders/NormalGeoG.glsl");
 
 
     Shader mainShader = Shader("Assets/Art/Shaders/SSimpleEmissionV.glsl", "Assets/Art/Shaders/SSimpleEmissionF.glsl");
@@ -201,7 +252,8 @@ int main() {
 
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         double* x = new double();
         double* y = new double();
         glfwGetCursorPos(window, x, y);
@@ -266,7 +318,8 @@ int main() {
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
 
-        for (VisualObject* object : mObjects) {
+        for (VisualObject* object : mObjects)
+        {
             object->draw();
         }
         /*
@@ -281,8 +334,10 @@ int main() {
         normalGeoShader.setMat4("projection", projection);
         for (auto m_object : mObjects)
         {
-            m_object->draw();
+        m_object->draw();
         }
+
+        
         // IMGUI RENDER
         // Rendering
         ImGui::Render();
@@ -320,23 +375,29 @@ int main() {
 static bool UI_enabled;
 static bool bbbb = false;
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window)
+{
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-        if (!bbbb) {
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+    {
+        if (!bbbb)
+        {
             bbbb = true;
             UI_enabled = !UI_enabled;
-            if (UI_enabled) {
+            if (UI_enabled)
+            {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
-            else {
+            else
+            {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
         }
     }
-    else {
+    else
+    {
         bbbb = false;
     }
 
@@ -357,8 +418,10 @@ void processInput(GLFWwindow* window) {
     camera.ProcessKeyboard(keyboardAxis, deltaTime);
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (bFirstMouse) {
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (bFirstMouse)
+    {
         bFirstMouse = false;
         mouseLastX = xpos;
         mouseLastY = ypos;
@@ -371,18 +434,22 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     camera.ProcessMouseMovement(offsetX, offsetY, true, true);
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
         camera.ProcessMouseScroll(yoffset, true);
     }
-    else {
+    else
+    {
         camera.ProcessMouseScroll(yoffset, false);
     }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
