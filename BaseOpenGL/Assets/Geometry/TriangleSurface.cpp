@@ -37,13 +37,13 @@ namespace MM {
         mVertices.clear();
         if (inn.is_open()) {
             int n;
-            MM::Vertex vertex;
+            Vertex vertex;
             inn >> n;
             mVertices.reserve(n);
             for (int i = 0; i < n; ++i) {
                 inn >> vertex;
                 mVertices.push_back(vertex);
-                std::cout << vertex << std::endl;
+                // std::cout << vertex << std::endl;
             }
         }
     }
@@ -68,15 +68,15 @@ namespace MM {
         // Create, bind and populate Vertex Buffer Object,
         glGenBuffers(1, &mVBO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(MM::Vertex), mVertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_STATIC_DRAW);
 
         // tells the GPU shader program the structure and size of the data we pass
         // XYZ
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MM::Vertex), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
         glEnableVertexAttribArray(0);
 
         // RGB
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MM::Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
 
         // Good practice to unbind vertex arrays
@@ -88,6 +88,8 @@ namespace MM {
         glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mMatrix[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
     }
+
+    
 
     void TriangleSurface::construct() {
         mVertices.clear();

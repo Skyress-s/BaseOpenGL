@@ -153,20 +153,20 @@ int main() {
     // mObjects.push_back(new MM::Tetrahedron());
     
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
-    tri1->construct(); // makes the functions from task 2
+    // tri1->construct(); // makes the functions from task 2
     // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/xxyy.txt");
-    tri1->toFile("xxyy.txt");
+    tri1->readFile("Ved1.txt");
     
     
-    MM::TriangleSurface* tri = new MM::TriangleSurface();
-    tri->readFile("xxyy.txt");
-    mObjects.push_back(tri);
+    // MM::TriangleSurface* tri = new MM::TriangleSurface();
+    // tri->readFile("xxyy.txt");
+    mObjects.push_back(tri1);
     
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
                                    "Assets/Art/Shaders/Lek2F.glsl");
     leksjon2Shader.use();
-
+    Shader geoNormalShader = Shader()
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
     // Initializing Visual Objects

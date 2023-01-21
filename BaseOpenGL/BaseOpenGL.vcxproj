@@ -177,6 +177,8 @@
   <ItemGroup>
     <Content Include="Assets\Art\Shaders\Lek2F.glsl" />
     <Content Include="Assets\Art\Shaders\Lek2V.glsl" />
+    <Content Include="Assets\Art\Shaders\NormalGeoF.glsl" />
+    <Content Include="Assets\Art\Shaders\NormalGeoV.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionF.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionV.glsl" />
     <Content Include="Assets\Geometry\cubeTri.txt" />
