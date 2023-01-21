@@ -155,7 +155,7 @@ int main() {
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     // tri1->construct(); // makes the functions from task 2
     // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/xxyy.txt");
-    tri1->readFile("Ved1.txt");
+    tri1->readFile("Ved2.txt");
     
     
     // MM::TriangleSurface* tri = new MM::TriangleSurface();
@@ -166,7 +166,6 @@ int main() {
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
                                    "Assets/Art/Shaders/Lek2F.glsl");
     leksjon2Shader.use();
-    Shader geoNormalShader = Shader()
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
     // Initializing Visual Objects
@@ -177,6 +176,10 @@ int main() {
     // Good pratice to unbind vertex arrays
     glBindVertexArray(0);
 
+    // binding geometry shader
+    Shader normalGeoShader = Shader("Assets/Art/Shaders/NormalGeoV.glsl", "Assets/Art/Shaders/NormalGeoF.glsl", 
+"Assets/Art/Shaders/NormalGeoG.glsl");
+
 
     Shader mainShader = Shader("Assets/Art/Shaders/SSimpleEmissionV.glsl", "Assets/Art/Shaders/SSimpleEmissionF.glsl");
 
@@ -184,8 +187,6 @@ int main() {
     glm::mat4x4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
                                               100.f);
 
-    projection = glm::ortho(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
-                            100.f);
 
     // LEKSJON 2
     // ----------------------------------------
@@ -213,6 +214,8 @@ int main() {
         lastFrame = time;
 
 
+        // IMGUI
+        // -----------------------------------------------------------------------------------------------------------------
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -266,10 +269,20 @@ int main() {
         for (VisualObject* object : mObjects) {
             object->draw();
         }
-        // for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
-        //     (*it)->draw();
-        // }
+        /*
+        for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
+            (*it)->draw();
+        }
+        */
 
+        normalGeoShader.use();
+        normalGeoShader.setMat4("model", model);
+        normalGeoShader.setMat4("view", view);
+        normalGeoShader.setMat4("projection", projection);
+        for (auto m_object : mObjects)
+        {
+            m_object->draw();
+        }
         // IMGUI RENDER
         // Rendering
         ImGui::Render();
