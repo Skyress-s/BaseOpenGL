@@ -10,7 +10,7 @@ namespace MM {
         mVertices.push_back(Vertex{0, 1, 0, 0, 1, 0});
         mVertices.push_back(Vertex{0, 0, 0, 0, 0, 1});
         mVertices.push_back(Vertex{0, 0, 1, 0, 0, 1});
-        mMatrix = glm::mat4x4(1.f); // creates identity matrix
+        mModelMatrix = glm::mat4x4(1.f); // creates identity matrix
     }
 
     XYZ::~XYZ() {
@@ -42,9 +42,10 @@ namespace MM {
     }
 
     void XYZ::draw() {
+        mModelMatrix = GetModelMatrix();
+        
         glBindVertexArray(mVAO);
-        mMatrix = glm::mat4x4(1.f);
-        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE,&mMatrix[0][0]);
+        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE,&mModelMatrix[0][0]);
         glDrawArrays(GL_LINES, 0, mVertices.size());
     }
 }

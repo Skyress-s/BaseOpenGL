@@ -29,7 +29,10 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Assets/Axis/InteractiveObject.h"
+#include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Graph2D.h"
+#include "Assets/VisualObjectUI/TransformUI.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -48,6 +51,8 @@ bool bFirstMouse = true;
 float deltaTime = 0.1f; // the time between the current and last frame
 float lastFrame = 0.0f; // the of last frame
 
+// possesed
+MM::InteractiveObject* currentPossesedObject = nullptr;
 
 // TODO delete shaders
 const char* vertexShaderSource = "#version 330 core\n"
@@ -84,6 +89,19 @@ float f(float x) {
 }
 
 int main() {
+    /*
+    glm::mat4 testMat = glm::mat4(1.f);
+    testMat = glm::translate(testMat, glm::vec3(7,6,9));
+    testMat[1][0] = 4;
+    for (int i = 0; i < 4; ++i) {
+        for (int y = 0; y < 4; ++y) {
+            std::cout <<testMat[y][i];
+        }
+        std::cout << std::endl;
+    }
+    */
+
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -119,6 +137,7 @@ int main() {
 
     // IMGUI
     // ----------------------------------------
+
     {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -156,17 +175,28 @@ int main() {
 
     // objects in scene
     std::vector<VisualObject*> mObjects{};
-    // mObjects.push_back(new MM::XYZ());
-    // mObjects.push_back(new MM::Tetrahedron());
+
+    VisualObject* xyz = new MM::XYZ();
+    xyz->name = "XYZ";
+    xyz->SetPosition(glm::vec3(1.5f,0,0));
+    mObjects.push_back(xyz);
+
+    MM::Tetrahedron* tet = new MM::Tetrahedron();
+    tet->name = "TETRAHEDRON";
+    tet->SetPosition(glm::vec3(0, 0, -4));
+    mObjects.push_back(tet);
+
+    MM::InteractiveObject* cube = new MM::Cube();
+    cube->name = "CUBE";
+    currentPossesedObject = cube;
+    mObjects.push_back(cube);
 
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
+    tri1->name = "TRIANGLE SURFACE GRAPH";
+    tri1->SetPosition(glm::vec3(3, 0, 0));
     // tri1->construct(); // makes the functions from task 2
-    // tri1->toFile("C:/OFFLINE/BaseOpenGL/BaseOpenGL/Assets/Geometry/xxyy.txt");
-    tri1->readFile("Ved2.txt");
-
-
-    // MM::TriangleSurface* tri = new MM::TriangleSurface();
-    // tri->readFile("xxyy.txt");
+    // tri1->toFile("surface");
+    tri1->readFile("surface");
     mObjects.push_back(tri1);
 
 
@@ -176,9 +206,11 @@ int main() {
     };
     // TEMP TEST
     MM::Graph2D* graph_2d = new MM::Graph2D(ff, 20, 0.f, 5.f);
-    graph_2d->toFile("FalloffGraph.txt");
+    graph_2d->name = "GRAPH 2D";
+    // graph_2d->toFile("FalloffGraph.txt");
     graph_2d->readFile("FalloffGraph.txt");
-    // mObjects.push_back(graph_2d);
+    graph_2d->SetPosition(glm::vec3(-2, 3, 0));
+    mObjects.push_back(graph_2d);
 
     auto lissa = [](float t)
     {
@@ -196,9 +228,11 @@ int main() {
     }
 
     MM::Graph2D* lissaGraph = new MM::Graph2D(lissaVerts);
+    lissaGraph->SetPosition(glm::vec3(-3,0,0));
+    lissaGraph->name = "LISSAJOUS CURVE";
     // lissaGraph->toFile("LissaGraph.txt");
     // lissaGraph->readFile("LissaGraph.txt");
-    // mObjects.push_back(lissaGraph);
+    mObjects.push_back(lissaGraph);
 
 
     // Getting shader
@@ -227,6 +261,19 @@ int main() {
                                               100.f);
 
 
+    // UI
+    TransformUI tetUI;
+    tetUI.target = tet;
+    TransformUI xyzUI;
+    xyzUI.target = xyz;
+    TransformUI cubeUI;
+    cubeUI.target = cube;
+    TransformUI triUI;
+    triUI.target = tri1;
+    TransformUI graphUI;
+    graphUI.target = graph_2d;
+    TransformUI lissaUI;
+    lissaUI.target = lissaGraph;
     // LEKSJON 2
     // ----------------------------------------
     // OTHER ENABLES
@@ -265,8 +312,25 @@ int main() {
         {
             static float f = 0.0f;
             static int counter = 0;
+            ImGui::Begin("Controls");
+            ImGui::Text("TAB - Enter/exit UI mode\n"
+                "ARROW KEYS   - Move cube\n"
+                "WASD KEYS    - Move Camera\n"
+                "MOVE MOUSE   - Look around");
+            ImGui::End();
 
-            ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Helalo, world!"); // Create a window called "Hello, world!" and append into it.
+            tetUI.Draw();
+            xyzUI.Draw();
+            cubeUI.Draw();
+            triUI.Draw();
+            graphUI.Draw();
+            lissaUI.Draw();
+            
+            ImGui::End();
+
+            /*
+            ImGui::Begin("awdawdHelalo, world!"); // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
@@ -285,6 +349,7 @@ int main() {
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
                         ImGui::GetIO().Framerate);
             ImGui::End();
+        */
         }
 
         glm::mat4x4 view = camera.GetViewMatrix();
@@ -395,6 +460,21 @@ void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         keyboardAxis.y += 1.f;
     camera.ProcessKeyboard(keyboardAxis, deltaTime);
+
+    // possesed object
+    float moveScalar = 0.1f;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        currentPossesedObject->move(0, 0, -moveScalar);
+    }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        currentPossesedObject->move(0, 0, moveScalar);
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        currentPossesedObject->move(-moveScalar, 0, 0);
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        currentPossesedObject->move(moveScalar, 0, 0);
+    }
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
@@ -408,7 +488,9 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     mouseLastX = xpos;
     mouseLastY = ypos;
 
-    camera.ProcessMouseMovement(offsetX, offsetY, true, true);
+    if (!UI_enabled) {
+        camera.ProcessMouseMovement(offsetX, offsetY, true, true);
+    }
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {

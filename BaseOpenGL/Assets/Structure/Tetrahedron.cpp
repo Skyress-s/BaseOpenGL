@@ -19,7 +19,7 @@ MM::Tetrahedron::Tetrahedron() {
     mVertices.push_back(Vertex{0, 0, 1, 1, 1, 0});
     mVertices.push_back(Vertex{0, 1, 0, 1, 1, 0});
     mVertices.push_back(Vertex{1, 0, 0, 1, 1, 0});
-    mMatrix = glm::mat4x4(1.f); // creates identity matrix
+    mModelMatrix = glm::mat4x4(1.f); // creates identity matrix
 }
 
 MM::Tetrahedron::~Tetrahedron() {
@@ -51,8 +51,10 @@ void MM::Tetrahedron::init(GLint matrixUniform) {
 }
 
 void MM::Tetrahedron::draw() {
+    mModelMatrix = GetModelMatrix();
+    
     glBindVertexArray(mVAO);
-    glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mMatrix[0][0]);
+    glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
     glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
 
 

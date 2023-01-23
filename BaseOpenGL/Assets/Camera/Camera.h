@@ -65,7 +65,7 @@ public:
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true, GLboolean bInvertY = true) {
         xoffset *= sensetivity;
         yoffset *= sensetivity;
-
+        
         if (bInvertY)
             yoffset *= -1.f;
         

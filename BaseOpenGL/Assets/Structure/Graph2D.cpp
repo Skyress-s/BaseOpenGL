@@ -25,13 +25,13 @@ namespace MM
         }
         */
 
-        mMatrix = glm::mat4x4(1.f);
+        mModelMatrix = glm::mat4x4(1.f);
     }
 
     Graph2D::Graph2D(std::vector<Vertex> verts)
     {
         mVertices = verts;
-        mMatrix = glm::mat4x4(1.f);
+        mModelMatrix = glm::mat4x4(1.f);
     }
 
     void Graph2D::init(GLint matrixUniform)
@@ -62,8 +62,9 @@ namespace MM
 
     void Graph2D::draw()
     {
+        mModelMatrix = GetModelMatrix();
         glBindVertexArray(mVAO);
-        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mMatrix[0][0]);
+        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
         glDrawArrays(GL_LINE_LOOP, 0, mVertices.size());
     }
     

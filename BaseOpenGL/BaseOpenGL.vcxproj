@@ -138,13 +138,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Assets\Axis\Axis.cpp" />
+    <ClCompile Include="Assets\Axis\InteractiveObject.cpp" />
     <ClCompile Include="Assets\Axis\VisualObject.cpp" />
     <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
     <ClCompile Include="Assets\Shader\Shader.cpp" />
+    <ClCompile Include="Assets\Structure\Cube.cpp" />
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
     <ClCompile Include="Assets\Structure\Tetrahedron.cpp" />
     <ClCompile Include="Assets\Structure\Vertex.cpp" />
     <ClCompile Include="Assets\Structure\XYZ.cpp" />
+    <ClCompile Include="Assets\VisualObjectUI\TransformUI.cpp" />
+    <ClCompile Include="Assets\VisualObjectUI\VisualObjectUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Vendor\imgui\imgui.cpp" />
@@ -157,16 +161,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\Axis\Axis.h" />
+    <ClInclude Include="Assets\Axis\InteractiveObject.h" />
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
     <ClInclude Include="Assets\Model\Mesh.h" />
     <ClInclude Include="Assets\Model\Model.h" />
     <ClInclude Include="Assets\Shader\Shader.h" />
+    <ClInclude Include="Assets\Structure\Cube.h" />
     <ClInclude Include="Assets\Structure\Graph2D.h" />
     <ClInclude Include="Assets\Structure\Tetrahedron.h" />
     <ClInclude Include="Assets\Structure\Vertex.h" />
     <ClInclude Include="Assets\Structure\XYZ.h" />
+    <ClInclude Include="Assets\VisualObjectUI\TransformUI.h" />
+    <ClInclude Include="Assets\VisualObjectUI\VisualObjectUI.h" />
     <ClInclude Include="Vendor\imgui\imconfig.h" />
     <ClInclude Include="Vendor\imgui\imgui.h" />
     <ClInclude Include="Vendor\imgui\imgui_impl_glfw.h" />

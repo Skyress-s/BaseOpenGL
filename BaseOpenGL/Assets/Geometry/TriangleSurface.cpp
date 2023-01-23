@@ -20,12 +20,12 @@ namespace MM {
         Vertex v5{0.0, 0.5, 0.0, 1, 0, 0};
         mVertices.push_back(v5);
 
-        mMatrix = glm::mat4x4(1.f);
+        mModelMatrix = glm::mat4x4(1.f);
     }
 
     TriangleSurface::TriangleSurface(std::string fileName) {
         readFile(fileName);
-        mMatrix = glm::mat4x4(1.f);
+        mModelMatrix = glm::mat4x4(1.f);
     }
 
     TriangleSurface::~TriangleSurface() {
@@ -75,7 +75,7 @@ namespace MM {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
         glEnableVertexAttribArray(0);
 
-        // RGB
+        // RGB / NORMAL >:)
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
 
@@ -84,8 +84,10 @@ namespace MM {
     }
 
     void TriangleSurface::draw() {
+        mModelMatrix = GetModelMatrix();
+        
         glBindVertexArray(mVAO);
-        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mMatrix[0][0]);
+        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
     }
 
@@ -114,15 +116,15 @@ namespace MM {
 
         // auto frankeDerived = [franke](float x, float y)
         // {
-        //     float diff = 0.05f;
-        //     float x1 = franke(x)
+        // float diff = 0.05f;
+        // float x1 = franke(x);
         // };
 
         auto myFunc = [](float x, float y)
         {
             return x * x * y;
         };
-
+        
         auto funcX = [](float x, float y)
         {
             return 2.f * x * y;
