@@ -54,21 +54,6 @@ float lastFrame = 0.0f; // the of last frame
 // possesed
 MM::InteractiveObject* currentPossesedObject = nullptr;
 
-// TODO delete shaders
-const char* vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char* fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-
-
 // Our state
 bool show_demo_window = true;
 bool show_another_window = false;
@@ -84,7 +69,8 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-float f(float x) {
+// falloff func
+float falloffFunc(float x) {
     return cos(4.f * x) * 1.f / exp(x);
 }
 
@@ -194,9 +180,9 @@ int main() {
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     tri1->name = "TRIANGLE SURFACE GRAPH";
     tri1->SetPosition(glm::vec3(3, 0, 0));
-    // tri1->construct(); // makes the functions from task 2
-    // tri1->toFile("surface");
-    tri1->readFile("surface");
+    tri1->construct(); // makes the functions from task 2
+    // tri1->toFile("surface.txt");
+    tri1->readFile("surface.txt");
     mObjects.push_back(tri1);
 
 
@@ -204,7 +190,8 @@ int main() {
     {
         return cos(4.f * x) * 1.f / exp(x);
     };
-    // TEMP TEST
+
+    // 2d falloff func
     MM::Graph2D* graph_2d = new MM::Graph2D(ff, 20, 0.f, 5.f);
     graph_2d->name = "GRAPH 2D";
     // graph_2d->toFile("FalloffGraph.txt");
@@ -212,6 +199,7 @@ int main() {
     graph_2d->SetPosition(glm::vec3(-2, 3, 0));
     mObjects.push_back(graph_2d);
 
+    // lissa graph
     auto lissa = [](float t)
     {
         float d = glm::pi<float>() / 2.f;
@@ -231,7 +219,7 @@ int main() {
     lissaGraph->SetPosition(glm::vec3(-3,0,0));
     lissaGraph->name = "LISSAJOUS CURVE";
     // lissaGraph->toFile("LissaGraph.txt");
-    // lissaGraph->readFile("LissaGraph.txt");
+    lissaGraph->readFile("LissaGraph.txt");
     mObjects.push_back(lissaGraph);
 
 
@@ -252,9 +240,6 @@ int main() {
     // binding geometry shader
     Shader normalGeoShader = Shader("Assets/Art/Shaders/NormalGeoV.glsl", "Assets/Art/Shaders/NormalGeoF.glsl",
                                     "Assets/Art/Shaders/NormalGeoG.glsl");
-
-
-    Shader mainShader = Shader("Assets/Art/Shaders/SSimpleEmissionV.glsl", "Assets/Art/Shaders/SSimpleEmissionF.glsl");
 
     glm::mat4x4 model = glm::mat4x4(1.f);
     glm::mat4x4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
