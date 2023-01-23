@@ -184,6 +184,16 @@ namespace MM {
     void TriangleSurface::constructWithLambda(std::function<float(float, float)> func) {
 
         
+        auto FindNormal = [](float x, float z, std::function<float(float,float)> funcc)
+        {
+            const float step = 0.01f;
+            float xx = funcc(x+step, z) - funcc(x-step,z);
+            xx /= (step*2.f);
+            float yy = funcc(x, z + step) - funcc(x, z-step);
+            yy /= (step*2.f);
+
+            return glm::normalize(glm::vec3(-xx,  1,-yy));
+        };
         mVertices.clear();
         float xmin = 0.f, xmax = 1.0f, zmin = 0.f, zmax = 1.0f;
         float h = 1.f / (2 << 2);
@@ -192,30 +202,30 @@ namespace MM {
                 float y;
                 glm::vec3 n = glm::vec3(1,1,1);
                 y = func(x, z + h);
-                // n = myFuncNormal(x, z + h);
+                n = FindNormal(x, z + h,func);
                 mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
 
                 y = func(x + h, z);
-                // n = myFuncNormal(x + h, z);
+                n = FindNormal(x + h, z,func);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
 
                 y = func(x, z);
-                // n = myFuncNormal(x, z);
+                n = FindNormal(x, z,func);
                 mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
 
 
                 // second triangle
                 // ----------------------------------------
                 y = func(x + h, z + h);
-                // n = myFuncNormal(x + h, z + h);
+                n = FindNormal(x + h, z + h,func);
                 mVertices.push_back(Vertex{x + h, y, z + h, n.x, n.y, n.z});
 
                 y = func(x + h, z);
-                // n = myFuncNormal(x + h, z);
+                n = FindNormal(x + h, z,func);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
                 
                 y = func(x, z + h);
-                // n = myFuncNormal(x, z + h);
+                n = FindNormal(x, z + h,func);
                 mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
 
             }

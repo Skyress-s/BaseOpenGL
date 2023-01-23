@@ -239,7 +239,7 @@ int main() {
     lower = 0.f;
     upper = 1.f;
     step = 0.0025f;
-
+    
     float total{};
     // reads from the center of each square we evaluate 
     for (float x = lower + 0.5f*step; x < upper; x+=step) {
