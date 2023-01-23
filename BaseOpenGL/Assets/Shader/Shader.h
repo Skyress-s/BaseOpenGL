@@ -72,12 +72,12 @@ Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPat
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
-        checkCompileErrors(vertex, "VERTEX");
+        checkCompileErrors(vertex, "VERTEX", vertexPath);
         // fragment Shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
-        checkCompileErrors(fragment, "FRAGMENT");
+        checkCompileErrors(fragment, "FRAGMENT", fragmentPath);
         // if geometry shader is given, compile geometry shader
         unsigned int geometry;
         if(geometryPath != nullptr)
@@ -86,7 +86,7 @@ Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPat
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &gShaderCode, NULL);
             glCompileShader(geometry);
-            checkCompileErrors(geometry, "GEOMETRY");
+            checkCompileErrors(geometry, "GEOMETRY", geometryPath);
         }
         // shader Program
         ID = glCreateProgram();
@@ -95,7 +95,7 @@ Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPat
         if(geometryPath != nullptr)
             glAttachShader(ID, geometry);
         glLinkProgram(ID);
-        checkCompileErrors(ID, "PROGRAM");
+        checkCompileErrors(ID, "PROGRAM", "NO PATH::SHADER_LINK");
         // delete the shaders as they're linked into our program now and no longer necessery
         glDeleteShader(vertex);
         glDeleteShader(fragment);
@@ -177,7 +177,7 @@ private:
     //utility function to check for comile errors
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------
-    void checkCompileErrors(GLuint shader, std::string type)
+    void checkCompileErrors(GLuint shader, std::string type, std::string filepath)
     {
         GLint success;
         GLchar infoLog[1024];
@@ -188,6 +188,7 @@ private:
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                std::cout << "FILEPATH" << filepath << std::endl;
             }
         }
         else
