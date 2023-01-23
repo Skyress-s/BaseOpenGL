@@ -225,6 +225,7 @@ int main() {
 
     auto oblig1_3Func = [](float x,float y)
     {
+        // return 1.f;
         return (1 - x - y);
     };
     MM::TriangleSurface* oblig1_3Graph = new MM::TriangleSurface();
