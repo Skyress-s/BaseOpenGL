@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <functional>
+
 #include "../Axis/VisualObject.h"
 
 namespace MM {
@@ -13,5 +15,6 @@ namespace MM {
         void init(GLint matrixUniform) override;
         void draw() override;
         void construct();
+        void constructWithLambda(std::function<float(float, float)> func);
     };
 }

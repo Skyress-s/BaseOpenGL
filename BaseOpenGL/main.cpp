@@ -164,25 +164,25 @@ int main() {
 
     VisualObject* xyz = new MM::XYZ();
     xyz->name = "XYZ";
-    xyz->SetPosition(glm::vec3(1.5f,0,0));
+    xyz->SetPosition(glm::vec3(0,0,0));
     mObjects.push_back(xyz);
 
-    MM::Tetrahedron* tet = new MM::Tetrahedron();
-    tet->name = "TETRAHEDRON";
-    tet->SetPosition(glm::vec3(0, 0, -4));
-    mObjects.push_back(tet);
+    // MM::Tetrahedron* tet = new MM::Tetrahedron();
+    // tet->name = "TETRAHEDRON";
+    // tet->SetPosition(glm::vec3(0, 0, -4));
+    // mObjects.push_back(tet);
 
-    MM::InteractiveObject* cube = new MM::Cube();
-    cube->name = "CUBE";
-    currentPossesedObject = cube;
-    mObjects.push_back(cube);
+    // MM::InteractiveObject* cube = new MM::Cube();
+    // cube->name = "CUBE";
+    // currentPossesedObject = cube;
+    // mObjects.push_back(cube);
 
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     tri1->name = "TRIANGLE SURFACE GRAPH";
-    tri1->SetPosition(glm::vec3(3, 0, 0));
+    tri1->SetPosition(glm::vec3(4, 0, 0));
     tri1->construct(); // makes the functions from task 2
     // tri1->toFile("surface.txt");
-    tri1->readFile("surface.txt");
+    // tri1->readFile("surface.txt");
     mObjects.push_back(tri1);
 
 
@@ -223,6 +223,32 @@ int main() {
     mObjects.push_back(lissaGraph);
 
 
+    auto oblig1_3Func = [](float x,float y)
+    {
+        return (1 - x - y);
+    };
+    MM::TriangleSurface* oblig1_3Graph = new MM::TriangleSurface();
+    oblig1_3Graph->SetPosition(glm::vec3(0,0,0));
+    oblig1_3Graph->constructWithLambda(oblig1_3Func);
+    mObjects.push_back(oblig1_3Graph);
+
+
+    // getting the integral
+    float lower, upper, step;
+    lower = 0.f;
+    upper = 1.f;
+    step = 0.0025f;
+
+    float total{};
+    // reads from the center of each square we evaluate 
+    for (float x = lower + 0.5f*step; x < upper; x+=step) {
+        for (float y = lower + 0.5f*step; y < 1.f-x; y+=step) {
+            total += oblig1_3Func(x,y) * step * step; // height * length * length       
+        }
+    }
+
+    std::cout << total << std::endl;
+    
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
                                    "Assets/Art/Shaders/Lek2F.glsl");
@@ -247,12 +273,12 @@ int main() {
 
 
     // UI
-    TransformUI tetUI;
-    tetUI.target = tet;
+    // TransformUI tetUI;
+    // tetUI.target = tet;
     TransformUI xyzUI;
     xyzUI.target = xyz;
-    TransformUI cubeUI;
-    cubeUI.target = cube;
+    // TransformUI cubeUI;
+    // cubeUI.target = cube;
     TransformUI triUI;
     triUI.target = tri1;
     TransformUI graphUI;
@@ -268,6 +294,7 @@ int main() {
 
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
 
     // RENDER LOOP
@@ -305,9 +332,9 @@ int main() {
             ImGui::End();
 
             ImGui::Begin("Helalo, world!"); // Create a window called "Hello, world!" and append into it.
-            tetUI.Draw();
+            // tetUI.Draw();
             xyzUI.Draw();
-            cubeUI.Draw();
+            // cubeUI.Draw();
             triUI.Draw();
             graphUI.Draw();
             lissaUI.Draw();

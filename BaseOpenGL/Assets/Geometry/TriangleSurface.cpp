@@ -85,13 +85,12 @@ namespace MM {
 
     void TriangleSurface::draw() {
         mModelMatrix = GetModelMatrix();
-        
+
         glBindVertexArray(mVAO);
         glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
     }
 
-    
 
     void TriangleSurface::construct() {
         mVertices.clear();
@@ -124,7 +123,7 @@ namespace MM {
         {
             return x * x * y;
         };
-        
+
         auto funcX = [](float x, float y)
         {
             return 2.f * x * y;
@@ -139,44 +138,83 @@ namespace MM {
         {
             float xx = funcX(x, y);
             float yy = funcY(x, y);
-            
+
             // new Anders amazing way, see proof in camera roll
-            return glm::normalize(glm::vec3( -funcX(x,y), -funcY(x,y), 1));
+            return glm::normalize(glm::vec3(-funcX(x, y),  1,-funcY(x, y)));
             // old stinky stinky method >:(
-            return normalize(glm::cross( glm::vec3(1, 0, xx), glm::vec3(0, 1, yy)));
+            return normalize(glm::cross(glm::vec3(1, 0, xx), glm::vec3(0, 1, yy)));
         };
 
+        float xmin = 0.f, xmax = 1.0f, zmin = 0.f, zmax = 1.0f;
+        float h = 1.f / (2 << 2);
+        for (float x = xmin; x < xmax; x += h)
+            for (float z = zmin; z < zmax; z += h) {
+                float y;
+                glm::vec3 n;
+                y = myFunc(x, z + h);
+                n = myFuncNormal(x, z + h);
+                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
+
+                y = myFunc(x + h, z);
+                n = myFuncNormal(x + h, z);
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+
+                y = myFunc(x, z);
+                n = myFuncNormal(x, z);
+                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
+
+
+                // second triangle
+                // ----------------------------------------
+                y = myFunc(x + h, z + h);
+                n = myFuncNormal(x + h, z + h);
+                mVertices.push_back(Vertex{x + h, y, z + h, n.x, n.y, n.z});
+
+                y = myFunc(x + h, z);
+                n = myFuncNormal(x + h, z);
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+                
+                y = myFunc(x, z + h);
+                n = myFuncNormal(x, z + h);
+                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
+
+            }
+    }
+
+    void TriangleSurface::constructWithLambda(std::function<float(float, float)> func) {
+        mVertices.clear();
         float xmin = 0.f, xmax = 1.0f, ymin = 0.f, ymax = 1.0f;
         float h = 1.f / (2 << 2);
         for (float x = xmin; x < xmax; x += h)
             for (float y = ymin; y < ymax; y += h) {
-                float z = myFunc(x, y);
-                glm::vec3 n = myFuncNormal(x, y);
+                float z = func(x, y);
+                // glm::vec3 n = myFuncNormal(x, y);
+                glm::vec3 n = glm::vec3(1, 1, 1);
                 mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
-                
-                z = myFunc(x + h, y);
-                n = myFuncNormal(x+h,y);
+
+                z = func(x + h, y);
+                // n = myFuncNormal(x+h,y);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
-                
-                z = myFunc(x, y + h);
-                n = myFuncNormal(x,y+h);
+
+                z = func(x, y + h);
+                // n = myFuncNormal(x,y+h);
                 mVertices.push_back(Vertex{x, y + h, z, n.x, n.y, n.z});
 
 
                 // second triangle
                 // ----------------------------------------
-                
-                z = myFunc(x, y + h);
-                n = myFuncNormal(x,y+h);
+
+                z = func(x, y + h);
+                // n = myFuncNormal(x,y+h);
                 mVertices.push_back(Vertex{x, y + h, z, n.x, n.y, n.z});
-                
-                z = myFunc(x + h, y);
-                n = myFuncNormal(x+h,y);
+
+                z = func(x + h, y);
+                // n = myFuncNormal(x+h,y);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
-                
-                z = myFunc(x + h, y + h);
-                n = myFuncNormal(x+h,y+h);
-                mVertices.push_back(Vertex{x + h, y + h, z, n.x, n.y, n.z});
+
+                z = func(x + h, y + h);
+                // n = myFuncNormal(x+h,y+h);
+                mVertices.push_back(Vertex{x + h, y+h, z, n.x, n.y, n.z});
             }
     }
 }
