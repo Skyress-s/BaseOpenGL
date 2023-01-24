@@ -33,6 +33,7 @@
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Graph2D.h"
 #include "Assets/VisualObjectUI/TransformUI.h"
+#include "Vendor/imgui/imgui_internal.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -74,18 +75,114 @@ float falloffFunc(float x) {
     return cos(4.f * x) * 1.f / exp(x);
 }
 
-int main() {
-    /*
-    glm::mat4 testMat = glm::mat4(1.f);
-    testMat = glm::translate(testMat, glm::vec3(7,6,9));
-    testMat[1][0] = 4;
-    for (int i = 0; i < 4; ++i) {
-        for (int y = 0; y < 4; ++y) {
-            std::cout <<testMat[y][i];
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
+    for (int y = 0; y < R; ++y) {
+        for (int x = 0; x < C; ++x) {
+            std::cout << m[x][y];
         }
         std::cout << std::endl;
     }
-    */
+}
+
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
+    static_assert(R == C, "Rows and Collums has to be equal!");
+    // example how to do it
+    // glm::mat3 testMat = glm::mat3(1.f);
+    // testMat[0][0] = 1.f;
+    // testMat[1][0] = 1.f;
+    // testMat[2][0] = 1.f;
+    //
+    // testMat[0][1] = 5.f;
+    // testMat[1][1] = 3.f;
+    // testMat[2][1] = 2.f;
+    //
+    // testMat[0][2] = 1.f;
+    // testMat[1][2] = 3.f;
+    // testMat[2][2] = 2.f;
+    std::cout << "MATRIX" << std::endl;
+    print(mat);
+
+    glm::mat<C, R, T, Q> inv = inverse(mat);
+
+
+    glm::vec<R, T, Q> res = inv * equals;
+    std::cout << "RESULTS XYZW VALUES" << std::endl;
+    for (int i = 0; i < R; ++i) {
+        std::cout << res[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "RECALCULATE" << std::endl;
+    for (int y = 0; y < C; ++y) {
+        float plane = 0.f;
+        for (int x = 0; x < C; ++x) {
+            plane += mat[x][y] * res[x];
+        }
+        std::cout << plane << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "SHOULD EQUAL" << std::endl;
+    for (int i = 0; i < R; ++i) {
+        std::cout << equals[i] << " ";
+    }
+    std::cout << std::endl;
+
+
+    return;
+}
+
+int main() {
+    if (true) {
+        glm::mat3 testMat = glm::mat3(1.f);
+        float arr[] = {
+            1,5,1,
+            1,3,3,
+            1,2,2
+        };
+        testMat = glm::make_mat3(arr);
+        print(testMat);
+        // testMat[0][0] = 1.f;
+        // testMat[1][0] = 1.f;
+        // testMat[2][0] = 1.f;
+        //
+        // testMat[0][1] = 5.f;
+        // testMat[1][1] = 3.f;
+        // testMat[2][1] = 2.f;
+        //
+        // testMat[0][2] = 1.f;
+        // testMat[1][2] = 3.f;
+        // testMat[2][2] = 2.f;
+        SolveThreePlanes(testMat, glm::vec3(1, 2, 1));
+    }
+    else {
+        glm::mat4 w2t2_mat = glm::mat4(0.f);
+
+        w2t2_mat[0][0] = 1.f / 16.f;
+        w2t2_mat[1][0] = -0.5f;
+        w2t2_mat[2][0] = 3.f / 2.f;
+        w2t2_mat[3][0] = -1.f;
+
+        w2t2_mat[0][1] = 0.5f;
+        w2t2_mat[1][1] = -2.f;
+        w2t2_mat[2][1] = 3.f / 2.f;
+        w2t2_mat[3][1] = -1.f;
+
+        w2t2_mat[0][2] = 4.f;
+        w2t2_mat[1][2] = -8.f;
+        w2t2_mat[2][2] = 6.f;
+        w2t2_mat[3][2] = -1.f;
+
+        w2t2_mat[0][3] = 27.f / 2.f;
+        w2t2_mat[1][3] = -18.f;
+        w2t2_mat[2][3] = 9.f;
+        w2t2_mat[3][3] = -1.f;
+
+        SolveThreePlanes(w2t2_mat, glm::vec4(1.f / 16.f, 0.5f, 1.f, 7.f / 2.f));
+    }
 
 
     // glfw: initialize and configure
@@ -162,9 +259,37 @@ int main() {
     // objects in scene
     std::vector<VisualObject*> mObjects{};
 
+    MM::TriangleSurface* plane1 = new MM::TriangleSurface();
+    plane1->SetPosition(glm::vec3(0, 0, 0));
+    auto plane1Func = [](float x, float z)
+    {
+        return 1.f - x - z;
+    };
+    plane1->constructWithLambda(plane1Func);
+    mObjects.push_back(plane1);
+
+    MM::TriangleSurface* plane2 = new MM::TriangleSurface();
+    plane2->SetPosition(glm::vec3(0, 0, 0));
+    auto plane2Func = [](float x, float z)
+    {
+        return (2.f - 5.f * x - 2.f * z) / 3.f;
+    };
+    plane2->constructWithLambda(plane2Func);
+    mObjects.push_back(plane2);
+
+    MM::TriangleSurface* plane3 = new MM::TriangleSurface();
+    plane3->SetPosition(glm::vec3(0, 0, 0));
+    auto plane3Func = [](float x, float z)
+    {
+        return (1.f - 1.f * x - 2.f * z) / 3.f;
+    };
+    plane3->constructWithLambda(plane3Func);
+    mObjects.push_back(plane3);
+
+
     VisualObject* xyz = new MM::XYZ();
     xyz->name = "XYZ";
-    xyz->SetPosition(glm::vec3(0,0,0));
+    xyz->SetPosition(glm::vec3(0, 0, 0));
     mObjects.push_back(xyz);
 
     // MM::Tetrahedron* tet = new MM::Tetrahedron();
@@ -172,10 +297,12 @@ int main() {
     // tet->SetPosition(glm::vec3(0, 0, -4));
     // mObjects.push_back(tet);
 
-    // MM::InteractiveObject* cube = new MM::Cube();
-    // cube->name = "CUBE";
-    // currentPossesedObject = cube;
-    // mObjects.push_back(cube);
+    MM::InteractiveObject* cube = new MM::Cube();
+    cube->SetPosition(glm::vec3(0.25f, -0.75f, 1.5f));
+    cube->SetScale(glm::vec3(0.01f,0.01f,0.01f));
+    cube->name = "CUBE";
+    currentPossesedObject = cube;
+    mObjects.push_back(cube);
 
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     tri1->name = "TRIANGLE SURFACE GRAPH";
@@ -216,20 +343,20 @@ int main() {
     }
 
     MM::Graph2D* lissaGraph = new MM::Graph2D(lissaVerts);
-    lissaGraph->SetPosition(glm::vec3(-3,0,0));
+    lissaGraph->SetPosition(glm::vec3(-3, 0, 0));
     lissaGraph->name = "LISSAJOUS CURVE";
     // lissaGraph->toFile("LissaGraph.txt");
     lissaGraph->readFile("LissaGraph.txt");
     mObjects.push_back(lissaGraph);
 
 
-    auto oblig1_3Func = [](float x,float y)
+    auto oblig1_3Func = [](float x, float y)
     {
         // return 1.f;
         return (1 - x - y);
     };
     MM::TriangleSurface* oblig1_3Graph = new MM::TriangleSurface();
-    oblig1_3Graph->SetPosition(glm::vec3(0,0,0));
+    oblig1_3Graph->SetPosition(glm::vec3(0, 0, 0));
     oblig1_3Graph->constructWithLambda(oblig1_3Func);
     mObjects.push_back(oblig1_3Graph);
 
@@ -239,17 +366,17 @@ int main() {
     lower = 0.f;
     upper = 1.f;
     step = 0.0025f;
-    
+
     float total{};
     // reads from the center of each square we evaluate 
-    for (float x = lower + 0.5f*step; x < upper; x+=step) {
-        for (float y = lower + 0.5f*step; y < 1.f-x; y+=step) {
-            total += oblig1_3Func(x,y) * step * step; // height * length * length       
+    for (float x = lower + 0.5f * step; x < upper; x += step) {
+        for (float y = lower + 0.5f * step; y < 1.f - x; y += step) {
+            total += oblig1_3Func(x, y) * step * step; // height * length * length       
         }
     }
 
     std::cout << total << std::endl;
-    
+
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
                                    "Assets/Art/Shaders/Lek2F.glsl");
@@ -312,7 +439,6 @@ int main() {
         deltaTime = time - lastFrame;
         lastFrame = time;
 
-
         // IMGUI
         // -----------------------------------------------------------------------------------------------------------------
         // Start the Dear ImGui frame
@@ -326,6 +452,7 @@ int main() {
             static float f = 0.0f;
             static int counter = 0;
             ImGui::Begin("Controls");
+            
             ImGui::Text("TAB - Enter/exit UI mode\n"
                 "ARROW KEYS   - Move cube\n"
                 "WASD KEYS    - Move Camera\n"
@@ -339,7 +466,7 @@ int main() {
             triUI.Draw();
             graphUI.Draw();
             lissaUI.Draw();
-            
+
             ImGui::End();
 
             /*

@@ -30,6 +30,12 @@ public:
         z = newPosition.z;
     }
 
+    void SetScale(glm::vec3 newScale) {
+        sx = newScale[0];
+        sy = newScale[1];
+        sz = newScale[2];
+    }
+
 protected:
     std::vector<MM::Vertex> mVertices;
     GLuint mVAO{0};
@@ -39,10 +45,16 @@ protected:
 
     glm::mat4 GetModelMatrix() const {
         glm::mat4 mat = glm::mat4(1.f);
-        return glm::translate(mat, glm::vec3(x, y, z));
+        mat = glm::translate(mat, glm::vec3(x, y, z));
+        mat = glm::scale(mat, glm::vec3(sx,sy,sz));
+        return mat;
     }
 
     float x{};
     float y{};
     float z{};
+
+    float sx = 1.f;
+    float sy = 1.f;
+    float sz = 1.f;
 };

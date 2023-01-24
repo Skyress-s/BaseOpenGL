@@ -195,7 +195,7 @@ namespace MM {
             return glm::normalize(glm::vec3(-xx,  1,-yy));
         };
         mVertices.clear();
-        float xmin = 0.f, xmax = 1.0f, zmin = 0.f, zmax = 1.0f;
+        float xmin = -1.f, xmax = 2.0f, zmin = -1.f, zmax = 2.0f;
         float h = 1.f / (2 << 2);
         for (float x = xmin; x < xmax; x += h)
             for (float z = zmin; z < zmax; z += h) {
