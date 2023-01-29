@@ -144,6 +144,7 @@
     <ClCompile Include="Assets\Shader\Shader.cpp" />
     <ClCompile Include="Assets\Structure\Cube.cpp" />
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
+    <ClCompile Include="Assets\Structure\OctahedronBall.cpp" />
     <ClCompile Include="Assets\Structure\Tetrahedron.cpp" />
     <ClCompile Include="Assets\Structure\Vertex.cpp" />
     <ClCompile Include="Assets\Structure\XYZ.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Assets\Shader\Shader.h" />
     <ClInclude Include="Assets\Structure\Cube.h" />
     <ClInclude Include="Assets\Structure\Graph2D.h" />
+    <ClInclude Include="Assets\Structure\OctahedronBall.h" />
     <ClInclude Include="Assets\Structure\Tetrahedron.h" />
     <ClInclude Include="Assets\Structure\Vertex.h" />
     <ClInclude Include="Assets\Structure\XYZ.h" />

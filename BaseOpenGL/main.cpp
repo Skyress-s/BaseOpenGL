@@ -32,6 +32,7 @@
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Graph2D.h"
+#include "Assets/Structure/OctahedronBall.h"
 #include "Assets/VisualObjectUI/TransformUI.h"
 #include "Vendor/imgui/imgui_internal.h"
 
@@ -43,7 +44,7 @@ void processInput(GLFWwindow* window);
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 
-Camera camera = (glm::vec3(0.f, 0.f, 3.f));
+Camera camera = (glm::vec3(0.f, 0.f, 5.f));
 float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
 bool bFirstMouse = true;
@@ -54,6 +55,8 @@ float lastFrame = 0.0f; // the of last frame
 
 // possesed
 MM::InteractiveObject* currentPossesedObject = nullptr;
+bool bDrawNormals = false;
+float drawNormalLength = 0.3f;
 
 // Our state
 bool show_demo_window = true;
@@ -71,14 +74,18 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 // falloff func
-float falloffFunc(float x) {
+float falloffFunc(float x)
+{
     return cos(4.f * x) * 1.f / exp(x);
 }
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
-    for (int y = 0; y < R; ++y) {
-        for (int x = 0; x < C; ++x) {
+GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m)
+{
+    for (int y = 0; y < R; ++y)
+    {
+        for (int x = 0; x < C; ++x)
+        {
             std::cout << m[x][y];
         }
         std::cout << std::endl;
@@ -87,7 +94,8 @@ GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
 
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
+void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals)
+{
     static_assert(R == C, "Rows and Collums has to be equal!");
     // example how to do it
     // glm::mat3 testMat = glm::mat3(1.f);
@@ -110,15 +118,18 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
 
     glm::vec<R, T, Q> res = inv * equals;
     std::cout << "RESULTS XYZW VALUES" << std::endl;
-    for (int i = 0; i < R; ++i) {
+    for (int i = 0; i < R; ++i)
+    {
         std::cout << res[i] << " ";
     }
     std::cout << std::endl;
 
     std::cout << "RECALCULATE" << std::endl;
-    for (int y = 0; y < C; ++y) {
+    for (int y = 0; y < C; ++y)
+    {
         float plane = 0.f;
-        for (int x = 0; x < C; ++x) {
+        for (int x = 0; x < C; ++x)
+        {
             plane += mat[x][y] * res[x];
         }
         std::cout << plane << " ";
@@ -126,7 +137,8 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
     std::cout << std::endl;
 
     std::cout << "SHOULD EQUAL" << std::endl;
-    for (int i = 0; i < R; ++i) {
+    for (int i = 0; i < R; ++i)
+    {
         std::cout << equals[i] << " ";
     }
     std::cout << std::endl;
@@ -135,13 +147,15 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
     return;
 }
 
-int main() {
-    if (true) {
+int main()
+{
+    if (true)
+    {
         glm::mat3 testMat = glm::mat3(1.f);
         float arr[] = {
-            1,5,1,
-            1,3,3,
-            1,2,2
+            1, 5, 1,
+            1, 3, 3,
+            1, 2, 2
         };
         testMat = glm::make_mat3(arr);
         print(testMat);
@@ -158,7 +172,8 @@ int main() {
         // testMat[2][2] = 2.f;
         SolveThreePlanes(testMat, glm::vec3(1, 2, 1));
     }
-    else {
+    else
+    {
         glm::mat4 w2t2_mat = glm::mat4(0.f);
 
         w2t2_mat[0][0] = 1.f / 16.f;
@@ -203,7 +218,8 @@ int main() {
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL) {
+    if (window == NULL)
+    {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -213,7 +229,8 @@ int main() {
     glfwSwapInterval(1);
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -299,7 +316,7 @@ int main() {
 
     MM::InteractiveObject* cube = new MM::Cube();
     cube->SetPosition(glm::vec3(0.25f, -0.75f, 1.5f));
-    cube->SetScale(glm::vec3(0.01f,0.01f,0.01f));
+    cube->SetScale(glm::vec3(0.01f, 0.01f, 0.01f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
     mObjects.push_back(cube);
@@ -338,7 +355,8 @@ int main() {
         return MM::Vertex(x, y, 0.f, 1.f, 1.f, 1.f);
     };
     std::vector<MM::Vertex> lissaVerts{};
-    for (float i = 0; i < glm::pi<float>() * 2.f; i += 0.1f) {
+    for (float i = 0; i < glm::pi<float>() * 2.f; i += 0.1f)
+    {
         lissaVerts.push_back(lissa(i));
     }
 
@@ -369,13 +387,20 @@ int main() {
 
     float total{};
     // reads from the center of each square we evaluate 
-    for (float x = lower + 0.5f * step; x < upper; x += step) {
-        for (float y = lower + 0.5f * step; y < 1.f - x; y += step) {
+    for (float x = lower + 0.5f * step; x < upper; x += step)
+    {
+        for (float y = lower + 0.5f * step; y < 1.f - x; y += step)
+        {
             total += oblig1_3Func(x, y) * step * step; // height * length * length       
         }
     }
 
     std::cout << total << std::endl;
+
+    MM::OctahedronBall* octBall = new MM::OctahedronBall(3);
+    octBall->SetPosition(glm::vec3(0, 2, 3));
+    mObjects.push_back(octBall);
+
 
     // Getting shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
@@ -384,7 +409,8 @@ int main() {
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
     // Initializing Visual Objects
-    for (VisualObject* m_object : mObjects) {
+    for (VisualObject* m_object : mObjects)
+    {
         m_object->init(matrixUniform);
     }
 
@@ -427,7 +453,8 @@ int main() {
 
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         double* x = new double();
         double* y = new double();
         glfwGetCursorPos(window, x, y);
@@ -452,7 +479,7 @@ int main() {
             static float f = 0.0f;
             static int counter = 0;
             ImGui::Begin("Controls");
-            
+
             ImGui::Text("TAB - Enter/exit UI mode\n"
                 "ARROW KEYS   - Move cube\n"
                 "WASD KEYS    - Move Camera\n"
@@ -467,6 +494,11 @@ int main() {
             graphUI.Draw();
             lissaUI.Draw();
 
+            ImGui::Checkbox("Draw Normals", &bDrawNormals);
+            if (bDrawNormals)
+            {
+                ImGui::SliderFloat("NormalVectorLength", &drawNormalLength, 0.01f, 2.f);
+            }
             ImGui::End();
 
             /*
@@ -510,7 +542,8 @@ int main() {
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
 
-        for (VisualObject* object : mObjects) {
+        for (VisualObject* object : mObjects)
+        {
             object->draw();
         }
         /*
@@ -519,12 +552,17 @@ int main() {
         }
         */
 
-        normalGeoShader.use();
-        normalGeoShader.setMat4("model", model);
-        normalGeoShader.setMat4("view", view);
-        normalGeoShader.setMat4("projection", projection);
-        for (auto m_object : mObjects) {
-            m_object->draw();
+        if (bDrawNormals)
+        {
+            normalGeoShader.use();
+            normalGeoShader.setFloat("MAGNITUDE", drawNormalLength);
+            normalGeoShader.setMat4("model", model);
+            normalGeoShader.setMat4("view", view);
+            normalGeoShader.setMat4("projection", projection);
+            for (auto m_object : mObjects)
+            {
+                m_object->draw();
+            }
         }
 
 
@@ -565,23 +603,29 @@ int main() {
 static bool UI_enabled;
 static bool bbbb = false;
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window)
+{
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-        if (!bbbb) {
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+    {
+        if (!bbbb)
+        {
             bbbb = true;
             UI_enabled = !UI_enabled;
-            if (UI_enabled) {
+            if (UI_enabled)
+            {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
-            else {
+            else
+            {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
         }
     }
-    else {
+    else
+    {
         bbbb = false;
     }
 
@@ -603,22 +647,28 @@ void processInput(GLFWwindow* window) {
 
     // possesed object
     float moveScalar = 0.1f;
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
         currentPossesedObject->move(0, 0, -moveScalar);
     }
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
         currentPossesedObject->move(0, 0, moveScalar);
     }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    {
         currentPossesedObject->move(-moveScalar, 0, 0);
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    {
         currentPossesedObject->move(moveScalar, 0, 0);
     }
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (bFirstMouse) {
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (bFirstMouse)
+    {
         bFirstMouse = false;
         mouseLastX = xpos;
         mouseLastY = ypos;
@@ -628,23 +678,28 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     mouseLastX = xpos;
     mouseLastY = ypos;
 
-    if (!UI_enabled) {
+    if (!UI_enabled)
+    {
         camera.ProcessMouseMovement(offsetX, offsetY, true, true);
     }
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
         camera.ProcessMouseScroll(yoffset, true);
     }
-    else {
+    else
+    {
         camera.ProcessMouseScroll(yoffset, false);
     }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
