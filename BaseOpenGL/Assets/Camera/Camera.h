@@ -51,7 +51,7 @@ public:
     
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix() {
-        return glm::lookAt(position, position + forward, up);
+        return SelfLookAtImplementation(position, position + forward, up);
         // return SelfLookAtImplementation(position, position + forward, up);
     }
 
@@ -109,7 +109,7 @@ private:
         up      = glm::normalize(glm::cross(right, forward));
     }
 
-    glm::mat4 SelfLookAtImplementation(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) {
+    glm::mat4 SelfLookAtImplementation(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) const {
         glm::vec3 forwardAxis = glm::normalize(_position - _target);
         glm::vec3 rightAxis = glm::normalize(glm::cross(_up, forwardAxis));
         glm::vec3 upAxis = glm::normalize(glm::cross(forwardAxis, rightAxis));
@@ -132,6 +132,8 @@ private:
 
         return rotation * translation;
     }
+
+    
 };
 
 

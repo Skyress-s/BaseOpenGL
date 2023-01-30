@@ -195,6 +195,17 @@
     <Content Include="Assets\Art\Shaders\SSimpleEmissionF.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionV.glsl" />
     <Content Include="Assets\Geometry\cubeTri.txt" />
+    <Content Include="Assets\Latex\Images\BingShilling.png" />
+    <Content Include="Assets\Latex\Images\ConstructTriangleSurface.png" />
+    <Content Include="Assets\Latex\Images\myFunc.png" />
+    <Content Include="Assets\Latex\Images\readWriteTriangle.png" />
+    <Content Include="Assets\Latex\Images\readWriteTriangleDef.png" />
+    <Content Include="Assets\Latex\Matte_Oblig1.tex" />
+    <Content Include="Assets\Latex\test.aux" />
+    <Content Include="Assets\Latex\test.log" />
+    <Content Include="Assets\Latex\test.pdf" />
+    <Content Include="Assets\Latex\test.synctex.gz" />
+    <Content Include="Assets\Latex\test.tex" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,127 @@
+﻿\documentclass[14]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+
+
+\usepackage[margin=1.25in]{geometry}
+
+
+\title{Matte Oblig 1}
+\author{Mathias Mohn Mørch}
+\date{Januar 2023}
+
+\begin{document}
+    \maketitle
+    \begin{flushleft}
+        \graphicspath{{Images/}}
+
+        \section{Innledning}
+        I de følgende oppgavene skal vi bruke open GL sin grafikk funksjonalitet sammen med c++ for å løse og visualisere mattematiske grafen.
+        Det skal også vises hvordan man gjør disse grapfene om til triangler som OpenGL kan tegne, samt åssen skrive og lese disse dataene fra fil.
+        
+        
+        \section{Oppgave 1}
+            \subsection*{1}
+        Se vedlegg 1 for datafil.
+        Valgte en \(h = \frac{1}{16}\) med en definisjons mendge \(\mathbb{D} = (0,0), (1,1)\)
+        Brukte \(x^2\cdot y\) som funksjon\\
+        kode snippet som lager grafen\\
+        \includegraphics[width = 10cm]{ConstructTriangleSurface}
+        
+        Funksjoner som leser og skriver data
+        
+        \includegraphics[width = 12cm]{readWriteTriangle}
+        \includegraphics[width=12cm]{readWriteTriangleDef}
+        
+        
+            \subsection*{2}
+        Lage partiellderiverte lambda funksjoner, og lage en til som regner ut normaler basert på disse
+        
+        \includegraphics[width=14cm]{functions}
+        
+        \includegraphics[width=14cm]{constructv2}
+        
+            \subsection*{3}
+        Her brukte jeg en geometri shader steg for å tegne normal linjene basert på vertex dataen.
+        Geometry Shader (Basert på learnopengl.com)
+        
+        \includegraphics[width=10cm]{geometryshader}
+        
+        Tegner først objectet med normal shader, derreter normal (som har geometry shader del) shader.
+        
+        \includegraphics[width=10cm]{doubledrawgeometrycode}
+        
+        Dette ga følgende resultat
+        
+        \includegraphics[width=8cm]{normalvectors}
+        
+        Oppengaven sa at man skulle modifisere draw funksjonen, så håper det er greit at jeg isteden bruker draw funksjonen to ganger.
+        
+        \section{Oppgave 2}
+            \subsection*{1}
+        Velger funksjonen \(f(x)=cos(4x) * 1(e^x)\), med definisjonsmengde \(\mathbb{D} = [0,5]\)
+        
+            \subsection*{2}
+        Velger 20 intervaller, det gir en h på: 
+        \begin{align*}
+            & h = dx = \frac{b-a}{n}\\
+            & h = \frac{5-0}{20} = 0.25
+        \end{align*}
+        
+        \subsection*{3}
+        Velger at fargen til vertexen skal være 
+        \begin{align*}
+            rgb = f(x)*0.5 + 0.5
+        \end{align*}
+        Dette er slik at alle punktene på kurven får en farge verdi mellom 0 og 1.
+        
+        \subsection*{4}
+        Regnet ut funksjonsverdiene og pushet de til mVertices (arver fra Visual Object)   
+        
+        \includegraphics[width=14cm]{graph2dcode}
+        
+        Brukte derreter toFile funksjon (samme som i oppgave 1)
+        
+        \includegraphics[width=14cm]{graph2dtofilecode}
+        
+        \subsection*{5}
+        
+        \includegraphics[width=14cm]{lissajouseCurveCode}
+        
+        Valgte parameterene \(d = pi/2, a = 3, b = 4, A = 1, B = 1 og h = 0.1\) 
+        Fikk følgende kurve
+        
+        \includegraphics[width=14cm]{lissajousecurve}
+        
+        
+        \section{Oppgave 3}
+        \subsection*{1}
+        Funksjonene brukt
+        
+        \includegraphics[width=9cm]{numericintegral}
+        
+        Dette ga "total" lik \(0.16625 \text{. Fasit er } \frac{1}{6} = 0.16666...\) 
+        
+        \subsection*{2}
+        
+        Igjentok med halvert avstand \(h\), fikk resultatet \(0.166661)\)
+        
+        \section{Diskusjon}
+        Generelt fant vi at datamaskinen, gitt liten nokk oppdelig \(h\), kan 
+        med bra presisjon regne ut intergraler til grafer av to variable.
+        I tilleg klarte vi å tegne flere grafer, både i 3d og 2d i et 3d rom med hjelp fra OpenGL
+        
+        Jeg har lært åssen man konstruerer en 3d flate med triagnler, hvor inndataen er en graf
+        av to variable, samt mer åssen OpenGL generelt funker med sine VBO VBO osv.
+        Itilleg har intergral oppgaven (Oppgave 3.1) hjulpet med å få en bedre intuitiv
+        forståelse av åssen intergraler av funkksjoner av to variable fungerer.
+        
+        \section{Lenker}
+        Github lenke : https://github.com/Skyress-s/BaseOpenGL/tree/Math3-Compulsory-1
+    \end{flushleft}
+\end{document}
+
