@@ -31,6 +31,7 @@
 
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Structure/Cube.h"
+#include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
 #include "Assets/Structure/OctahedronBall.h"
 #include "Assets/VisualObjectUI/TransformUI.h"
@@ -276,6 +277,13 @@ int main()
     // objects in scene
     std::vector<VisualObject*> mObjects{};
 
+    // disc
+    MM::Disc* disc = new MM::Disc();
+    disc->construct(100);
+    disc->SetPosition(glm::vec3(4,3,0));
+    mObjects.push_back(disc);
+    
+
     MM::TriangleSurface* plane1 = new MM::TriangleSurface();
     plane1->SetPosition(glm::vec3(0, 0, 0));
     auto plane1Func = [](float x, float z)
@@ -298,6 +306,7 @@ int main()
     plane3->SetPosition(glm::vec3(0, 0, 0));
     auto plane3Func = [](float x, float z)
     {
+        return 2.f;
         return (1.f - 1.f * x - 2.f * z) / 3.f;
     };
     plane3->constructWithLambda(plane3Func);
@@ -537,6 +546,12 @@ int main()
 
         // THIS IS THE SECTION WHERE WE RENDER AND DO OUR LOGIC
         // -----------------------------------------------------------------------------------------------------------------
+
+        // UPDATE
+        for (auto object : mObjects)
+        {
+            object->Update(deltaTime);
+        }
         
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", projection);

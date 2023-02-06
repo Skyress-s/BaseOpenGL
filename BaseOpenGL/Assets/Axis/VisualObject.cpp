@@ -9,3 +9,7 @@ VisualObject::~VisualObject() {
     glDeleteBuffers(1, &mVBO);
 }
 
+void VisualObject::Update(float deltaTime)
+{
+}
+

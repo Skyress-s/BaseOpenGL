@@ -13,6 +13,7 @@ public:
     virtual ~VisualObject();
     virtual void init(GLint matrixUniform) = 0;
     virtual void draw() = 0;
+    virtual void Update(float deltaTime);
     std::string name{"N/A"};
     
     glm::vec3 GetPosition() {
@@ -38,9 +39,9 @@ public:
         sz = newScale[2];
     }
 
-    glm::mat4 GetRotationEulerAngles() {
-                
-    }
+    // glm::mat4 GetRotationEulerAngles() {
+        
+    // }
 
     void SetRotation(glm::vec3 rot) {
         _rotation = glm::mat4(1);
