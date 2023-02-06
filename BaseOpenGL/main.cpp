@@ -316,7 +316,7 @@ int main()
 
     MM::InteractiveObject* cube = new MM::Cube();
     cube->SetPosition(glm::vec3(0.25f, -0.75f, 1.5f));
-    cube->SetScale(glm::vec3(0.01f, 0.01f, 0.01f));
+    cube->SetScale(glm::vec3(0.8f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
     mObjects.push_back(cube);
@@ -537,7 +537,7 @@ int main()
 
         // THIS IS THE SECTION WHERE WE RENDER AND DO OUR LOGIC
         // -----------------------------------------------------------------------------------------------------------------
-
+        
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);

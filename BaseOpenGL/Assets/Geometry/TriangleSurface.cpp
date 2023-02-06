@@ -89,6 +89,7 @@ namespace MM {
         glBindVertexArray(mVAO);
         glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
+        
     }
 
 

@@ -12,13 +12,13 @@ namespace MM {
         mVertices.push_back(Vertex(-1,-1,1    ,1,1,1));
 
         // bottom
-        mVertices.push_back(Vertex(-1,-1,1    ,1,1,1));
+        mVertices.push_back(Vertex(1,-1,-1    ,1,1,1));
         mVertices.push_back(Vertex(1,-1,1    ,1,1,1));
-        mVertices.push_back(Vertex(1,-1,-1    ,1,1,1));
-        
-        mVertices.push_back(Vertex(1,-1,-1    ,1,1,1));
-        mVertices.push_back(Vertex(-1,-1,-1    ,1,1,1));
         mVertices.push_back(Vertex(-1,-1,1    ,1,1,1));
+        
+        mVertices.push_back(Vertex(-1,-1,1    ,1,1,1));
+        mVertices.push_back(Vertex(-1,-1,-1    ,1,1,1));
+        mVertices.push_back(Vertex(1,-1,-1    ,1,1,1));
 
         // side R
         Vertex s1 = Vertex(1, -1,-1     , 1,1,1);
