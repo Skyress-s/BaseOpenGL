@@ -27,6 +27,7 @@
 #endif
 // #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
+#include <unordered_map>
 #include <GLFW/glfw3.h>
 
 #include "Assets/Axis/InteractiveObject.h"
@@ -173,33 +174,6 @@ int main()
         // testMat[2][2] = 2.f;
         SolveThreePlanes(testMat, glm::vec3(1, 2, 1));
     }
-    else
-    {
-        glm::mat4 w2t2_mat = glm::mat4(0.f);
-
-        w2t2_mat[0][0] = 1.f / 16.f;
-        w2t2_mat[1][0] = -0.5f;
-        w2t2_mat[2][0] = 3.f / 2.f;
-        w2t2_mat[3][0] = -1.f;
-
-        w2t2_mat[0][1] = 0.5f;
-        w2t2_mat[1][1] = -2.f;
-        w2t2_mat[2][1] = 3.f / 2.f;
-        w2t2_mat[3][1] = -1.f;
-
-        w2t2_mat[0][2] = 4.f;
-        w2t2_mat[1][2] = -8.f;
-        w2t2_mat[2][2] = 6.f;
-        w2t2_mat[3][2] = -1.f;
-
-        w2t2_mat[0][3] = 27.f / 2.f;
-        w2t2_mat[1][3] = -18.f;
-        w2t2_mat[2][3] = 9.f;
-        w2t2_mat[3][3] = -1.f;
-
-        SolveThreePlanes(w2t2_mat, glm::vec4(1.f / 16.f, 0.5f, 1.f, 7.f / 2.f));
-    }
-
 
     // glfw: initialize and configure
     // ------------------------------
@@ -275,14 +249,18 @@ int main()
     // ----------------------------------------
 
     // objects in scene
+    // std::vector<VisualObject*> mObjects{};
     std::vector<VisualObject*> mObjects{};
-
+    std::unordered_map<std::string, VisualObject*> mMap{};
+    
+    
     // disc
     MM::Disc* disc = new MM::Disc();
     disc->construct(100);
     disc->SetPosition(glm::vec3(4,3,0));
-    mObjects.push_back(disc);
-    
+    // mObjects.push_back(disc);
+    mMap.insert(std::pair<std::string, VisualObject*>{"disc", disc});
+    // mMap.insert(std::pair<std::string, VisualObject*>("disc", disc));
 
     MM::TriangleSurface* plane1 = new MM::TriangleSurface();
     plane1->SetPosition(glm::vec3(0, 0, 0));
@@ -291,7 +269,8 @@ int main()
         return 1.f - x - z;
     };
     plane1->constructWithLambda(plane1Func);
-    mObjects.push_back(plane1);
+    // mObjects.push_back(plane1);
+    mMap.insert(std::pair<std::string, VisualObject*>{"plane1", plane1});
 
     MM::TriangleSurface* plane2 = new MM::TriangleSurface();
     plane2->SetPosition(glm::vec3(0, 0, 0));
@@ -300,7 +279,8 @@ int main()
         return (2.f - 5.f * x - 2.f * z) / 3.f;
     };
     plane2->constructWithLambda(plane2Func);
-    mObjects.push_back(plane2);
+    // mObjects.push_back(plane2);
+    mMap.insert(std::pair<std::string, VisualObject*>{"plane2", plane2});
 
     MM::TriangleSurface* plane3 = new MM::TriangleSurface();
     plane3->SetPosition(glm::vec3(0, 0, 0));
@@ -310,14 +290,16 @@ int main()
         return (1.f - 1.f * x - 2.f * z) / 3.f;
     };
     plane3->constructWithLambda(plane3Func);
-    mObjects.push_back(plane3);
-
+    // mObjects.push_back(plane3);
+    mMap.insert(std::pair<std::string, VisualObject*>{"plane3", plane3});
+    
 
     VisualObject* xyz = new MM::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
-    mObjects.push_back(xyz);
-
+    // mObjects.push_back(xyz);
+    mMap.insert(std::pair<std::string, VisualObject*>{"xyz", xyz});
+    
     // MM::Tetrahedron* tet = new MM::Tetrahedron();
     // tet->name = "TETRAHEDRON";
     // tet->SetPosition(glm::vec3(0, 0, -4));
@@ -328,7 +310,8 @@ int main()
     cube->SetScale(glm::vec3(0.8f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
-    mObjects.push_back(cube);
+    // mObjects.push_back(cube);
+    mMap.insert(std::pair<std::string, VisualObject*>{"cube", cube});
 
     MM::TriangleSurface* tri1 = new MM::TriangleSurface();
     tri1->name = "TRIANGLE SURFACE GRAPH";
@@ -336,7 +319,8 @@ int main()
     tri1->construct(); // makes the functions from task 2
     // tri1->toFile("surface.txt");
     // tri1->readFile("surface.txt");
-    mObjects.push_back(tri1);
+    // mObjects.push_back(tri1);
+    mMap.insert(std::pair<std::string, VisualObject*>{"tri1", tri1});
 
 
     auto ff = [](float x)
@@ -350,7 +334,8 @@ int main()
     // graph_2d->toFile("FalloffGraph.txt");
     graph_2d->readFile("FalloffGraph.txt");
     graph_2d->SetPosition(glm::vec3(-2, 3, 0));
-    mObjects.push_back(graph_2d);
+    // mObjects.push_back(graph_2d);
+    mMap.insert(std::pair<std::string, VisualObject*>{"graph2d", graph_2d});
 
     // lissa graph
     auto lissa = [](float t)
@@ -374,9 +359,11 @@ int main()
     lissaGraph->name = "LISSAJOUS CURVE";
     // lissaGraph->toFile("LissaGraph.txt");
     lissaGraph->readFile("LissaGraph.txt");
-    mObjects.push_back(lissaGraph);
+    // mObjects.push_back(lissaGraph);
+    mMap.insert(std::pair<std::string, VisualObject*>{"lissa", lissaGraph});
 
 
+    // 3dGraph
     auto oblig1_3Func = [](float x, float y)
     {
         // return 1.f;
@@ -385,7 +372,8 @@ int main()
     MM::TriangleSurface* oblig1_3Graph = new MM::TriangleSurface();
     oblig1_3Graph->SetPosition(glm::vec3(0, 0, 0));
     oblig1_3Graph->constructWithLambda(oblig1_3Func);
-    mObjects.push_back(oblig1_3Graph);
+    // mObjects.push_back(oblig1_3Graph);
+    mMap.insert(std::pair<std::string, VisualObject*>{"3dgraph", oblig1_3Graph});
 
 
     // getting the integral
@@ -408,7 +396,8 @@ int main()
 
     MM::OctahedronBall* octBall = new MM::OctahedronBall(3);
     octBall->SetPosition(glm::vec3(0, 2, 3));
-    mObjects.push_back(octBall);
+    // mObjects.push_back(octBall);
+    mMap.insert(std::pair<std::string, VisualObject*>{"ball", octBall});
 
 
     // Getting shader
@@ -418,9 +407,15 @@ int main()
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
     // Initializing Visual Objects
+    /*
     for (VisualObject* m_object : mObjects)
     {
         m_object->init(matrixUniform);
+    }
+    */
+
+    for (auto object : mMap) {
+        object.second->init(matrixUniform);   
     }
 
     // Good pratice to unbind vertex arrays
@@ -548,18 +543,20 @@ int main()
         // -----------------------------------------------------------------------------------------------------------------
 
         // UPDATE
-        for (auto object : mObjects)
-        {
-            object->Update(deltaTime);
+        
+
+        // mMap["disc"]->SetPosition(mMap["disc"]->GetPosition() += glm::vec3(1,0,0)*deltaTime*2.f);
+        for (auto object : mMap) {
+            object.second->Update(deltaTime);
         }
         
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
 
-        for (VisualObject* object : mObjects)
+        for (auto object : mMap)
         {
-            object->draw();
+            object.second->draw();
         }
         /*
         for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
@@ -574,9 +571,9 @@ int main()
             normalGeoShader.setMat4("model", model);
             normalGeoShader.setMat4("view", view);
             normalGeoShader.setMat4("projection", projection);
-            for (auto m_object : mObjects)
+            for (auto m_object : mMap)
             {
-                m_object->draw();
+                m_object.second->draw();
             }
         }
 
