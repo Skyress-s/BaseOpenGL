@@ -3,7 +3,7 @@
 #include <iostream>
 #include "../Axis/VisualObject.h"
 
-namespace MM
+namespace KT
 {
     class Graph2D : public VisualObject
     {

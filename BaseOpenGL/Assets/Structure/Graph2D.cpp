@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-namespace MM
+namespace KT
 {
     Graph2D::Graph2D(std::function<float(float)> f, int n, float from, float to)
     {

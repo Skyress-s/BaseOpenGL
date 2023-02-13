@@ -1,6 +1,6 @@
 ﻿#include "Vertex.h"
 
-namespace MM {
+namespace KT {
     Vertex::Vertex() {
     }
 

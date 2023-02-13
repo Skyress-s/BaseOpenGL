@@ -2,7 +2,7 @@
 #include "../Axis/InteractiveObject.h"
 #include "../Axis/VisualObject.h"
 
-namespace MM {
+namespace KT {
     class Cube : public InteractiveObject {
     public:
         Cube();

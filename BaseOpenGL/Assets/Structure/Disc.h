@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../Axis/VisualObject.h"
 
-namespace MM
+namespace KT
 {
     class Disc : public VisualObject
     {

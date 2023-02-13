@@ -1,6 +1,6 @@
 ﻿#include "Cube.h"
 
-namespace MM {
+namespace KT {
     Cube::Cube() {
         // front
         mVertices.push_back(Vertex(-1,-1,1    ,1,1,1));

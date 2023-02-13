@@ -2,7 +2,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-namespace MM {
+namespace KT {
     XYZ::XYZ() {
         mVertices.push_back(Vertex{0, 0, 0, 1, 0, 0});
         mVertices.push_back(Vertex{1, 0, 0, 1, 0, 0});

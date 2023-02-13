@@ -1,6 +1,6 @@
 ﻿#include "Disc.h"
 
-namespace MM {
+namespace KT {
     void Disc::draw() {
         mModelMatrix = GetModelMatrix();
 
@@ -28,7 +28,7 @@ namespace MM {
         const float pi = glm::pi<float>();
         mVertices.clear();
         // central point
-        mVertices.push_back(MM::Vertex(0, 0, 0, 0, 0, 0));
+        mVertices.push_back(KT::Vertex(0, 0, 0, 0, 0, 0));
 
         for (int i = 0; i < segments; ++i)
         {
@@ -37,7 +37,7 @@ namespace MM {
             float y = sin(t * pi * 2.f);
             glm::vec3 pos = glm::vec3(x, y, 0.f);
 
-            mVertices.push_back(MM::Vertex(pos, pos));
+            mVertices.push_back(KT::Vertex(pos, pos));
         }
 
         // elements

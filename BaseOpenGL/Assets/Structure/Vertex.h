@@ -2,7 +2,7 @@
 #include <iostream>
 #include <glm/vec3.hpp>
 
-namespace MM {
+namespace KT {
     class Vertex {
     public:
         /*

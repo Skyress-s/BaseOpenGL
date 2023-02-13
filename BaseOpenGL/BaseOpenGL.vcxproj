@@ -148,6 +148,7 @@
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
     <ClCompile Include="Assets\Structure\OctahedronBall.cpp" />
     <ClCompile Include="Assets\Structure\Tetrahedron.cpp" />
+    <ClCompile Include="Assets\Structure\Trophy.cpp" />
     <ClCompile Include="Assets\Structure\Vertex.cpp" />
     <ClCompile Include="Assets\Structure\XYZ.cpp" />
     <ClCompile Include="Assets\VisualObjectUI\TransformUI.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
+    <ClInclude Include="Assets\Math\Graphs.h" />
     <ClInclude Include="Assets\Model\Mesh.h" />
     <ClInclude Include="Assets\Model\Model.h" />
     <ClInclude Include="Assets\Shader\Shader.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="Assets\Structure\Graph2D.h" />
     <ClInclude Include="Assets\Structure\OctahedronBall.h" />
     <ClInclude Include="Assets\Structure\Tetrahedron.h" />
+    <ClInclude Include="Assets\Structure\Trophy.h" />
     <ClInclude Include="Assets\Structure\Vertex.h" />
     <ClInclude Include="Assets\Structure\XYZ.h" />
     <ClInclude Include="Assets\VisualObjectUI\TransformUI.h" />

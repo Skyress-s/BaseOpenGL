@@ -31,6 +31,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Assets/Axis/InteractiveObject.h"
+#include "Assets/Math/Graphs.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
@@ -56,7 +57,7 @@ float deltaTime = 0.1f; // the time between the current and last frame
 float lastFrame = 0.0f; // the of last frame
 
 // possesed
-MM::InteractiveObject* currentPossesedObject = nullptr;
+KT::InteractiveObject* currentPossesedObject = nullptr;
 bool bDrawNormals = false;
 float drawNormalLength = 0.3f;
 
@@ -76,18 +77,14 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 // falloff func
-float falloffFunc(float x)
-{
+float falloffFunc(float x) {
     return cos(4.f * x) * 1.f / exp(x);
 }
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m)
-{
-    for (int y = 0; y < R; ++y)
-    {
-        for (int x = 0; x < C; ++x)
-        {
+GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
+    for (int y = 0; y < R; ++y) {
+        for (int x = 0; x < C; ++x) {
             std::cout << m[x][y];
         }
         std::cout << std::endl;
@@ -96,8 +93,7 @@ GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m)
 
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals)
-{
+void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
     static_assert(R == C, "Rows and Collums has to be equal!");
     // example how to do it
     // glm::mat3 testMat = glm::mat3(1.f);
@@ -120,18 +116,15 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals)
 
     glm::vec<R, T, Q> res = inv * equals;
     std::cout << "RESULTS XYZW VALUES" << std::endl;
-    for (int i = 0; i < R; ++i)
-    {
+    for (int i = 0; i < R; ++i) {
         std::cout << res[i] << " ";
     }
     std::cout << std::endl;
 
     std::cout << "RECALCULATE" << std::endl;
-    for (int y = 0; y < C; ++y)
-    {
+    for (int y = 0; y < C; ++y) {
         float plane = 0.f;
-        for (int x = 0; x < C; ++x)
-        {
+        for (int x = 0; x < C; ++x) {
             plane += mat[x][y] * res[x];
         }
         std::cout << plane << " ";
@@ -139,8 +132,7 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals)
     std::cout << std::endl;
 
     std::cout << "SHOULD EQUAL" << std::endl;
-    for (int i = 0; i < R; ++i)
-    {
+    for (int i = 0; i < R; ++i) {
         std::cout << equals[i] << " ";
     }
     std::cout << std::endl;
@@ -149,10 +141,10 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals)
     return;
 }
 
-int main()
-{
-    if (true)
-    {
+typedef std::pair<std::string, VisualObject*> MapPair;
+
+int main() {
+    if (true) {
         glm::mat3 testMat = glm::mat3(1.f);
         float arr[] = {
             1, 5, 1,
@@ -193,8 +185,7 @@ int main()
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
+    if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -204,8 +195,7 @@ int main()
     glfwSwapInterval(1);
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -252,152 +242,28 @@ int main()
     // std::vector<VisualObject*> mObjects{};
     std::vector<VisualObject*> mObjects{};
     std::unordered_map<std::string, VisualObject*> mMap{};
-    
-    
-    // disc
-    MM::Disc* disc = new MM::Disc();
-    disc->construct(100);
-    disc->SetPosition(glm::vec3(4,3,0));
-    // mObjects.push_back(disc);
-    mMap.insert(std::pair<std::string, VisualObject*>{"disc", disc});
-    // mMap.insert(std::pair<std::string, VisualObject*>("disc", disc));
 
-    MM::TriangleSurface* plane1 = new MM::TriangleSurface();
-    plane1->SetPosition(glm::vec3(0, 0, 0));
-    auto plane1Func = [](float x, float z)
-    {
-        return 1.f - x - z;
-    };
-    plane1->constructWithLambda(plane1Func);
-    // mObjects.push_back(plane1);
-    mMap.insert(std::pair<std::string, VisualObject*>{"plane1", plane1});
 
-    MM::TriangleSurface* plane2 = new MM::TriangleSurface();
-    plane2->SetPosition(glm::vec3(0, 0, 0));
-    auto plane2Func = [](float x, float z)
-    {
-        return (2.f - 5.f * x - 2.f * z) / 3.f;
-    };
-    plane2->constructWithLambda(plane2Func);
-    // mObjects.push_back(plane2);
-    mMap.insert(std::pair<std::string, VisualObject*>{"plane2", plane2});
+    // main surface
+    KT::TriangleSurface* ground = new KT::TriangleSurface();
+    ground->constructWithLambda(KT::Graph::Franke);
+    mMap.insert(MapPair("ground", ground));
+    ground->SetPosition(0, 0, 0);
 
-    MM::TriangleSurface* plane3 = new MM::TriangleSurface();
-    plane3->SetPosition(glm::vec3(0, 0, 0));
-    auto plane3Func = [](float x, float z)
-    {
-        return 2.f;
-        return (1.f - 1.f * x - 2.f * z) / 3.f;
-    };
-    plane3->constructWithLambda(plane3Func);
-    // mObjects.push_back(plane3);
-    mMap.insert(std::pair<std::string, VisualObject*>{"plane3", plane3});
-    
-
-    VisualObject* xyz = new MM::XYZ();
+    VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
     // mObjects.push_back(xyz);
     mMap.insert(std::pair<std::string, VisualObject*>{"xyz", xyz});
-    
-    // MM::Tetrahedron* tet = new MM::Tetrahedron();
-    // tet->name = "TETRAHEDRON";
-    // tet->SetPosition(glm::vec3(0, 0, -4));
-    // mObjects.push_back(tet);
 
-    MM::InteractiveObject* cube = new MM::Cube();
+    KT::InteractiveObject* cube = new KT::Cube();
     cube->SetPosition(glm::vec3(0.25f, -0.75f, 1.5f));
-    cube->SetScale(glm::vec3(0.8f));
+    cube->SetScale(glm::vec3(0.05f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
     // mObjects.push_back(cube);
     mMap.insert(std::pair<std::string, VisualObject*>{"cube", cube});
 
-    MM::TriangleSurface* tri1 = new MM::TriangleSurface();
-    tri1->name = "TRIANGLE SURFACE GRAPH";
-    tri1->SetPosition(glm::vec3(4, 0, 0));
-    tri1->construct(); // makes the functions from task 2
-    // tri1->toFile("surface.txt");
-    // tri1->readFile("surface.txt");
-    // mObjects.push_back(tri1);
-    mMap.insert(std::pair<std::string, VisualObject*>{"tri1", tri1});
-
-
-    auto ff = [](float x)
-    {
-        return cos(4.f * x) * 1.f / exp(x);
-    };
-
-    // 2d falloff func
-    MM::Graph2D* graph_2d = new MM::Graph2D(ff, 20, 0.f, 5.f);
-    graph_2d->name = "GRAPH 2D";
-    // graph_2d->toFile("FalloffGraph.txt");
-    graph_2d->readFile("FalloffGraph.txt");
-    graph_2d->SetPosition(glm::vec3(-2, 3, 0));
-    // mObjects.push_back(graph_2d);
-    mMap.insert(std::pair<std::string, VisualObject*>{"graph2d", graph_2d});
-
-    // lissa graph
-    auto lissa = [](float t)
-    {
-        float d = glm::pi<float>() / 2.f;
-        float a = 3.f;
-        float b = 4.f;
-        float x = 1.f * sin(a * t + d);
-        float y = 1.f * sin(b * t);
-
-        return MM::Vertex(x, y, 0.f, 1.f, 1.f, 1.f);
-    };
-    std::vector<MM::Vertex> lissaVerts{};
-    for (float i = 0; i < glm::pi<float>() * 2.f; i += 0.1f)
-    {
-        lissaVerts.push_back(lissa(i));
-    }
-
-    MM::Graph2D* lissaGraph = new MM::Graph2D(lissaVerts);
-    lissaGraph->SetPosition(glm::vec3(-3, 0, 0));
-    lissaGraph->name = "LISSAJOUS CURVE";
-    // lissaGraph->toFile("LissaGraph.txt");
-    lissaGraph->readFile("LissaGraph.txt");
-    // mObjects.push_back(lissaGraph);
-    mMap.insert(std::pair<std::string, VisualObject*>{"lissa", lissaGraph});
-
-
-    // 3dGraph
-    auto oblig1_3Func = [](float x, float y)
-    {
-        // return 1.f;
-        return (1 - x - y);
-    };
-    MM::TriangleSurface* oblig1_3Graph = new MM::TriangleSurface();
-    oblig1_3Graph->SetPosition(glm::vec3(0, 0, 0));
-    oblig1_3Graph->constructWithLambda(oblig1_3Func);
-    // mObjects.push_back(oblig1_3Graph);
-    mMap.insert(std::pair<std::string, VisualObject*>{"3dgraph", oblig1_3Graph});
-
-
-    // getting the integral
-    float lower, upper, step;
-    lower = 0.f;
-    upper = 1.f;
-    step = 0.0025f;
-
-    float total{};
-    // reads from the center of each square we evaluate 
-    for (float x = lower + 0.5f * step; x < upper; x += step)
-    {
-        for (float y = lower + 0.5f * step; y < 1.f - x; y += step)
-        {
-            total += oblig1_3Func(x, y) * step * step; // height * length * length       
-        }
-    }
-
-    std::cout << total << std::endl;
-
-    MM::OctahedronBall* octBall = new MM::OctahedronBall(3);
-    octBall->SetPosition(glm::vec3(0, 2, 3));
-    // mObjects.push_back(octBall);
-    mMap.insert(std::pair<std::string, VisualObject*>{"ball", octBall});
 
 
     // Getting shader
@@ -415,7 +281,7 @@ int main()
     */
 
     for (auto object : mMap) {
-        object.second->init(matrixUniform);   
+        object.second->init(matrixUniform);
     }
 
     // Good pratice to unbind vertex arrays
@@ -430,19 +296,6 @@ int main()
                                               100.f);
 
 
-    // UI
-    // TransformUI tetUI;
-    // tetUI.target = tet;
-    TransformUI xyzUI;
-    xyzUI.target = xyz;
-    // TransformUI cubeUI;
-    // cubeUI.target = cube;
-    TransformUI triUI;
-    triUI.target = tri1;
-    TransformUI graphUI;
-    graphUI.target = graph_2d;
-    TransformUI lissaUI;
-    lissaUI.target = lissaGraph;
     // LEKSJON 2
     // ----------------------------------------
     // OTHER ENABLES
@@ -457,8 +310,7 @@ int main()
 
     // RENDER LOOP
     // -----------------------------------------------------------------------------------------------------------------
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         double* x = new double();
         double* y = new double();
         glfwGetCursorPos(window, x, y);
@@ -491,20 +343,12 @@ int main()
             ImGui::End();
 
             ImGui::Begin("Helalo, world!"); // Create a window called "Hello, world!" and append into it.
-            // tetUI.Draw();
-            xyzUI.Draw();
-            // cubeUI.Draw();
-            triUI.Draw();
-            graphUI.Draw();
-            lissaUI.Draw();
 
             ImGui::Checkbox("Draw Normals", &bDrawNormals);
-            if (bDrawNormals)
-            {
+            if (bDrawNormals) {
                 ImGui::SliderFloat("NormalVectorLength", &drawNormalLength, 0.01f, 2.f);
             }
             ImGui::End();
-
             /*
             ImGui::Begin("awdawdHelalo, world!"); // Create a window called "Hello, world!" and append into it.
 
@@ -543,19 +387,18 @@ int main()
         // -----------------------------------------------------------------------------------------------------------------
 
         // UPDATE
-        
+
 
         // mMap["disc"]->SetPosition(mMap["disc"]->GetPosition() += glm::vec3(1,0,0)*deltaTime*2.f);
         for (auto object : mMap) {
             object.second->Update(deltaTime);
         }
-        
+
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
 
-        for (auto object : mMap)
-        {
+        for (auto object : mMap) {
             object.second->draw();
         }
         /*
@@ -564,15 +407,13 @@ int main()
         }
         */
 
-        if (bDrawNormals)
-        {
+        if (bDrawNormals) {
             normalGeoShader.use();
             normalGeoShader.setFloat("MAGNITUDE", drawNormalLength);
             normalGeoShader.setMat4("model", model);
             normalGeoShader.setMat4("view", view);
             normalGeoShader.setMat4("projection", projection);
-            for (auto m_object : mMap)
-            {
+            for (auto m_object : mMap) {
                 m_object.second->draw();
             }
         }
@@ -615,29 +456,23 @@ int main()
 static bool UI_enabled;
 static bool bbbb = false;
 
-void processInput(GLFWwindow* window)
-{
+void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
-    {
-        if (!bbbb)
-        {
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        if (!bbbb) {
             bbbb = true;
             UI_enabled = !UI_enabled;
-            if (UI_enabled)
-            {
+            if (UI_enabled) {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
-            else
-            {
+            else {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
         }
     }
-    else
-    {
+    else {
         bbbb = false;
     }
 
@@ -658,29 +493,24 @@ void processInput(GLFWwindow* window)
     camera.ProcessKeyboard(keyboardAxis, deltaTime);
 
     // possesed object
-    float moveScalar = 0.1f;
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-        currentPossesedObject->move(0, 0, -moveScalar);
+    float moveScalar = 0.01f;
+    
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        currentPossesedObject->move(0,  -moveScalar, KT::Graph::Franke);
     }
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    {
-        currentPossesedObject->move(0, 0, moveScalar);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        currentPossesedObject->move(0, moveScalar, KT::Graph::Franke);
     }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    {
-        currentPossesedObject->move(-moveScalar, 0, 0);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        currentPossesedObject->move(-moveScalar, 0, KT::Graph::Franke);
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-        currentPossesedObject->move(moveScalar, 0, 0);
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        currentPossesedObject->move(moveScalar, 0, KT::Graph::Franke);
     }
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos)
-{
-    if (bFirstMouse)
-    {
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (bFirstMouse) {
         bFirstMouse = false;
         mouseLastX = xpos;
         mouseLastY = ypos;
@@ -690,28 +520,23 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
     mouseLastX = xpos;
     mouseLastY = ypos;
 
-    if (!UI_enabled)
-    {
+    if (!UI_enabled) {
         camera.ProcessMouseMovement(offsetX, offsetY, true, true);
     }
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         camera.ProcessMouseScroll(yoffset, true);
     }
-    else
-    {
+    else {
         camera.ProcessMouseScroll(yoffset, false);
     }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);

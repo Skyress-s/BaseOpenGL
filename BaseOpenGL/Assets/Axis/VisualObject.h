@@ -27,6 +27,10 @@ public:
         return pos;
     }
 
+    void SetPosition(const float& x, const float& y, const float& z) {
+        SetPosition(glm::vec3(x,y,z));
+    }
+
     void SetPosition(glm::vec3 newPosition) {
         x = newPosition.x;
         y = newPosition.y;
@@ -56,7 +60,7 @@ public:
     
 
 protected:
-    std::vector<MM::Vertex> mVertices;
+    std::vector<KT::Vertex> mVertices;
     GLuint mVAO{0};
     GLuint mVBO{0};
     GLuint mMatrixUniform{0};

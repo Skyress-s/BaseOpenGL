@@ -3,7 +3,7 @@
 
 #include "../Axis/VisualObject.h"
 
-namespace MM {
+namespace KT {
     
 class XYZ : public VisualObject {
 public:

@@ -2,7 +2,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-MM::Tetrahedron::Tetrahedron() {
+KT::Tetrahedron::Tetrahedron() {
     
     mVertices.push_back(Vertex{1, 0, 0, 1, 0, 0});
     mVertices.push_back(Vertex{-1, 0, 0, 1, 0, 0});
@@ -22,10 +22,10 @@ MM::Tetrahedron::Tetrahedron() {
     mModelMatrix = glm::mat4x4(1.f); // creates identity matrix
 }
 
-MM::Tetrahedron::~Tetrahedron() {
+KT::Tetrahedron::~Tetrahedron() {
 }
 
-void MM::Tetrahedron::init(GLint matrixUniform) {
+void KT::Tetrahedron::init(GLint matrixUniform) {
     mMatrixUniform = matrixUniform;
 
     // Create and bind vertex arrays, the object that will hold the Vertex Buffer Object
@@ -50,7 +50,7 @@ void MM::Tetrahedron::init(GLint matrixUniform) {
     glBindVertexArray(0);
 }
 
-void MM::Tetrahedron::draw() {
+void KT::Tetrahedron::draw() {
     mModelMatrix = GetModelMatrix();
     
     glBindVertexArray(mVAO);

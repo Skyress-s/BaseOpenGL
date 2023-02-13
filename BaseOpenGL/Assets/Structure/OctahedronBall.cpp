@@ -1,6 +1,6 @@
 ﻿#include "OctahedronBall.h"
 
-namespace MM
+namespace KT
 {
     OctahedronBall::OctahedronBall()
     {
