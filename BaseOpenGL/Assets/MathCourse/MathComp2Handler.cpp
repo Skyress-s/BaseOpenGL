@@ -1,5 +1,6 @@
 ﻿#include "MathComp2Handler.h"
 
+#include "../Math/MathHelpers.h"
 #include "../Structure/OctahedronBall.h"
 
 namespace KT
@@ -13,42 +14,40 @@ namespace KT
     {
         std::vector<glm::vec3> ps{};
 
-        ps.push_back(glm::vec3(0,0,0));
-        ps.push_back(glm::vec3(0,3,0));
-        ps.push_back(glm::vec3(0,3,2));
-        ps.push_back(glm::vec3(4,3,0));
+        ps.push_back(glm::vec3(0, 0, 0));
+        ps.push_back(glm::vec3(1, 3, 0));
+        ps.push_back(glm::vec3(2, 4, 0));
+        ps.push_back(glm::vec3(3, 6, 0));
+        ps.push_back(glm::vec3(4, 4, 0));
+        ps.push_back(glm::vec3(5, 3, 0));
+        ps.push_back(glm::vec3(6, 5, 0));
+        ps.push_back(glm::vec3(7, 7, 0));
+        ps.push_back(glm::vec3(8, 10, 0));
 
 
-        
         return ps;
-        
     }
 
     void MathComp2Handler::init(GLint matrixUniform)
     {
         std::vector<KT::Vertex> list = KT::OctahedronBall::makeUnitBall(1);
-        std::cout << "verts : " << list.size() << std::endl;
         // std::vector<KT::Vertex> list{};
         // list.push_back(Vertex(0,0,0,1,1,1));
         // list.push_back(Vertex(0,2,0,1,1,1));
         // list.push_back(Vertex(0,2,5,1,1,1));
 
-        for (int i = 0; i < list.size(); ++i)
-        {
-            list[i].m_xyz[0] *= 0.1f;
-            list[i].m_xyz[1] *= 0.1f;
-            list[i].m_xyz[2] *= 0.1f;
-        }
-        
-        for (auto vertex : list)
-        {
-        }
+        // for (int i = 0; i < list.size(); ++i)
+        // {
+        // list[i].m_xyz[0] *= 0.1f;
+        // list[i].m_xyz[1] *= 0.1f;
+        // list[i].m_xyz[2] *= 0.1f;
+        // }
 
-        
+
+
         mVertices = list;
-        
-        
-        
+
+
         mMatrixUniform = matrixUniform;
 
         // vertex array
@@ -71,12 +70,15 @@ namespace KT
 
     void MathComp2Handler::draw()
     {
-        mModelMatrix = glm::mat4(1.f);
         for (int i = 0; i < points.size(); ++i)
         {
-            std::cout << i << " ";
-            mModelMatrix = glm::translate(mModelMatrix, points[i]);
+            mModelMatrix = GetModelMatrix();
 
+            glm::vec3 point =  mModelMatrix*glm::vec4(points[i],1);
+            
+            mModelMatrix = MathHelpers::TRS(point, glm::quat(1,0,0,0), glm::vec3(0.1f));
+
+            
             glBindVertexArray(mVAO);
 
             glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);

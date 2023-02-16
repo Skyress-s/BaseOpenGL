@@ -267,6 +267,10 @@ int main() {
 
 
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
+    float mathScale = 0.4f;
+    math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
+    math_comp2_handler->SetPosition(0.f,4,0);
+    math_comp2_handler->SetRotation(0,0,0);
     mMap.insert(std::pair<std::string, VisualObject*>{"math2comp", math_comp2_handler});
 
 
