@@ -29,7 +29,10 @@ namespace KT
     {
         std::vector<KT::Vertex> list = KT::OctahedronBall::makeUnitBall(1);
 
-        glm::mat<4,3,glm::f32, glm::defaultp> awd;
+        // glm::mat4 test{1.f};
+        // test = glm::translate(test, glm::vec3(1,2,3));
+        // MathHelpers::printt(test);
+        
         mVertices = list;
 
 

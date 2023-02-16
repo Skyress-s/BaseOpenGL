@@ -1,5 +1,6 @@
 ﻿#include "MathHelpers.h"
 
+#include <iostream>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
@@ -13,4 +14,5 @@ namespace KT
         m = glm::scale(m, scale);
         return m;
     }
+  
 }

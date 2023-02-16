@@ -90,6 +90,7 @@ GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
         }
         std::cout << std::endl;
     }
+    glm::mat<4,7,glm::f32, glm::defaultp> awd = glm::mat<4,7,glm::f32, glm::defaultp>();
 }
 
 
