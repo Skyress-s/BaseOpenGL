@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-
+#include <Eigen/Dense>
 
 #include <glm/glm.hpp>
 #include <iostream>
@@ -90,7 +90,7 @@ GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
         }
         std::cout << std::endl;
     }
-    glm::mat<4,7,glm::f32, glm::defaultp> awd = glm::mat<4,7,glm::f32, glm::defaultp>();
+  
 }
 
 
@@ -146,28 +146,13 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
 typedef std::pair<std::string, VisualObject*> MapPair;
 
 int main() {
-    if (true) {
-        glm::mat3 testMat = glm::mat3(1.f);
-        float arr[] = {
-            1, 5, 1,
-            1, 3, 3,
-            1, 2, 2
-        };
-        testMat = glm::make_mat3(arr);
-        print(testMat);
-        // testMat[0][0] = 1.f;
-        // testMat[1][0] = 1.f;
-        // testMat[2][0] = 1.f;
-        //
-        // testMat[0][1] = 5.f;
-        // testMat[1][1] = 3.f;
-        // testMat[2][1] = 2.f;
-        //
-        // testMat[0][2] = 1.f;
-        // testMat[1][2] = 3.f;
-        // testMat[2][2] = 2.f;
-        SolveThreePlanes(testMat, glm::vec3(1, 2, 1));
-    }
+    // dynamic matrix X for unknown
+    Eigen::MatrixXd m;
+
+    // fixed sized matrix
+    Eigen::Matrix4d a;
+
+    m.resize(7, 3);
 
     // glfw: initialize and configure
     // ------------------------------
@@ -266,8 +251,6 @@ int main() {
     // mObjects.push_back(cube);
     mMap.insert(std::pair<std::string, VisualObject*>{"cube", cube});
 
-
-    glm::mat<4,4, glm::f32, glm::defaultp> a;
 
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
