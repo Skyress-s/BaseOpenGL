@@ -1,5 +1,8 @@
 ﻿#include "MathHelpers.h"
 
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 namespace KT
 {
     glm::mat4 MathHelpers::TRS(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale)

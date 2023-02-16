@@ -1,8 +1,6 @@
 ﻿#include "MathComp2Handler.h"
-
 #include "../Math/MathHelpers.h"
 #include "../Structure/OctahedronBall.h"
-
 namespace KT
 {
     MathComp2Handler::MathComp2Handler()
@@ -24,27 +22,14 @@ namespace KT
         ps.push_back(glm::vec3(7, 7, 0));
         ps.push_back(glm::vec3(8, 10, 0));
 
-
         return ps;
     }
 
     void MathComp2Handler::init(GLint matrixUniform)
     {
         std::vector<KT::Vertex> list = KT::OctahedronBall::makeUnitBall(1);
-        // std::vector<KT::Vertex> list{};
-        // list.push_back(Vertex(0,0,0,1,1,1));
-        // list.push_back(Vertex(0,2,0,1,1,1));
-        // list.push_back(Vertex(0,2,5,1,1,1));
 
-        // for (int i = 0; i < list.size(); ++i)
-        // {
-        // list[i].m_xyz[0] *= 0.1f;
-        // list[i].m_xyz[1] *= 0.1f;
-        // list[i].m_xyz[2] *= 0.1f;
-        // }
-
-
-
+        glm::mat<4,3,glm::f32, glm::defaultp> awd;
         mVertices = list;
 
 

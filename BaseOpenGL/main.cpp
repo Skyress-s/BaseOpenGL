@@ -266,6 +266,8 @@ int main() {
     mMap.insert(std::pair<std::string, VisualObject*>{"cube", cube});
 
 
+    glm::mat<4,4, glm::f32, glm::defaultp> a;
+
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
     math_comp2_handler->SetScale(mathScale, mathScale, mathScale);

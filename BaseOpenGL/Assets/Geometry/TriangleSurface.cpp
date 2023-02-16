@@ -94,6 +94,9 @@ namespace KT {
 
 
     void TriangleSurface::construct() {
+
+        glm::mat<4,4, glm::f32, glm::defaultp> a;
+        
         mVertices.clear();
         const float k_pi = glm::pi<float>();
         const float e = glm::e<float>();
