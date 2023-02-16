@@ -32,6 +32,7 @@
 
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Math/Graphs.h"
+#include "Assets/MathCourse/MathComp2Handler.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
@@ -264,6 +265,9 @@ int main() {
     // mObjects.push_back(cube);
     mMap.insert(std::pair<std::string, VisualObject*>{"cube", cube});
 
+
+    KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
+    mMap.insert(std::pair<std::string, VisualObject*>{"math2comp", math_comp2_handler});
 
 
     // Getting shader

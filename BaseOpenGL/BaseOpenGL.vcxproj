@@ -141,6 +141,7 @@
     <ClCompile Include="Assets\Axis\InteractiveObject.cpp" />
     <ClCompile Include="Assets\Axis\VisualObject.cpp" />
     <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
+    <ClCompile Include="Assets\MathCourse\MathComp2Handler.cpp" />
     <ClCompile Include="Assets\Shader\Shader.cpp" />
     <ClCompile Include="Assets\SpacePartition\QuadTree.cpp" />
     <ClCompile Include="Assets\Structure\Cube.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
+    <ClInclude Include="Assets\MathCourse\MathComp2Handler.h" />
     <ClInclude Include="Assets\Math\Graphs.h" />
     <ClInclude Include="Assets\Model\Mesh.h" />
     <ClInclude Include="Assets\Model\Model.h" />

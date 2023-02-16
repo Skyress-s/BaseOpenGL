@@ -18,10 +18,10 @@ namespace KT {
         Vertex();
         Vertex(float x, float y, float z, float r,float g,float b);
         Vertex(glm::vec3 pos, glm::vec3 nor);
-    private:
         float m_xyz[3];       
         float m_normal[3];  
         float m_st[2];
+    private:
 
 
         friend std::ostream& operator<<(std::ostream&, const Vertex&);
