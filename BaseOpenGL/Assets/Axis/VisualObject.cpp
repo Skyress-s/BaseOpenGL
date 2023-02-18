@@ -1,15 +1,16 @@
 ﻿#include "VisualObject.h"
 
 VisualObject::VisualObject() {
-    
 }
 
 VisualObject::~VisualObject() {
-    glDeleteVertexArrays(1, &mVAO);
-    glDeleteBuffers(1, &mVBO);
+    if (mVAO != NULL) {
+        glDeleteVertexArrays(1, &mVAO);
+    }
+    if (mVBO != NULL) {
+        glDeleteBuffers(1, &mVBO);
+    }
 }
 
-void VisualObject::Update(float deltaTime)
-{
+void VisualObject::Update(float deltaTime) {
 }
-

@@ -147,13 +147,10 @@ typedef std::pair<std::string, VisualObject*> MapPair;
 
 int main() {
     // dynamic matrix X for unknown
-    Eigen::MatrixXd m;
+    KT::MathComp2Handler handler{}; 
 
-    // fixed sized matrix
-    Eigen::Matrix4d a;
-
-    m.resize(7, 3);
-
+    return 0;
+    
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();

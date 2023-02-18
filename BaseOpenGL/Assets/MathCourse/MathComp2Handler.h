@@ -12,6 +12,7 @@ namespace KT
 
     public:
         MathComp2Handler();
+        ~MathComp2Handler() override;
         std::vector<glm::vec3> GenerateRandomPoints() const;
         void init(GLint matrixUniform) override;
         void draw() override;
