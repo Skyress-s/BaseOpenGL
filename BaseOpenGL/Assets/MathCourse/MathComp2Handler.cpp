@@ -5,6 +5,13 @@
 
 namespace KT {
     MathComp2Handler::MathComp2Handler() {
+        
+    }
+
+    MathComp2Handler::~MathComp2Handler() {
+    }
+
+    void MathComp2Handler::HandleTask1() {
         points = GenerateRandomPoints();
 
         Eigen::MatrixXd A = Eigen::MatrixXd(points.size(), 3);
@@ -29,9 +36,22 @@ namespace KT {
         Eigen::MatrixXd x = Eigen::Inverse<Eigen::MatrixXd>(B)*c;
         std::cout << "result" << std::endl << x << std::endl;
         
-    }
-
-    MathComp2Handler::~MathComp2Handler() {
+        // writing mVerices
+        mVertices.clear();
+        float min = -4.f;
+        float max = 3.f;
+        int divisions = 10;
+        float delta = (max - min)/divisions;
+        
+        for (float i = min; i <= max+0.001f; i+=delta) {
+            float y =
+                x(0,0)*i*i +
+                x(1,0)*i +
+                x(2,0);
+            Vertex v = Vertex(glm::vec3(i, y,0), glm::vec3(0,0,0));
+            mVertices.push_back(v);    
+        }
+        
     }
 
     std::vector<glm::vec3> MathComp2Handler::GenerateRandomPoints() const {
@@ -47,6 +67,52 @@ namespace KT {
         ps.push_back(glm::vec3(3, 7, 0));
 
         return ps;
+    }
+
+    void MathComp2Handler::HandleTask2() {
+        std::vector<glm::vec3> ps{};
+        ps.push_back(glm::vec3(0,0,0));
+        ps.push_back(glm::vec3(1,2,0));
+        ps.push_back(glm::vec3(2,5,0));
+        ps.push_back(glm::vec3(3,6,0));
+        points = ps;
+
+        
+        Eigen::MatrixXd A = Eigen::MatrixXd(4, 4);
+        for (int i = 0; i < ps.size(); ++i) {
+            A(i,0) = ps[i].x * ps[i].x * ps[i].x;
+            A(i,1) = ps[i].x * ps[i].x;
+            A(i,2) = ps[i].x;
+            A(i,3) = 1.0;
+        }
+
+        std::cout << A <<  std::endl;
+
+        Eigen::Vector4d y{};
+        for (int i = 0; i < ps.size(); ++i) {
+            y(i) = ps[i].y;
+        }
+        
+        std::cout << y << std::endl;
+        Eigen::Vector4d x = A.inverse() * y;
+        std::cout << x << std::endl;
+
+        mVertices.clear();
+        float min = 0.f;
+        float max = 3.f;
+        int divisions = 10;
+        float delta = (max - min)/divisions;
+        
+        for (float i = 0; i <= max+0.001f; i+=delta) {
+            float y =
+                x(0)*i*i*i +
+                x(1)*i*i +
+                x(2)*i +
+                x(3);
+            Vertex v = Vertex(glm::vec3(i, y,0), glm::vec3(0,0,0));
+            mVertices.push_back(v);    
+        }
+        
     }
 
     void MathComp2Handler::init(GLint matrixUniform) {

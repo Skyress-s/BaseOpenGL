@@ -65,7 +65,7 @@ namespace KT
         mModelMatrix = GetModelMatrix();
         glBindVertexArray(mVAO);
         glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
-        glDrawArrays(GL_LINE_LOOP, 0, mVertices.size());
+        glDrawArrays(GL_LINE_STRIP, 0, mVertices.size());
     }
     
     void Graph2D::readFile(std::string fileName) {

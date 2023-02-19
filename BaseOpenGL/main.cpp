@@ -31,6 +31,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Assets/Axis/InteractiveObject.h"
+#include "Assets/IO/FileHandler.h"
 #include "Assets/Math/Graphs.h"
 #include "Assets/MathCourse/MathComp2Handler.h"
 #include "Assets/Structure/Cube.h"
@@ -147,9 +148,6 @@ typedef std::pair<std::string, VisualObject*> MapPair;
 
 int main() {
     // dynamic matrix X for unknown
-    KT::MathComp2Handler handler{}; 
-
-    return 0;
     
     // glfw: initialize and configure
     // ------------------------------
@@ -228,11 +226,19 @@ int main() {
     std::unordered_map<std::string, VisualObject*> mMap{};
 
 
+    KT::MathComp2Handler* handler = new KT::MathComp2Handler(); 
+    handler->HandleTask2();
+    handler->ToFile("math2_2");
+    mMap.insert(MapPair("math2", handler));
+
+    KT::Graph2D* graph_2 = new KT::Graph2D(KT::FileHandler::VertexFromFile("math2_2"));
+    mMap.insert(MapPair("graph_2", graph_2));
+    
     // main surface
-    KT::TriangleSurface* ground = new KT::TriangleSurface();
-    ground->constructWithLambda(KT::Graph::Franke);
-    mMap.insert(MapPair("ground", ground));
-    ground->SetPosition(0, 0, 0);
+    // KT::TriangleSurface* ground = new KT::TriangleSurface();
+    // ground->constructWithLambda(KT::Graph::Franke);
+    // mMap.insert(MapPair("ground", ground));
+    // ground->SetPosition(0, 0, 0);
 
     VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
