@@ -94,7 +94,6 @@ GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
         }
         std::cout << std::endl;
     }
-  
 }
 
 
@@ -152,7 +151,7 @@ typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 int main() {
     // dynamic matrix X for unknown
-    
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -205,7 +204,7 @@ int main() {
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
     }
-    
+
     // CALLBACKS
     // ----------------------------------------
 
@@ -229,7 +228,7 @@ int main() {
     std::vector<KT::VisualObject*> mObjects{};
     std::unordered_map<std::string, KT::VisualObject*> mMap{};
 
-    
+
     // main surface
     KT::TriangleSurface* ground = new KT::TriangleSurface();
     ground->constructWithLambda(KT::Graph::Franke);
@@ -254,36 +253,40 @@ int main() {
     // PROG3D 
     // ----------------------------------------
 
-    KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15,-2.f, 4.f);
-    graph1->SetPosition(4,0,0);
+    KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
+    graph1->SetPosition(4, 0, 0);
     mMap.insert(MapPair("graph1", graph1));
-    
-    KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15,-2.f, 4.f);
-    graph2->SetPosition(4,0,0);
+
+    KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
+    graph2->SetPosition(4, 0, 0);
     mMap.insert(MapPair("graph2", graph2));
 
     GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
-        Range{-2,4});
-    graphNPCWalker->SetPosition(4,0,0);
+                                                        Range{-2, 4});
+    graphNPCWalker->SetPosition(4, 0, 0);
     mMap.insert(MapPair("walker", graphNPCWalker));
 
-    
+
     // TROPHIES
     // ----------------------------------------
-    KT::Trophy* trophy1 = new KT::Trophy(cube,1.f);
-    trophy1->SetPosition(1.f, KT::Graph::Franke(1,0), 0);
-    mMap.insert(MapPair("t1", trophy1));
-    // trophy1->SetPosition(handler)
-    
-    // KT::Trophy* trophy2 = new KT::Trophy(cube,1.f);
-    // KT::Trophy* trophy3 = new KT::Trophy(cube,1.f);
-    // KT::Trophy* trophy4 = new KT::Trophy(cube,1.f);
+    for (int i = 0; i < 6; ++i) {
+        float x = KT::Random::Random(-1.f, 1.f);
+        
+        float z = KT::Random::Random(-1.f, 1.f);
+
+        std::cout << "xz : " << x << " " << z <<std::endl;
+        KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
+        trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
+        std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
+        mMap.insert(MapPair("t" + std::to_string(i), trophy));
+    }
+
 
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
     math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
-    math_comp2_handler->SetPosition(0.f,4,0);
-    math_comp2_handler->SetRotation(0,0,0);
+    math_comp2_handler->SetPosition(0.f, 4, 0);
+    math_comp2_handler->SetRotation(0, 0, 0);
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
 
 
@@ -517,9 +520,9 @@ void processInput(GLFWwindow* window) {
 
     // possesed object
     float moveScalar = 0.01f;
-    
+
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        currentPossesedObject->move(0,  -moveScalar, KT::Graph::Franke);
+        currentPossesedObject->move(0, -moveScalar, KT::Graph::Franke);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         currentPossesedObject->move(0, moveScalar, KT::Graph::Franke);

@@ -1,7 +1,9 @@
 ﻿#include "Trophy.h"
 
 void KT::Trophy::draw() {
-    KT::VisualObject::Draw(GL_TRIANGLES, GetModelMatrix());
+    if (!_collected) {
+        KT::VisualObject::Draw(GL_TRIANGLES, GetModelMatrix());
+    }
 }
 
 void KT::Trophy::init(GLint matrixUniform) {
@@ -10,4 +12,7 @@ void KT::Trophy::init(GLint matrixUniform) {
 
 void KT::Trophy::Update(float deltaTime) {
     VisualObject::Update(deltaTime);
+    if (IsInRange()) {
+        _collected = true;
+    }
 }

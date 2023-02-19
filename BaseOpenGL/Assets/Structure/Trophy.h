@@ -7,6 +7,7 @@ namespace KT {
     private:
         InteractiveObject* _target;
         float _range;
+        bool _collected = false;
     public:
         Trophy(InteractiveObject* player, const float& range) {
             _target = player;
@@ -24,7 +25,7 @@ namespace KT {
         }
 
         bool IsInRange() {
-            if (glm::distance(_target->GetPosition(), GetPosition())) 
+            if (glm::distance(_target->GetPosition(), GetPosition()) < _range) 
                 return true;
             return false;
         }
