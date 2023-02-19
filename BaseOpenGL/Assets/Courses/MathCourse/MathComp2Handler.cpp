@@ -1,6 +1,6 @@
 ﻿#include "MathComp2Handler.h"
-#include "../Math/MathHelpers.h"
-#include "../Structure/OctahedronBall.h"
+#include "../../Math/MathHelpers.h"
+#include "../../Structure/OctahedronBall.h"
 #include <Eigen/Dense>
 
 namespace KT {

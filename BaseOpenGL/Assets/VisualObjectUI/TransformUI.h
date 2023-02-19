@@ -4,6 +4,6 @@
 
 class TransformUI : public VisualObjectUI {
 public:
-    VisualObject* target{};
+    KT::VisualObject* target{};
     void Draw() override;
 };

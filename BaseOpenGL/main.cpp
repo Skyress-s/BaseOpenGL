@@ -31,13 +31,16 @@
 #include <GLFW/glfw3.h>
 
 #include "Assets/Axis/InteractiveObject.h"
+#include "Assets/Courses/3DProgCourse/GraphNPCWalker.h"
+#include "Assets/Courses/3DProgCourse/Prog3DComp2Handler.h"
 #include "Assets/IO/FileHandler.h"
 #include "Assets/Math/Graphs.h"
-#include "Assets/MathCourse/MathComp2Handler.h"
+#include "Assets/Courses/MathCourse/MathComp2Handler.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
 #include "Assets/Structure/OctahedronBall.h"
+#include "Assets/Structure/Trophy.h"
 #include "Assets/VisualObjectUI/TransformUI.h"
 #include "Vendor/imgui/imgui_internal.h"
 
@@ -144,7 +147,8 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
     return;
 }
 
-typedef std::pair<std::string, VisualObject*> MapPair;
+typedef std::pair<std::string, KT::VisualObject*> MapPair;
+
 
 int main() {
     // dynamic matrix X for unknown
@@ -201,7 +205,7 @@ int main() {
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
     }
-
+    
     // CALLBACKS
     // ----------------------------------------
 
@@ -222,29 +226,21 @@ int main() {
 
     // objects in scene
     // std::vector<VisualObject*> mObjects{};
-    std::vector<VisualObject*> mObjects{};
-    std::unordered_map<std::string, VisualObject*> mMap{};
+    std::vector<KT::VisualObject*> mObjects{};
+    std::unordered_map<std::string, KT::VisualObject*> mMap{};
 
-
-    KT::MathComp2Handler* handler = new KT::MathComp2Handler(); 
-    handler->HandleTask2();
-    handler->ToFile("math2_2");
-    mMap.insert(MapPair("math2", handler));
-
-    KT::Graph2D* graph_2 = new KT::Graph2D(KT::FileHandler::VertexFromFile("math2_2"));
-    mMap.insert(MapPair("graph_2", graph_2));
     
     // main surface
-    // KT::TriangleSurface* ground = new KT::TriangleSurface();
-    // ground->constructWithLambda(KT::Graph::Franke);
-    // mMap.insert(MapPair("ground", ground));
-    // ground->SetPosition(0, 0, 0);
+    KT::TriangleSurface* ground = new KT::TriangleSurface();
+    ground->constructWithLambda(KT::Graph::Franke);
+    mMap.insert(MapPair("ground", ground));
+    ground->SetPosition(0, 0, 0);
 
-    VisualObject* xyz = new KT::XYZ();
+    KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
     // mObjects.push_back(xyz);
-    mMap.insert(std::pair<std::string, VisualObject*>{"xyz", xyz});
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
     KT::InteractiveObject* cube = new KT::Cube();
     cube->SetPosition(glm::vec3(0.25f, -0.75f, 1.5f));
@@ -252,15 +248,43 @@ int main() {
     cube->name = "CUBE";
     currentPossesedObject = cube;
     // mObjects.push_back(cube);
-    mMap.insert(std::pair<std::string, VisualObject*>{"cube", cube});
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
+
+    // PROG3D 
+    // ----------------------------------------
+
+    KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15,-2.f, 4.f);
+    graph1->SetPosition(4,0,0);
+    mMap.insert(MapPair("graph1", graph1));
+    
+    KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15,-2.f, 4.f);
+    graph2->SetPosition(4,0,0);
+    mMap.insert(MapPair("graph2", graph2));
+
+    GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
+        Range{-2,4});
+    graphNPCWalker->SetPosition(4,0,0);
+    mMap.insert(MapPair("walker", graphNPCWalker));
+
+    
+    // TROPHIES
+    // ----------------------------------------
+    KT::Trophy* trophy1 = new KT::Trophy(cube,1.f);
+    trophy1->SetPosition(1.f, KT::Graph::Franke(1,0), 0);
+    mMap.insert(MapPair("t1", trophy1));
+    // trophy1->SetPosition(handler)
+    
+    // KT::Trophy* trophy2 = new KT::Trophy(cube,1.f);
+    // KT::Trophy* trophy3 = new KT::Trophy(cube,1.f);
+    // KT::Trophy* trophy4 = new KT::Trophy(cube,1.f);
 
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
     math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
     math_comp2_handler->SetPosition(0.f,4,0);
     math_comp2_handler->SetRotation(0,0,0);
-    mMap.insert(std::pair<std::string, VisualObject*>{"math2comp", math_comp2_handler});
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
 
 
     // Getting shader
@@ -345,6 +369,8 @@ int main() {
             if (bDrawNormals) {
                 ImGui::SliderFloat("NormalVectorLength", &drawNormalLength, 0.01f, 2.f);
             }
+
+            ImGui::Checkbox("GraphToggle", &graphNPCWalker->toggle);
             ImGui::End();
             /*
             ImGui::Begin("awdawdHelalo, world!"); // Create a window called "Hello, world!" and append into it.

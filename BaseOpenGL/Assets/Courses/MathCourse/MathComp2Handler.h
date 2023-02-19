@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <vector>
 
-#include "../Axis/VisualObject.h"
-#include "../IO/FileHandler.h"
+#include "../../Axis/VisualObject.h"
+#include "../../IO/FileHandler.h"
 
 namespace KT
 {

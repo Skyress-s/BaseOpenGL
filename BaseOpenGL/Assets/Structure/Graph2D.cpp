@@ -8,7 +8,7 @@ namespace KT
     {
         mVertices.clear();
         float h = (to - from) / (float)n;
-        for (float x = from; x < to; x += h)
+        for (float x = from; x < to + h/2.f; x += h)
         {
             float y = f(x);
             float col = y * 0.5f + 0.5f;

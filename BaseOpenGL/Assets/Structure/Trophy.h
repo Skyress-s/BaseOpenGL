@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "OctahedronBall.h"
 #include "../Axis/InteractiveObject.h"
 
 namespace KT {
@@ -10,6 +11,16 @@ namespace KT {
         Trophy(InteractiveObject* player, const float& range) {
             _target = player;
             _range = range;
+            mVertices = std::vector<Vertex>();
+            mVertices = OctahedronBall::makeUnitBall(2); // skateboard trick
+            for (int i = 0; i < mVertices.size(); ++i) {
+                mVertices[i].m_xyz[0] *= 0.1f;
+                mVertices[i].m_xyz[1] *= 0.1f;
+                mVertices[i].m_xyz[2] *= 0.1f;
+                
+            }
+            for (auto vert : mVertices) {
+            }
         }
 
         bool IsInRange() {

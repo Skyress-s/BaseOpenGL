@@ -48,7 +48,7 @@ namespace KT
         glBindVertexArray(0);
     }
 
-    std::vector<Vertex> OctahedronBall::makeUnitBall(int _recurtions)
+    std::vector<Vertex> OctahedronBall::makeUnitBall(int _recurtions, float scale)
     {
         glm::vec3 v0{0, 0, 1};
         glm::vec3 v1{1, 0, 0};
@@ -59,6 +59,8 @@ namespace KT
 
         std::vector<KT::Vertex> list = std::vector<Vertex>(0);
 
+
+        
         Subdivide(v0, v1, v2, _recurtions, list);
         Subdivide(v0, v2, v3, _recurtions, list);
         Subdivide(v0, v3, v4, _recurtions, list);
@@ -67,7 +69,12 @@ namespace KT
         Subdivide(v5, v3, v2, _recurtions, list);
         Subdivide(v5, v4, v3, _recurtions, list);
         Subdivide(v5, v1, v4, _recurtions, list);
-
+        
+        for (int i = 0; i < list.size(); ++i) {
+            list[i].m_xyz[0] *= scale;   
+            list[i].m_xyz[1] *= scale;   
+            list[i].m_xyz[2] *= scale;   
+        }
         return list;
     }
 

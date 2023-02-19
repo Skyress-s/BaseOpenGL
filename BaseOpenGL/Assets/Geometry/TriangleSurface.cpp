@@ -200,7 +200,7 @@ namespace KT {
         };
         mVertices.clear();
         float xmin = -1.f, xmax = 1.0f, zmin = -1.f, zmax = 1.0f;
-        float h = 1.f / (2 << 2);
+        float h = 1.f / (2 << 4);
         for (float x = xmin; x < xmax; x += h)
             for (float z = zmin; z < zmax; z += h) {
                 float y;

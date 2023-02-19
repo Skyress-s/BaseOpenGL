@@ -8,94 +8,121 @@
 
 #include "../Structure/Vertex.h"
 
-class VisualObject {
-public:
-    VisualObject();
-    virtual ~VisualObject();
-    virtual void init(GLint matrixUniform) = 0;
-    virtual void draw() = 0;
-    virtual void Update(float deltaTime);
-    std::string name{"N/A"};
-    
-    glm::vec3 GetPosition() {
-        return glm::vec3(x,y,z);
-        glm::vec3 pos{};
-        
-        pos.x = mModelMatrix[3][0];
-        pos.y = mModelMatrix[3][1];
-        pos.z = mModelMatrix[3][2];
+namespace KT {
+    class VisualObject {
+    public:
+        VisualObject();
+        virtual ~VisualObject();
 
-        return pos;
-    }
+        /**
+         * \brief Should be called after mVertices are set up, sets up VBOs etc
+         * \param matrixUniform 
+         */
+        virtual void init(GLint matrixUniform);
 
-    void SetPosition(const float& x, const float& y, const float& z) {
-        SetPosition(glm::vec3(x,y,z));
-    }
+        virtual void draw() = 0;
+        virtual void Update(float deltaTime);
+        std::string name{"N/A"};
 
-    void SetPosition(glm::vec3 newPosition) {
-        x = newPosition.x;
-        y = newPosition.y;
-        z = newPosition.z;
-    }
+        glm::vec3 GetPosition() {
+            return glm::vec3(x, y, z);
+            glm::vec3 pos{};
 
-    glm::vec3 GetScale() const
-    {
-        return glm::vec3(sx,sy,sz);
-    }
-    
-    void SetScale(glm::vec3 newScale) {
-        sx = newScale[0];
-        sy = newScale[1];
-        sz = newScale[2];
-    }
+            pos.x = mModelMatrix[3][0];
+            pos.y = mModelMatrix[3][1];
+            pos.z = mModelMatrix[3][2];
 
-    void SetScale(const float& x, const float& y, const float& z)
-    {
-        sx =x;
-        sy = y;
-        sz = z;
-    }
+            return pos;
+        }
 
-    // glm::mat4 GetRotationEulerAngles() {
-        
-    // }
+        void SetPosition(const float& x, const float& y, const float& z) {
+            SetPosition(glm::vec3(x, y, z));
+        }
 
-    void SetRotation(glm::vec3 rot) {
-        _rotation = glm::quat(rot);
-    }
+        void SetPosition(glm::vec3 newPosition) {
+            x = newPosition.x;
+            y = newPosition.y;
+            z = newPosition.z;
+        }
 
-    void SetRotation(const float& x, const float& y,const float& z)
-    {
-        SetRotation(glm::vec3(x,y,z));
-    }
-    
+        glm::vec3 GetScale() const {
+            return glm::vec3(sx, sy, sz);
+        }
 
-protected:
-    std::vector<KT::Vertex> mVertices;
-    GLuint mVAO{0};
-    GLuint mVBO{0};
-    GLuint mMatrixUniform{0};
-    glm::mat4x4 mModelMatrix;
+        void SetScale(glm::vec3 newScale) {
+            sx = newScale[0];
+            sy = newScale[1];
+            sz = newScale[2];
+        }
 
-    glm::mat4 GetModelMatrix() const {
-        glm::mat4 mat = glm::mat4(1.f);
-        mat = glm::translate(mat, glm::vec3(x, y, z));
-        mat *=  glm::mat4_cast(_rotation); 
-        mat = glm::scale(mat, glm::vec3(sx,sy,sz));
-        return mat;
-    }
+        void SetScale(const float& x, const float& y, const float& z) {
+            sx = x;
+            sy = y;
+            sz = z;
+        }
 
-    float x{};
-    float y{};
-    float z{};
+        // glm::mat4 GetRotationEulerAngles() {
 
-    glm::quat _rotation = glm::quat(1.f,0,0,0);
-    
-    // float rx{};
-    // float ry{};
-    // float rz{};
-    //
-    float sx = 1.f;
-    float sy = 1.f;
-    float sz = 1.f;
-};
+        // }
+
+        glm::quat GetRotation() const {
+            return _rotation;
+        }
+
+        void SetRotation(glm::vec3 rot) {
+            _rotation = glm::quat(rot);
+        }
+
+        void SetRotation(const float& x, const float& y, const float& z) {
+            SetRotation(glm::vec3(x, y, z));
+        }
+
+    protected:
+        std::vector<KT::Vertex> mVertices;
+        GLuint mVAO{0};
+        GLuint mVBO{0};
+        GLuint mMatrixUniform{0};
+        glm::mat4x4 mModelMatrix;
+
+        glm::mat4 GetModelMatrix() const {
+            glm::mat4 mat = glm::mat4(1.f);
+            mat = glm::translate(mat, glm::vec3(x, y, z));
+            mat *= glm::mat4_cast(_rotation);
+            mat = glm::scale(mat, glm::vec3(sx, sy, sz));
+            return mat;
+        }
+
+        // helper functions for drawing
+
+        /**
+         * \brief 
+         * \param drawMode typical GL_TRIANGLES, GL_LINES, GL_LINE_LOOP or GL_LINE_STRIP
+         */
+        void Draw(GLenum drawMode, glm::mat4 modelMatrix) const {
+            // mModelMatrix = GetModelMatrix();
+            glBindVertexArray(mVAO);
+
+            glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
+            glDrawArrays(drawMode, 0, mVertices.size());
+
+            // good practice
+            glBindVertexArray(0);
+        }
+
+        float x{};
+        float y{};
+        float z{};
+
+        glm::quat _rotation = glm::quat(1.f, 0, 0, 0);
+
+        // float rx{};
+        // float ry{};
+        // float rz{};
+        //
+        float sx = 1.f;
+        float sy = 1.f;
+        float sz = 1.f;
+
+        // 
+    };
+}
