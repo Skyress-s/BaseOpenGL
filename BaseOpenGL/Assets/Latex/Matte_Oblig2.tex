@@ -56,13 +56,13 @@
         \subsection*{2}
         Brukte mattebibloteket Eigen til å skaffe of regne ut matrisene og løse ligningssystemet 
         \begin{align*}
-            & A\cdot x = b
+            & A\cdot x = b \\
             & x = A^{-1} \cdot b
         \end{align*}
         
         
         
-        \begin{lstlisting}[language=C++, caption=Funksjon som genererer punktene]
+        \begin{lstlisting}[language=C++, caption=Funksjon som regner ut polynomet og lagrer numerisk grafdata]
 void MathComp2Handler::HandleTask1() {
     points = GenerateRandomPoints();
 
@@ -126,7 +126,7 @@ void MathComp2Handler::HandleTask1() {
         Skrev dette til fil, og leste inn i en Graph2D klasse
 
         (i main().)
-        \begin{lstlisting}[language=C++, caption=Funksjon som genererer punktene]
+        \begin{lstlisting}[language=C++, caption=main() del som lagrer klasse med oblig logic og 2d graf klasse som leser dataen]
     KT::MathComp2Handler* handler = new KT::MathComp2Handler(); 
     handler->HandleTask1();
     handler->ToFile("math2_2");
@@ -137,6 +137,7 @@ void MathComp2Handler::HandleTask1() {
 
         \end{lstlisting}
         (ToFile og FromFile har blitt gjort i oblig1, velger derfor å ikke vise her.)
+        
         Visualiseringen fra programmet
         
         \includegraphics[width=12cm]{opp1_visualisering}
@@ -214,30 +215,30 @@ void MathComp2Handler::HandleTask2() {
         
         Som ga oss polynomet 
         \begin{align*}
-            & f(x) = -0.5 \cdot x^3 + 2\ cdot x^2 + 0.5 \cdot x + 0
+            & f(x) = -0.5 \cdot x^3 + 2 \cdot x^2 + 0.5 \cdot x + 0
         \end{align*}
 
         \subsection*{2}
         
-        Brukte punktene regner ut fra del 1 av oppgave 2 og leste fildata inn i en Graph2D klasse\\
+        Brukte punktene regnet ut fra del 1 av oppgave 2 og leste fildata inn i en Graph2D klasse\\
         Gav følgene bilde i 3d program.
         
         \includegraphics[width=12cm]{task2_visualisering}
         
 
         \section{Diskusjon}
-        Har lært mer om åssen man finner løsningen av matrise likningsystemer og hvordan det kan gjøres nummerisk.
+        Har lært mer om åssen man finner løsningen av matrise likningsystemer og hvordan dette kan gjøres nummerisk.
         
         
         Har også lært mer om komposisjon, dette er i hovedgrad grunnet at mange klasser trenger å skrive KT::Vertex
         data til fil. Da lærte jeg hvor nytting det kan være å lage en FileHandler klasse slik at ikke alle klasser trenger 
         å arve funksjonaliteten, og samt hvordan man bruker dette via komposisjon.
         
-        Lærte også mer om hvordan interpolasjon fungerer. Grunnet at dette gir mer repitisjon av konseptene vi har lært i timen
+        Lærte også mer om hvordan interpolasjon fungerer. Grunnet at dette gir mer repitisjon av konseptene vi har lært i timen,
         samt at når man programmerer det må man ha "tunga rett i munnen"
        
         \section{Lenker}
-        Github lenke : https://github.com/Skyress-s/BaseOpenGL/tree/Math3-Compulsory-1
+        Github lenke : https://github.com/Skyress-s/BaseOpenGL/tree/Math3-Compulsory-2
     \end{flushleft}
 \end{document}
 
