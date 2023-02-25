@@ -165,6 +165,7 @@
     <ClCompile Include="Assets\Courses\MathCourse\MathComp2Handler.cpp" />
     <ClCompile Include="Assets\Door.cpp" />
     <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
+    <ClCompile Include="Assets\House.cpp" />
     <ClCompile Include="Assets\IO\FileHandler.cpp" />
     <ClCompile Include="Assets\Math\MathHelpers.cpp" />
     <ClCompile Include="Assets\Shader\Shader.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="Assets\Courses\MathCourse\MathComp2Handler.h" />
     <ClInclude Include="Assets\Door.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
+    <ClInclude Include="Assets\House.h" />
     <ClInclude Include="Assets\IO\FileHandler.h" />
     <ClInclude Include="Assets\Math\Graphs.h" />
     <ClInclude Include="Assets\Math\MathHelpers.h" />
