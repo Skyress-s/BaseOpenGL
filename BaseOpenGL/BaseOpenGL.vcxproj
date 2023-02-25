@@ -153,6 +153,7 @@
     <ClCompile Include="Assets\Structure\Disc.cpp" />
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
     <ClCompile Include="Assets\Structure\OctahedronBall.cpp" />
+    <ClCompile Include="Assets\Structure\Primitives.cpp" />
     <ClCompile Include="Assets\Structure\Range.cpp" />
     <ClCompile Include="Assets\Structure\Tetrahedron.cpp" />
     <ClCompile Include="Assets\Structure\Trophy.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Assets\Structure\Disc.h" />
     <ClInclude Include="Assets\Structure\Graph2D.h" />
     <ClInclude Include="Assets\Structure\OctahedronBall.h" />
+    <ClInclude Include="Assets\Structure\Primitives.h" />
     <ClInclude Include="Assets\Structure\Range.h" />
     <ClInclude Include="Assets\Structure\Tetrahedron.h" />
     <ClInclude Include="Assets\Structure\Trophy.h" />
