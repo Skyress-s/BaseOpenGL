@@ -1,4 +1,5 @@
-﻿#include "TriangleSurface.h"
+﻿#include "pch.h"
+#include "TriangleSurface.h"
 
 #include <fstream>
 #include <glm/ext/scalar_constants.hpp>

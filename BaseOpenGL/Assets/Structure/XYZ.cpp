@@ -1,4 +1,5 @@
-﻿#include "XYZ.h"
+﻿#include "pch.h"
+#include "XYZ.h"
 
 #include <glm/ext/matrix_transform.hpp>
 

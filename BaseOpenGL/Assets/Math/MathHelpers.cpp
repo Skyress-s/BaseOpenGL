@@ -1,4 +1,5 @@
-﻿#include "MathHelpers.h"
+﻿#include "pch.h"
+#include "MathHelpers.h"
 
 #include <iostream>
 #include <random>

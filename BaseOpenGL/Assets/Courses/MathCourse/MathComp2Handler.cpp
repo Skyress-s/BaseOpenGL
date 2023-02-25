@@ -1,4 +1,5 @@
-﻿#include "MathComp2Handler.h"
+﻿#include "pch.h"
+#include "MathComp2Handler.h"
 #include "../../Math/MathHelpers.h"
 #include "../../Structure/OctahedronBall.h"
 #include <Eigen/Dense>

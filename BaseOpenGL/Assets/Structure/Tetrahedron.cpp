@@ -1,4 +1,5 @@
-﻿#include "Tetrahedron.h"
+﻿#include "pch.h"
+#include "Tetrahedron.h"
 
 #include <glm/ext/matrix_transform.hpp>
 

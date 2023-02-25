@@ -1,4 +1,5 @@
-﻿#include "Range.h"
+﻿#include "pch.h"
+#include "Range.h"
 
 #include <cmath>
 

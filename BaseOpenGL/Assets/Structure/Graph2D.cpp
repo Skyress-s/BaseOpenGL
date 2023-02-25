@@ -1,4 +1,5 @@
-﻿#include "Graph2D.h"
+﻿#include "pch.h"
+#include "Graph2D.h"
 
 #include <fstream>
 

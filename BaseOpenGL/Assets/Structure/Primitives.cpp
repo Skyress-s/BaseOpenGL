@@ -1,1 +1,2 @@
-﻿#include "Primitives.h"
+﻿#include "pch.h"
+#include "Primitives.h"

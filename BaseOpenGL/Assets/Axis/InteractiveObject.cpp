@@ -1,4 +1,5 @@
-﻿#include "InteractiveObject.h"
+﻿#include "pch.h"
+#include "InteractiveObject.h"
 
 #include <glm/ext/matrix_transform.hpp>
 

@@ -1,1 +1,2 @@
-﻿#include "QuadTree.h"
+﻿#include "pch.h"
+#include "QuadTree.h"

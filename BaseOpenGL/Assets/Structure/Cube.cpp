@@ -1,4 +1,5 @@
-﻿#include "Cube.h"
+﻿#include "pch.h"
+#include "Cube.h"
 
 namespace KT {
     Cube::Cube() {

@@ -1,4 +1,5 @@
-﻿#include "OctahedronBall.h"
+﻿#include "pch.h"
+#include "OctahedronBall.h"
 
 namespace KT
 {

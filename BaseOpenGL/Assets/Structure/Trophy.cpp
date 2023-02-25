@@ -1,4 +1,5 @@
-﻿#include "Trophy.h"
+﻿#include "pch.h"
+#include "Trophy.h"
 
 void KT::Trophy::draw() {
     if (!_collected) {

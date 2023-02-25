@@ -1,4 +1,5 @@
-﻿#include "VisualObject.h"
+﻿#include "pch.h"
+#include "VisualObject.h"
 
 KT::VisualObject::VisualObject() {
 }

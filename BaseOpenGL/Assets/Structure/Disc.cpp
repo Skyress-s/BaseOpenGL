@@ -1,4 +1,5 @@
-﻿#include "Disc.h"
+﻿#include "pch.h"
+#include "Disc.h"
 
 namespace KT {
     void Disc::draw() {

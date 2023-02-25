@@ -1,4 +1,5 @@
-﻿#include "Vertex.h"
+﻿#include "pch.h"
+#include "Vertex.h"
 
 namespace KT {
     Vertex::Vertex() {
