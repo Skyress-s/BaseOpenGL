@@ -79,8 +79,10 @@ namespace KT {
 
     protected:
         std::vector<KT::Vertex> mVertices;
+        std::vector<int> mIndices;
         GLuint mVAO{0};
         GLuint mVBO{0};
+        GLuint mEBO{0};
         GLuint mMatrixUniform{0};
         glm::mat4x4 mModelMatrix;
 
@@ -106,6 +108,16 @@ namespace KT {
             glDrawArrays(drawMode, 0, mVertices.size());
 
             // good practice
+            glBindVertexArray(0);
+        }
+
+        void DrawElements(GLenum drawMode, glm::mat4 modelMatrix, std::vector<int> indices)
+        {
+            glBindVertexArray(mVAO);
+            
+            glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
+            glDrawElements(drawMode, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+            
             glBindVertexArray(0);
         }
 

@@ -63,8 +63,8 @@ namespace KT {
 
         // alt 1: Bind Element Buffer
         glGenBuffers(1, &mEBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Vertex) * mIndices.size(), mIndices.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO); // binds EBO to VBO!
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Vertex) * mIndices.size(), mIndices.data(), GL_STATIC_DRAW); // sets data
 
         // alt 2: bind Vertex Buffer Object
         // Create, bind and populate Vertex Buffer Object,

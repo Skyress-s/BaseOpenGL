@@ -31,6 +31,7 @@
 #include <unordered_map>
 #include <GLFW/glfw3.h>
 
+#include "Assets/Door.h"
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Courses/3DProgCourse/GraphNPCWalker.h"
 #include "Assets/Courses/3DProgCourse/Prog3DComp2Handler.h"
@@ -281,6 +282,11 @@ int main() {
         std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
         mMap.insert(MapPair("t" + std::to_string(i), trophy));
     }
+
+    // DOOR
+    // -----------------------------------------------------------------------------------------------------------------
+    KT::Door* door = new KT::Door(cube);
+    mMap.insert(MapPair("door", door));
 
 
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();

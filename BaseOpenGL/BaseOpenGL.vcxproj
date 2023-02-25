@@ -163,6 +163,7 @@
     <ClCompile Include="Assets\Courses\3DProgCourse\GraphNPCWalker.cpp" />
     <ClCompile Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.cpp" />
     <ClCompile Include="Assets\Courses\MathCourse\MathComp2Handler.cpp" />
+    <ClCompile Include="Assets\Door.cpp" />
     <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
     <ClCompile Include="Assets\IO\FileHandler.cpp" />
     <ClCompile Include="Assets\Math\MathHelpers.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="Assets\Courses\3DProgCourse\GraphNPCWalker.h" />
     <ClInclude Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.h" />
     <ClInclude Include="Assets\Courses\MathCourse\MathComp2Handler.h" />
+    <ClInclude Include="Assets\Door.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
     <ClInclude Include="Assets\IO\FileHandler.h" />
     <ClInclude Include="Assets\Math\Graphs.h" />
