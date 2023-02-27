@@ -12,18 +12,17 @@ namespace KT
          * \brief 
          * \param filepath example: "Assets/Art/Models/cube.fbx"
          */
-        ModelVisualObject(const std::string& filepath, Shader& shader) : VisualObject()
-        {
+        ModelVisualObject(const std::string& filepath, Shader& shader) : mShader(shader), VisualObject() {
             mModel = new Model(filepath);
-            mShader = shader;
         }
 
-        void init(GLint matrixUniform) override
-        {
+        void init(GLint matrixUniform) override {
             mMatrixUniform = matrixUniform;
             
         }
-        void Update(float deltaTime) override{}
+        void Update(float deltaTime) override {
+            
+        }
         void draw() override
         {
             glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &GetModelMatrix()[0][0]);
