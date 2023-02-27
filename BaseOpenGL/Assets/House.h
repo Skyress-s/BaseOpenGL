@@ -2,7 +2,7 @@
 #include <assimp/anim.h>
 #include <assimp/Importer.hpp>
 
-#include "Geometry/Model.h"
+// #include "Geometry/Model.h"
 #include "Math/MathHelpers.h"
 #include "Structure/Primitives.h"
 

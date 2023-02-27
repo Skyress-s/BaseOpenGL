@@ -301,8 +301,8 @@ int main() {
 
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
-    KT::House* house = new KT::House();
-    mMap.insert(MapPair("house", house));
+    // KT::House* house = new KT::House();
+    // mMap.insert(MapPair("house", house));
     
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
@@ -321,9 +321,9 @@ int main() {
 
     KT::TriangleSurface* triangle_surface = new KT::TriangleSurface();
 
-    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    houseObject->SetPosition(glm::vec3(0,5,0));
-    mMap.insert(MapPair("housee", houseObject));
+    // KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    // houseObject->SetPosition(glm::vec3(0,5,0));
+    // mMap.insert(MapPair("housee", houseObject));
     // Initializing Visual Objects
     /*
     for (VisualObject* m_object : mObjects)
