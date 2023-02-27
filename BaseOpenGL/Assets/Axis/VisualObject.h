@@ -77,6 +77,13 @@ namespace KT {
             SetRotation(glm::vec3(x, y, z));
         }
 
+        // model data
+        void SetVertices(const std::vector<Vertex>& vertices, const std::vector<int>& indices)
+        {
+            mVertices = vertices;
+            mIndices = indices;
+        }
+
     protected:
         std::vector<KT::Vertex> mVertices;
         std::vector<int> mIndices;
@@ -111,12 +118,12 @@ namespace KT {
             glBindVertexArray(0);
         }
 
-        void DrawElements(GLenum drawMode, glm::mat4 modelMatrix, std::vector<int> indices)
+        void DrawElements(GLenum drawMode, glm::mat4 modelMatrix)
         {
             glBindVertexArray(mVAO);
             
             glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
-            glDrawElements(drawMode, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+            glDrawElements(drawMode, static_cast<unsigned int>(mIndices.size()), GL_UNSIGNED_INT, 0);
             
             glBindVertexArray(0);
         }

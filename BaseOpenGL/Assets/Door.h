@@ -29,7 +29,7 @@ namespace KT
 
         void draw() override
         {
-            DrawElements(GL_TRIANGLES, GetModelMatrix(), mIndices);
+            DrawElements(GL_TRIANGLES, GetModelMatrix());
         }
 
         void Update(float deltaTime) override

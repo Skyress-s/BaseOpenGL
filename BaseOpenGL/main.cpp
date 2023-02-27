@@ -32,15 +32,18 @@
 #include <GLFW/glfw3.h>
 
 #include "Assets/Door.h"
+#include "Assets/House.h"
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Courses/3DProgCourse/GraphNPCWalker.h"
 #include "Assets/Courses/3DProgCourse/Prog3DComp2Handler.h"
 #include "Assets/IO/FileHandler.h"
 #include "Assets/Math/Graphs.h"
 #include "Assets/Courses/MathCourse/MathComp2Handler.h"
+#include "Assets/Geometry/Model.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
+#include "Assets/Structure/ModelVisualObject.h"
 #include "Assets/Structure/OctahedronBall.h"
 #include "Assets/Structure/Trophy.h"
 #include "Assets/VisualObjectUI/TransformUI.h"
@@ -152,6 +155,11 @@ typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 
 int main() {
+    
+
+    
+        
+            
     // dynamic matrix X for unknown
 
     // glfw: initialize and configure
@@ -225,12 +233,15 @@ int main() {
     // USER STUFF
     // ----------------------------------------
 
+    Model modela  = Model("Assets/Art/Models/cube.fbx");
+    Model doorr = Model("Assets/Art/Models/Door.fbx");
     // objects in scene
     // std::vector<VisualObject*> mObjects{};
     std::vector<KT::VisualObject*> mObjects{};
     std::unordered_map<std::string, KT::VisualObject*> mMap{};
 
 
+    
     // main surface
     KT::TriangleSurface* ground = new KT::TriangleSurface();
     ground->constructWithLambda(KT::Graph::Franke);
@@ -288,7 +299,11 @@ int main() {
     KT::Door* door = new KT::Door(cube);
     mMap.insert(MapPair("door", door));
 
-
+    // HOUSE
+    // -----------------------------------------------------------------------------------------------------------------
+    KT::House* house = new KT::House();
+    mMap.insert(MapPair("house", house));
+    
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
     math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
@@ -303,6 +318,12 @@ int main() {
     leksjon2Shader.use();
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
+
+    KT::TriangleSurface* triangle_surface = new KT::TriangleSurface();
+
+    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    houseObject->SetPosition(glm::vec3(0,5,0));
+    mMap.insert(MapPair("housee", houseObject));
     // Initializing Visual Objects
     /*
     for (VisualObject* m_object : mObjects)
@@ -434,6 +455,12 @@ int main() {
         for (auto object : mMap) {
             object.second->draw();
         }
+
+
+        glm::mat4 matrix = KT::MathHelpers::TRS(glm::vec3(0,0,5), glm::quat(1,0,0,0), glm::vec3(1,1,1));
+        leksjon2Shader.setMat4("matrix", matrix);
+        modela.Draw(leksjon2Shader);
+        doorr.Draw(leksjon2Shader);
         /*
         for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
             (*it)->draw();

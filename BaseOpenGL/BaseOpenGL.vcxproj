@@ -108,15 +108,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\OFFLINE\BaseOpenGL\Dependencies\OtherIncludes\eigen;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\OtherIncludes;%(AdditionalIncludeDirectories);$(SolutionDir)Dependencies\Assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)Dependencies\OtherIncludes\eigen;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\OtherIncludes;%(AdditionalIncludeDirectories);$(SolutionDir)Dependencies\Assimp\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;shell32.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib-vc2022;$(SolutionDir)Dependencies\GLAD\src;%(AdditionalLibraryDirectories);$(SolutionDir)Dependencies\Assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;shell32.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\Assimp\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2022;$(SolutionDir)Dependencies\GLAD\src;%(AdditionalLibraryDirectories);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\OFFLINE\BaseOpenGL\Dependencies\OtherIncludes\eigen;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\OtherIncludes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)Dependencies\OtherIncludes\eigen;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\OtherIncludes;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -136,8 +136,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib-vc2022;$(SolutionDir)Dependencies\GLAD\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glad.c;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\Assimp\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2022;$(SolutionDir)Dependencies\GLAD\src;%(AdditionalLibraryDirectories);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;glad.c;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;shell32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -174,6 +174,7 @@
     <ClCompile Include="Assets\Structure\Cube.cpp" />
     <ClCompile Include="Assets\Structure\Disc.cpp" />
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
+    <ClCompile Include="Assets\Structure\ModelVisualObject.cpp" />
     <ClCompile Include="Assets\Structure\OctahedronBall.cpp" />
     <ClCompile Include="Assets\Structure\Primitives.cpp" />
     <ClCompile Include="Assets\Structure\Range.cpp" />
@@ -193,6 +194,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Vendor\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -233,6 +238,8 @@
     <ClInclude Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.h" />
     <ClInclude Include="Assets\Courses\MathCourse\MathComp2Handler.h" />
     <ClInclude Include="Assets\Door.h" />
+    <ClInclude Include="Assets\Geometry\Mesh.h" />
+    <ClInclude Include="Assets\Geometry\Model.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
     <ClInclude Include="Assets\House.h" />
     <ClInclude Include="Assets\IO\FileHandler.h" />
@@ -246,6 +253,7 @@
     <ClInclude Include="Assets\Structure\Cube.h" />
     <ClInclude Include="Assets\Structure\Disc.h" />
     <ClInclude Include="Assets\Structure\Graph2D.h" />
+    <ClInclude Include="Assets\Structure\ModelVisualObject.h" />
     <ClInclude Include="Assets\Structure\OctahedronBall.h" />
     <ClInclude Include="Assets\Structure\Primitives.h" />
     <ClInclude Include="Assets\Structure\Range.h" />
@@ -256,6 +264,7 @@
     <ClInclude Include="Assets\VisualObjectUI\TransformUI.h" />
     <ClInclude Include="Assets\VisualObjectUI\VisualObjectUI.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Vendor\imgui\imconfig.h" />
     <ClInclude Include="Vendor\imgui\imgui.h" />
     <ClInclude Include="Vendor\imgui\imgui_impl_glfw.h" />
@@ -266,6 +275,8 @@
     <ClInclude Include="Vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Art\Models\cube.fbx" />
+    <Content Include="Assets\Art\Models\cubee.fbx" />
     <Content Include="Assets\Art\Shaders\Lek2F.glsl" />
     <Content Include="Assets\Art\Shaders\Lek2V.glsl" />
     <Content Include="Assets\Art\Shaders\NormalGeoF.glsl" />
