@@ -3,32 +3,25 @@
 
 namespace KT
 {
+    /**
+     * \brief similar to visual object, but uses a model class under the hood
+     */
     class ModelVisualObject : public VisualObject
     {
-        // Model* mModel;
-        // Shader mShader;
+        Model mModel;
+        Shader mShader;
     public:
         /**
          * \brief 
          * \param filepath example: "Assets/Art/Models/cube.fbx"
          */
-        ModelVisualObject(){}
-        // ModelVisualObject(const std::string& filepath, Shader& shader) : mShader(shader), VisualObject() {
-            // mModel = new Model(filepath);
-        // }
-
-        // void init(GLint matrixUniform) override {
-            // mMatrixUniform = matrixUniform;
-            
-        // }
-        // void Update(float deltaTime) override {
-            
-        // }
-        // void draw() override
-        // {
-            // glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &GetModelMatrix()[0][0]);
-            // mModel->Draw(mShader);
-        // }
+        ModelVisualObject(const std::string& fielPath, Shader& shader) : mShader(shader), mModel(fielPath) {
+        }
+        void draw() override
+        {
+            glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &GetModelMatrix()[0][0]);
+            mModel.Draw(mShader);
+        }
 
     };
 }

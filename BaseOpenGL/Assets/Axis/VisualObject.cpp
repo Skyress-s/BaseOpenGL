@@ -3,6 +3,7 @@
 
 KT::VisualObject::VisualObject()
 {
+    
 }
 
 KT::VisualObject::~VisualObject()

@@ -6,3 +6,4 @@
 #include <string>
 #include <glm/glm.hpp>
 #include "Assets/Axis/VisualObject.h"
+#include "Assets/Geometry/Model.h"

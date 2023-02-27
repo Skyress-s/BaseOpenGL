@@ -17,6 +17,7 @@ namespace KT {
         */
         Vertex();
         Vertex(float x, float y, float z, float r,float g,float b);
+        Vertex(float x, float y, float z, glm::vec3 nor);
         Vertex(glm::vec3 pos, glm::vec3 nor);
         float m_xyz[3];       
         float m_normal[3];  

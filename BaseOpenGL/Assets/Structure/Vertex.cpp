@@ -16,6 +16,10 @@ namespace KT {
         m_st[1] = 0;
     }
 
+    Vertex::Vertex(float x, float y, float z, glm::vec3 nor) : Vertex(glm::vec3(x,y,z), nor) {
+        
+    }
+
     Vertex::Vertex(glm::vec3 pos, glm::vec3 nor = glm::vec3(1.f)) {
         m_xyz[0] = pos.x;
         m_xyz[1] = pos.y;

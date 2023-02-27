@@ -7,7 +7,6 @@
 
 #include "Assets/Camera/Camera.h"
 #include "Assets/Geometry/TriangleSurface.h"
-#include "Assets/Model/Model.h"
 #include "Assets/Shader/Shader.h"
 #include "Assets/Structure/Tetrahedron.h"
 #include "Assets/Structure/XYZ.h"
@@ -39,7 +38,6 @@
 #include "Assets/IO/FileHandler.h"
 #include "Assets/Math/Graphs.h"
 #include "Assets/Courses/MathCourse/MathComp2Handler.h"
-#include "Assets/Geometry/Model.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
@@ -57,7 +55,13 @@ void processInput(GLFWwindow* window);
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 
-Camera camera = (glm::vec3(0.f, 0.f, 5.f));
+// Camera camera = (glm::vec3(0.f, 2.f, -5.f));
+
+std::shared_ptr<Camera> camera1 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
+std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
+std::shared_ptr<Camera> activeCamera = camera1;
+
+
 float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
 bool bFirstMouse = true;
@@ -76,6 +80,9 @@ bool show_demo_window = true;
 bool show_another_window = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 // decalring functions
+
+
+// global easy
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -233,20 +240,26 @@ int main() {
     // USER STUFF
     // ----------------------------------------
 
-    Model modela  = Model("Assets/Art/Models/cube.fbx");
-    Model doorr = Model("Assets/Art/Models/Door.fbx");
+    // Model modela  = Model("Assets/Art/Models/cube.fbx");
+    // Model doorr = Model("Assets/Art/Models/Door.fbx");
     // objects in scene
     // std::vector<VisualObject*> mObjects{};
     std::vector<KT::VisualObject*> mObjects{};
     std::unordered_map<std::string, KT::VisualObject*> mMap{};
 
+    //Shader
+    Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
+                                   "Assets/Art/Shaders/Lek2F.glsl");
+    leksjon2Shader.use();
+    GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
     
     // main surface
     KT::TriangleSurface* ground = new KT::TriangleSurface();
     ground->constructWithLambda(KT::Graph::Franke);
-    mMap.insert(MapPair("ground", ground));
     ground->SetPosition(0, 0, 0);
+    ground->SetScale(1.f);
+    mMap.insert(MapPair("ground", ground));
 
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
@@ -267,16 +280,16 @@ int main() {
     // ----------------------------------------
 
     KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
-    graph1->SetPosition(4, 0, 0);
+    graph1->SetPosition(3, 0, 0);
     mMap.insert(MapPair("graph1", graph1));
 
     KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
-    graph2->SetPosition(4, 0, 0);
+    graph2->SetPosition(3, 0, 0);
     mMap.insert(MapPair("graph2", graph2));
 
     GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
                                                         Range{-2, 4});
-    graphNPCWalker->SetPosition(4, 0, 0);
+    graphNPCWalker->SetPosition(3, 0, 0);
     mMap.insert(MapPair("walker", graphNPCWalker));
 
 
@@ -296,13 +309,23 @@ int main() {
 
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
-    KT::Door* door = new KT::Door(cube);
+    KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
+    door->SetScale(0.5f);
+    door->SetPosition(0.21,0.6f,1.0f);
     mMap.insert(MapPair("door", door));
 
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
-    // KT::House* house = new KT::House();
-    // mMap.insert(MapPair("house", house));
+    KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    house->SetPosition(glm::vec3(0,0.2,1.5f));
+    house->SetScale(0.5f);
+    mMap.insert(MapPair("house", house));
+
+    // IN HOUSE OBJECT
+    // -----------------------------------------------------------------------------------------------------------------
+    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
+    houseObject->SetPosition(0,0.4,1.4);
+    mMap.insert(MapPair("houseObject", houseObject));
     
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
@@ -310,27 +333,6 @@ int main() {
     math_comp2_handler->SetPosition(0.f, 4, 0);
     math_comp2_handler->SetRotation(0, 0, 0);
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
-
-
-    // Getting shader
-    Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
-                                   "Assets/Art/Shaders/Lek2F.glsl");
-    leksjon2Shader.use();
-    GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
-
-
-    KT::TriangleSurface* triangle_surface = new KT::TriangleSurface();
-
-    // KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    // houseObject->SetPosition(glm::vec3(0,5,0));
-    // mMap.insert(MapPair("housee", houseObject));
-    // Initializing Visual Objects
-    /*
-    for (VisualObject* m_object : mObjects)
-    {
-        m_object->init(matrixUniform);
-    }
-    */
 
     for (auto object : mMap) {
         object.second->init(matrixUniform);
@@ -344,9 +346,9 @@ int main() {
                                     "Assets/Art/Shaders/NormalGeoG.glsl");
 
     glm::mat4x4 model = glm::mat4x4(1.f);
-    glm::mat4x4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+    glm::mat4x4 projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
                                               100.f);
-
+    
 
     // LEKSJON 2
     // ----------------------------------------
@@ -426,8 +428,8 @@ int main() {
         */
         }
 
-        glm::mat4x4 view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
+        glm::mat4x4 view = activeCamera->GetViewMatrix();
+        projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
 
         // INPUT
         // ----------------------------------------
@@ -452,21 +454,38 @@ int main() {
         leksjon2Shader.setMat4("projection", projection);
         leksjon2Shader.setMat4("view", view);
 
+        // leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
+        
         for (auto object : mMap) {
             object.second->draw();
+        }
+
+        if (house->GetBounds().InBounds(currentPossesedObject->GetPosition())) {
+            std::cout << "IN HOUSE" << std::endl;
+            activeCamera = camera2;
+            activeCamera->position = house->GetPosition() + glm::vec3(1,2,0.9) * 0.4f;
+            activeCamera->pitch = -45.f;
+            activeCamera->yaw = -45.f - 90;
+            activeCamera->UpdateCameraVectors();
+            
+            activeCamera->mLocked = true;
+        }
+        else {
+            activeCamera = camera1;
+            std::cout << " NOTIN HOUSE" << std::endl;   
         }
 
 
         glm::mat4 matrix = KT::MathHelpers::TRS(glm::vec3(0,0,5), glm::quat(1,0,0,0), glm::vec3(1,1,1));
         leksjon2Shader.setMat4("matrix", matrix);
-        modela.Draw(leksjon2Shader);
-        doorr.Draw(leksjon2Shader);
+        // modela.Draw(leksjon2Shader);
+        // doorr.Draw(leksjon2Shader);
         /*
         for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
             (*it)->draw();
         }
         */
-
+        
         if (bDrawNormals) {
             normalGeoShader.use();
             normalGeoShader.setFloat("MAGNITUDE", drawNormalLength);
@@ -476,6 +495,7 @@ int main() {
             for (auto m_object : mMap) {
                 m_object.second->draw();
             }
+            
         }
 
 
@@ -550,7 +570,7 @@ void processInput(GLFWwindow* window) {
         keyboardAxis.y += -1.f;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         keyboardAxis.y += 1.f;
-    camera.ProcessKeyboard(keyboardAxis, deltaTime);
+    activeCamera->ProcessKeyboard(keyboardAxis, deltaTime);
 
     // possesed object
     float moveScalar = 0.01f;
@@ -581,16 +601,16 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     mouseLastY = ypos;
 
     if (!UI_enabled) {
-        camera.ProcessMouseMovement(offsetX, offsetY, true, true);
+        activeCamera->ProcessMouseMovement(offsetX, offsetY, true, true);
     }
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        camera.ProcessMouseScroll(yoffset, true);
+        activeCamera->ProcessMouseScroll(yoffset, true);
     }
     else {
-        camera.ProcessMouseScroll(yoffset, false);
+        activeCamera->ProcessMouseScroll(yoffset, false);
     }
 }
 

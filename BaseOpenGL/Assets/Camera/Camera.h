@@ -13,7 +13,7 @@ const glm::vec3 POSITION = glm::vec3(0,0,0);
 const glm::vec3 FRONT = glm::vec3(-1, 0 ,0);
 const glm::vec3 UP = glm::vec3(0,1,0);
 
-const float YAW = -90.f;
+const float YAW = 90.f;
 const float PITCH = 0.f;
 const float SPEED = 5.5f;
 const float SENSETIVITY = 0.05f;
@@ -27,6 +27,8 @@ public:
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
+
+    bool mLocked = false;
 
     
     float pitch;
@@ -56,6 +58,9 @@ public:
     }
 
     void ProcessKeyboard(glm::vec3 input, float deltaTime) {
+        if (mLocked)
+            return;
+            
         float velocity = deltaTime * speed;
         position += right * input.x * velocity;
         position += forward * input.z * velocity;
@@ -63,6 +68,9 @@ public:
     }
 
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true, GLboolean bInvertY = true) {
+        if (mLocked)
+            return;
+            
         xoffset *= sensetivity;
         yoffset *= sensetivity;
         
@@ -82,6 +90,9 @@ public:
     }
 
     void ProcessMouseScroll(float yoffset, bool bFOV = false) {
+        if (mLocked)
+            return;
+        
         if (bFOV) {
             fov += -yoffset * 5.f;
             fov = fov < 1.f ? 1.f : fov;
@@ -96,7 +107,6 @@ public:
 
     
     
-private:
     void UpdateCameraVectors() {
         // calculate the new Front vector
         glm::vec3 front;
@@ -108,6 +118,7 @@ private:
         right   = glm::normalize(glm::cross(forward, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         up      = glm::normalize(glm::cross(right, forward));
     }
+private:
 
     glm::mat4 SelfLookAtImplementation(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) const {
         glm::vec3 forwardAxis = glm::normalize(_position - _target);

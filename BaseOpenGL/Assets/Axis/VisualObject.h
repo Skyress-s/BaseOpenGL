@@ -54,6 +54,12 @@ namespace KT {
             sz = newScale[2];
         }
 
+        void SetScale(const float& uniformScale) {
+            sx = uniformScale;
+            sy = uniformScale;
+            sz = uniformScale;
+        }
+
         void SetScale(const float& x, const float& y, const float& z) {
             sx = x;
             sy = y;

@@ -142,12 +142,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="aaaaa.cpp" />
-    <ClCompile Include="Assets\Axis\Axis.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="Assets\Axis\InteractiveObject.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
@@ -164,7 +158,9 @@
     <ClCompile Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.cpp" />
     <ClCompile Include="Assets\Courses\MathCourse\MathComp2Handler.cpp" />
     <ClCompile Include="Assets\Door.cpp" />
+    <ClCompile Include="Assets\Geometry\Model.cpp" />
     <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
+    <ClCompile Include="Assets\Gizmo\GizmoDrawer.cpp" />
     <ClCompile Include="Assets\House.cpp" />
     <ClCompile Include="Assets\IO\FileHandler.cpp" />
     <ClCompile Include="Assets\Math\MathHelpers.cpp" />
@@ -230,7 +226,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aaaaa.h" />
-    <ClInclude Include="Assets\Axis\Axis.h" />
     <ClInclude Include="Assets\Axis\InteractiveObject.h" />
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
@@ -241,6 +236,7 @@
     <ClInclude Include="Assets\Geometry\Mesh.h" />
     <ClInclude Include="Assets\Geometry\Model.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />
+    <ClInclude Include="Assets\Gizmo\GizmoDrawer.h" />
     <ClInclude Include="Assets\House.h" />
     <ClInclude Include="Assets\IO\FileHandler.h" />
     <ClInclude Include="Assets\Math\Graphs.h" />
@@ -277,6 +273,7 @@
   <ItemGroup>
     <Content Include="Assets\Art\Models\cube.fbx" />
     <Content Include="Assets\Art\Models\cubee.fbx" />
+    <Content Include="Assets\Art\Models\Door.fbx" />
     <Content Include="Assets\Art\Shaders\Lek2F.glsl" />
     <Content Include="Assets\Art\Shaders\Lek2V.glsl" />
     <Content Include="Assets\Art\Shaders\NormalGeoF.glsl" />
