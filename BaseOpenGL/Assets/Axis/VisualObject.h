@@ -78,6 +78,10 @@ namespace KT {
             _rotation = glm::quat(rot);
         }
 
+        void SetRotation(glm::quat rot) {
+            _rotation = rot;   
+        }
+
         void SetRotation(const float& x, const float& y, const float& z) {
             SetRotation(glm::vec3(x, y, z));
         }

@@ -33,6 +33,7 @@
 #include "Assets/Door.h"
 #include "Assets/House.h"
 #include "Assets/Axis/InteractiveObject.h"
+#include "Assets/Camera/FollowCamera.h"
 #include "Assets/Courses/3DProgCourse/GraphNPCWalker.h"
 #include "Assets/Courses/3DProgCourse/Prog3DComp2Handler.h"
 #include "Assets/IO/FileHandler.h"
@@ -57,9 +58,10 @@ const unsigned int SCR_HEIGHT = 800;
 
 // Camera camera = (glm::vec3(0.f, 2.f, -5.f));
 
-std::shared_ptr<Camera> camera1 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
+// std::shared_ptr<Camera> camera1 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
+std::shared_ptr<Camera> camera1;
 std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
-std::shared_ptr<Camera> activeCamera = camera1;
+std::shared_ptr<Camera> activeCamera; 
 
 
 float mouseLastX = SCR_WIDTH / 2.f;
@@ -247,6 +249,8 @@ int main() {
     std::vector<KT::VisualObject*> mObjects{};
     std::unordered_map<std::string, KT::VisualObject*> mMap{};
 
+    
+    
     //Shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
                                    "Assets/Art/Shaders/Lek2F.glsl");
@@ -268,28 +272,31 @@ int main() {
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
     KT::InteractiveObject* cube = new KT::Cube();
-    cube->SetPosition(glm::vec3(0.25f, -0.75f, 1.5f));
+    cube->SetPosition(glm::vec3(0.25f, -0.75f, -0.9f));
     cube->SetScale(glm::vec3(0.05f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
     // mObjects.push_back(cube);
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
-
+    
+    camera1 = make_shared<FollowCamera>(cube);
+    // camera1 = make_shared<Camera>(glm::vec3(0,2,0));
+    activeCamera = camera1;
     // PROG3D 
     // ----------------------------------------
 
     KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
-    graph1->SetPosition(3, 0, 0);
+    graph1->SetPosition(-3, -4, 0);
     mMap.insert(MapPair("graph1", graph1));
 
     KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
-    graph2->SetPosition(3, 0, 0);
+    graph2->SetPosition(-3, -4, 0);
     mMap.insert(MapPair("graph2", graph2));
 
     GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
                                                         Range{-2, 4});
-    graphNPCWalker->SetPosition(3, 0, 0);
+    graphNPCWalker->SetPosition(-3, -4, 0);
     mMap.insert(MapPair("walker", graphNPCWalker));
 
 
@@ -311,13 +318,13 @@ int main() {
     // -----------------------------------------------------------------------------------------------------------------
     KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
     door->SetScale(0.5f);
-    door->SetPosition(0.21,0.6f,1.0f);
+    door->SetPosition(0.21,0.6f - 0.2f,1.0f);
     mMap.insert(MapPair("door", door));
 
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
     KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    house->SetPosition(glm::vec3(0,0.2,1.5f));
+    house->SetPosition(glm::vec3(0,0.2 - 0.2f,1.5f));
     house->SetScale(0.5f);
     mMap.insert(MapPair("house", house));
 
@@ -461,7 +468,6 @@ int main() {
         }
 
         if (house->GetBounds().InBounds(currentPossesedObject->GetPosition())) {
-            std::cout << "IN HOUSE" << std::endl;
             activeCamera = camera2;
             activeCamera->position = house->GetPosition() + glm::vec3(1,2,0.9) * 0.4f;
             activeCamera->pitch = -45.f;
@@ -472,7 +478,6 @@ int main() {
         }
         else {
             activeCamera = camera1;
-            std::cout << " NOTIN HOUSE" << std::endl;   
         }
 
 

@@ -52,12 +52,13 @@ public:
     }
     
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    glm::mat4 GetViewMatrix() {
+    virtual glm::mat4 GetViewMatrix() {
+        
         return SelfLookAtImplementation(position, position + forward, up);
         // return SelfLookAtImplementation(position, position + forward, up);
     }
 
-    void ProcessKeyboard(glm::vec3 input, float deltaTime) {
+    virtual void ProcessKeyboard(glm::vec3 input, float deltaTime) {
         if (mLocked)
             return;
             
@@ -67,7 +68,7 @@ public:
         position += up * input.y * velocity;
     }
 
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true, GLboolean bInvertY = true) {
+    virtual void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true, GLboolean bInvertY = true) {
         if (mLocked)
             return;
             

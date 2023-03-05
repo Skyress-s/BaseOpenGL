@@ -141,7 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="aaaaa.cpp" />
     <ClCompile Include="Assets\Axis\InteractiveObject.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
@@ -225,10 +224,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aaaaa.h" />
     <ClInclude Include="Assets\Axis\InteractiveObject.h" />
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
+    <ClInclude Include="Assets\Camera\FollowCamera.h" />
     <ClInclude Include="Assets\Courses\3DProgCourse\GraphNPCWalker.h" />
     <ClInclude Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.h" />
     <ClInclude Include="Assets\Courses\MathCourse\MathComp2Handler.h" />
