@@ -264,7 +264,9 @@ int main() {
     ground->SetPosition(0, 0, 0);
     ground->SetScale(1.f);
     mMap.insert(MapPair("ground", ground));
-
+    
+    
+    
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
