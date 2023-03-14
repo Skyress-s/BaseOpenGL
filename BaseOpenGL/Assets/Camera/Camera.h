@@ -13,7 +13,7 @@ const glm::vec3 POSITION = glm::vec3(0,0,0);
 const glm::vec3 FRONT = glm::vec3(-1, 0 ,0);
 const glm::vec3 UP = glm::vec3(0,1,0);
 
-const float YAW = 90.f;
+const float YAW = -90.f;
 const float PITCH = 0.f;
 const float SPEED = 5.5f;
 const float SENSETIVITY = 0.05f;

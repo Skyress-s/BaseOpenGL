@@ -39,6 +39,7 @@
 #include "Assets/IO/FileHandler.h"
 #include "Assets/Math/Graphs.h"
 #include "Assets/Courses/MathCourse/MathComp2Handler.h"
+#include "Assets/Math/TriangulationHandler.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Disc.h"
 #include "Assets/Structure/Graph2D.h"
@@ -59,9 +60,9 @@ const unsigned int SCR_HEIGHT = 800;
 // Camera camera = (glm::vec3(0.f, 2.f, -5.f));
 
 // std::shared_ptr<Camera> camera1 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
-std::shared_ptr<Camera> camera1;
-std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
-std::shared_ptr<Camera> activeCamera; 
+// std::shared_ptr<Camera> camera1;
+// std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
+std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 10.f)); 
 
 
 float mouseLastX = SCR_WIDTH / 2.f;
@@ -257,6 +258,8 @@ int main() {
     leksjon2Shader.use();
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
+
+    // triangulation
     
     // main surface
     KT::TriangleSurface* ground = new KT::TriangleSurface();
@@ -282,9 +285,6 @@ int main() {
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
     
-    camera1 = make_shared<FollowCamera>(cube);
-    // camera1 = make_shared<Camera>(glm::vec3(0,2,0));
-    activeCamera = camera1;
     // PROG3D 
     // ----------------------------------------
 
@@ -301,6 +301,8 @@ int main() {
     graphNPCWalker->SetPosition(-3, -4, 0);
     mMap.insert(MapPair("walker", graphNPCWalker));
 
+    KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler("TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
+    mMap.insert(MapPair("triHandler", triangulationHandler));
 
     // TROPHIES
     // ----------------------------------------
@@ -309,7 +311,7 @@ int main() {
         
         float z = KT::Random::Random(-1.f, 1.f);
 
-        std::cout << "xz : " << x << " " << z <<std::endl;
+        // std::cout << "xz : " << x << " " << z <<std::endl;
         KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
         trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
         std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
@@ -320,13 +322,14 @@ int main() {
     // -----------------------------------------------------------------------------------------------------------------
     KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
     door->SetScale(0.5f);
-    door->SetPosition(0.21,0.6f - 0.2f,1.0f);
+    door->SetPosition(0.21,0.6f - 5.2f,1.0f);
     mMap.insert(MapPair("door", door));
 
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
-    KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    house->SetPosition(glm::vec3(0,0.2 - 0.2f,1.5f));
+    // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    KT::House* house = new KT::House("Assets/Art/Models/better_elsa.fbx", leksjon2Shader);
+    house->SetPosition(glm::vec3(0,0.2 - 5.2f,1.5f));
     house->SetScale(0.5f);
     mMap.insert(MapPair("house", house));
 
@@ -364,8 +367,8 @@ int main() {
     // OTHER ENABLES
     // -----------------------------------------------------------------------------------------------------------------
     // uncomment this call to draw in wireframe polygons.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -469,20 +472,6 @@ int main() {
             object.second->draw();
         }
 
-        if (house->GetBounds().InBounds(currentPossesedObject->GetPosition())) {
-            activeCamera = camera2;
-            activeCamera->position = house->GetPosition() + glm::vec3(1,2,0.9) * 0.4f;
-            activeCamera->pitch = -45.f;
-            activeCamera->yaw = -45.f - 90;
-            activeCamera->UpdateCameraVectors();
-            
-            activeCamera->mLocked = true;
-        }
-        else {
-            activeCamera = camera1;
-        }
-
-
         glm::mat4 matrix = KT::MathHelpers::TRS(glm::vec3(0,0,5), glm::quat(1,0,0,0), glm::vec3(1,1,1));
         leksjon2Shader.setMat4("matrix", matrix);
         // modela.Draw(leksjon2Shader);
@@ -583,16 +572,20 @@ void processInput(GLFWwindow* window) {
     float moveScalar = 0.01f;
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        currentPossesedObject->move(0, -moveScalar, KT::Graph::Franke);
+        // currentPossesedObject->move(0, -moveScalar, KT::Graph::Franke);
+        currentPossesedObject->move(0, -moveScalar, 0);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        currentPossesedObject->move(0, moveScalar, KT::Graph::Franke);
+        // currentPossesedObject->move(0, moveScalar, KT::Graph::Franke);
+        currentPossesedObject->move(0, +moveScalar, 0);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        currentPossesedObject->move(-moveScalar, 0, KT::Graph::Franke);
+        // currentPossesedObject->move(-moveScalar, 0, KT::Graph::Franke);
+        currentPossesedObject->move(-moveScalar, 0, 0);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        currentPossesedObject->move(moveScalar, 0, KT::Graph::Franke);
+        currentPossesedObject->move(moveScalar, 0, 0);
+        // currentPossesedObject->move(moveScalar, 0, KT::Graph::Franke);
     }
 }
 

@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Vertex.h"
 
+#include <Windows.h>
+
 namespace KT {
     Vertex::Vertex() {
     }
@@ -33,8 +35,14 @@ namespace KT {
         m_st[1] = 0;
     }
 
+    const glm::vec3 Vertex::posToVec3() {
+        return glm::vec3(m_xyz[0], m_xyz[1], m_xyz[2]);
+    }
+
+
+    // file
     std::ostream& operator<<(std::ostream& os, const Vertex& v) {
-        os << std::fixed;
+        os << std::fixed; // 0.00001 not 1 * e^-7
         os << "(" << v.m_xyz[0] << ", " << v.m_xyz[1] << ", " << v.m_xyz[2] << ") ";
         os << "(" << v.m_normal[0] << ", " << v.m_normal[1] << ", " << v.m_normal[2] << ") ";
         os << "(" << v.m_st[0] << ", " << v.m_st[1] << ") ";
@@ -44,6 +52,8 @@ namespace KT {
     std::istream& operator>>(std::istream& is, Vertex& v) {
         // Trenger fire temporære variabler som kun skal lese inn parenteser og komma
         char dum, dum2, dum3, dum4;
+
+        // smart rading, both 0.00001 and 0.01 work
         is >> dum >> v.m_xyz[0] >> dum2 >> v.m_xyz[1] >> dum3 >> v.m_xyz[2] >> dum4;
         is >> dum >> v.m_normal[0] >> dum2 >> v.m_normal[1] >> dum3 >> v.m_normal[2] >> dum4;
         is >> dum >> v.m_st[0] >> dum2 >> v.m_st[1] >> dum3;

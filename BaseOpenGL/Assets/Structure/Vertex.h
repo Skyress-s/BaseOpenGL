@@ -22,6 +22,10 @@ namespace KT {
         float m_xyz[3];       
         float m_normal[3];  
         float m_st[2];
+
+        // converions
+        const glm::vec3 posToVec3();
+
     private:
 
 
