@@ -22,16 +22,16 @@ namespace KT {
             A(i, 1) = points[i].x;
             A(i, 2) = 1.f;
         }
-        std::cout << A << std::endl;
+        // std::cout << A << std::endl;
         Eigen::MatrixXd y = Eigen::MatrixXd(points.size(), 1);
         for (int i = 0; i < points.size(); ++i) {
             y(i, 0) = points[i].y;
         }
         
-        std::cout << y << std::endl;
+        // std::cout << y << std::endl;
         
         Eigen::MatrixXd B = Eigen::Transpose<Eigen::MatrixXd>(A) * A;
-        std::cout << B << std::endl;
+        // std::cout << B << std::endl;
         Eigen::MatrixXd c = Eigen::Transpose<Eigen::MatrixXd>(A) * y;
 
         Eigen::MatrixXd x = Eigen::Inverse<Eigen::MatrixXd>(B)*c;

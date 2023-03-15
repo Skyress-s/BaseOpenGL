@@ -18,7 +18,9 @@ namespace KT {
         }
     };
 
-    static glm::vec3 barycentricCoordinates3d(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
+    
+    
+    static glm::vec3 BarycentricCoordinates3d(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
                                              glm::vec3 x) {
         // 2d plane (xy) 
         p1.z = 0;
@@ -32,7 +34,7 @@ namespace KT {
         glm::vec3 n = glm::cross(p12, p13);
         // float areal_123 = n.length(); // dobbelt areal
         float areal_123 = glm::length(n); // dobbelt areal
-        std::cout << areal_123 << std::endl;
+        // std::cout << areal_123 << std::endl;
         glm::vec3 baryc; // til retur. Husk
         // u
         glm::vec3 p = p2 - x;
@@ -50,6 +52,10 @@ namespace KT {
         n = glm::cross(p, q);
         baryc.z = n.z / areal_123;
         return baryc;
+    }
+    
+    static glm::vec3 BarycentricCoordinates3d(glm::vec3 pps[3], glm::vec3 x) {
+        return BarycentricCoordinates3d(pps[0], pps[1], pps[2], x);
     }
 
     namespace Random {

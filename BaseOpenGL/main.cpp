@@ -277,7 +277,7 @@ int main() {
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
     KT::InteractiveObject* cube = new KT::Cube();
-    cube->SetPosition(glm::vec3(0.25f, -0.75f, -0.9f));
+    cube->SetPosition(glm::vec3(2.9f, 3.55f, -0.9f));
     cube->SetScale(glm::vec3(0.05f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
@@ -367,7 +367,7 @@ int main() {
     // OTHER ENABLES
     // -----------------------------------------------------------------------------------------------------------------
     // uncomment this call to draw in wireframe polygons.
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     //setting up depth test
     glEnable(GL_DEPTH_TEST);

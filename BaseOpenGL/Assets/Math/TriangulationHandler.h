@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <algorithm>
+
 #include "MathHelpers.h"
 #include "../IO/FileHandler.h"
 
@@ -15,9 +17,9 @@ namespace KT {
         TriangulationHandler(const std::string& vertexFilePath, const std::string& metaFilePath,
                              VisualObject* objectToMove)
             : _objectToMove(objectToMove) {
-            std::cout << "TRIANGULATION HANDLER READING VERTEX DATA" << std::endl;
+            // std::cout << "TRIANGULATION HANDLER READING VERTEX DATA" << std::endl;
             mVertices = ReadFileVertex(vertexFilePath);
-            std::cout << "TRIANGULATION HANDLER READING META DATA" << std::endl;
+            // std::cout << "TRIANGULATION HANDLER READING META DATA" << std::endl;
             ReadFileMeta(metaFilePath, mIndices, adjecents);
             for (int i = 0; i < mIndices.size(); ++i) {
                 std::cout << mIndices[i] << " " << mIndices[i + 1] << " " << mIndices[i + 2] << std::endl;
@@ -31,7 +33,6 @@ namespace KT {
             }
 
             SearchEntireTopology(currentTriangle);
-            
         }
 
         void draw() override {
@@ -42,90 +43,91 @@ namespace KT {
             VisualObject::init(matrixUniform);
         }
 
-        void Update(float deltaTime) override {
 
-            //  SearchCurrentAndNearest(currentTriangle);
-            //
-            // glm::vec3 position = SearchEntireTopology(tri);
-            // _objectToMove->SetPosition(position);
-        }
-
-        void GetTrianglePositions(const int& i, vector<glm::vec3>& outPositions) {
-            glm::vec3 p1,p2,p3;
-            p1 = mVertices[mIndices[i*3+0]].posToVec3();
-            p2 = mVertices[mIndices[i*3+1]].posToVec3();
-            p3 = mVertices[mIndices[i*3+2]].posToVec3();
-            outPositions.clear();
-            outPositions.push_back(p1);
-            outPositions.push_back(p2);
-            outPositions.push_back(p3);
+        // void GetTrianglePositions(const int& i, vector<glm::vec3>& outPositions) {
+        void GetTrianglePositions(const int& i, glm::vec3 outPositions[3]) {
+            glm::vec3 p1, p2, p3;
+            p1 = mVertices[mIndices[i * 3 + 0]].posToVec3();
+            p2 = mVertices[mIndices[i * 3 + 1]].posToVec3();
+            p3 = mVertices[mIndices[i * 3 + 2]].posToVec3();
+            // outPositions.clear();
+            // outPositions.push_back(p1);
+            // outPositions.push_back(p2);
+            // outPositions.push_back(p3);
+            outPositions[0] = p1;
+            outPositions[1] = p2;
+            outPositions[2] = p3;
         }
 
         void GetTriangleIndices(const int& i, int indices[3]) {
-            indices[0] = mIndices[i*3+0];
-            indices[1] = mIndices[i*3+1];
-            indices[2] = mIndices[i*3+2];
+            indices[0] = mIndices[i * 3 + 0];
+            indices[1] = mIndices[i * 3 + 1];
+            indices[2] = mIndices[i * 3 + 2];
         }
-        
-        glm::vec3 SearchEntireTopology(int& outTriangle) {
-            for (int i = 0; i < mIndices.size()/3; ++i) {
-                glm::vec3 p1, p2, p3, x;
-                p1 = mVertices[mIndices[i*3 + 0]].posToVec3();
-                p2 = mVertices[mIndices[i*3 + 1]].posToVec3();
-                p3 = mVertices[mIndices[i*3 + 2]].posToVec3();
-                // i += 2;
-                x = _objectToMove->GetPosition();
 
-                glm::vec3 baryc = barycentricCoordinates3d(p1, p2, p3, x);
-                // std::cout << baryc.x << " " << baryc.y << " " << baryc.z << " | " << baryc.x + baryc.y + baryc.z <<
-                    // std::endl;
-                if (baryc.x >= 0 && baryc.y >= 0 && baryc.z >= 0) {
-                    // std::cout << "FOUND POINT IN TRIANGLE" << std::endl;
-
-                    float zz = (p1 * baryc.x + p2 * baryc.y + p3 * baryc.z).z;
-                    glm::vec3 newPos = _objectToMove->GetPosition();
-                    newPos.z = zz;
-                    outTriangle = i;
-                    
-                    return newPos;
-                    // _objectToMove->SetPosition(newPos);
-                    break;
-                }
-            }
-            return _objectToMove->GetPosition();
-        }
 
         bool InTriangle(const int& i, const glm::vec3& x) {
-            std::vector<glm::vec3> positions{};
+            glm::vec3 positions[3];
             GetTrianglePositions(i, positions);
-            glm::vec3 baryc = barycentricCoordinates3d(positions[0], positions[1], positions[2], _objectToMove->GetPosition());
-            if (baryc.x <0 || baryc.y < 0 || baryc.z < 0) 
+            glm::vec3 baryc = BarycentricCoordinates3d(positions[0], positions[1], positions[2],
+                                                       _objectToMove->GetPosition());
+            if (baryc.x < 0 || baryc.y < 0 || baryc.z < 0)
                 return false;
             return true;
         }
 
-        auto GetEdge(const int& a,const int& b) {
+        int FindNeighbourTriangle(const int& a, const int& b, const int& ignoreTri) {
             int indices[3];
             for (int i = 0; i < mIndices.size() / 3; ++i) {
+                if (i == ignoreTri)
+                    continue;
+                GetTriangleIndices(i, indices);
+
+                // bool bFoundA = false;
+                // bool bFoundB = false;
+                // for (int j = 0; j < 3; ++j) {
+                //     if (indices[j] == a)
+                //         bFoundA = true;
+                // }
+                // for (int j = 0; j < 3; ++j) {
+                //     if (indices[j] == b)
+                //         bFoundB = true;
+                // }
+                // if (bFoundA && bFoundB) {
+                //     return i;
+                // }
+
+                auto start = mIndices.begin();
+                auto end = mIndices.begin();
+                std::advance(start, i*3);
+                std::advance(end, i*3);
+                std::advance(end, 3); // advance two i last, move one further becouse of the != end check further down
+                std::cout << "distance : " << std::distance(start,end) << std::endl;
+                vector<int>::iterator x = std::find(start, end, a);
+                vector<int>::iterator y = std::find(start, end, b);
                 
-                // GetTriangleIndices(i, )
+                if (x != end && y != end) {
+                    if (i != ignoreTri) {
+                        return i;
+                    }
+                }
             }
+            return -1;
         }
-        
+
         glm::vec3 SearchCurrentAndNearest(int& outTriangle) {
-            std::vector<glm::vec3> pos = std::vector<glm::vec3>(); 
-            GetTrianglePositions(currentTriangle, pos);
+            glm::vec3 pos[3];
             int triIndices[3];
+            GetTrianglePositions(currentTriangle, pos);
             GetTriangleIndices(currentTriangle, triIndices);
-            
-            glm::vec3 baryc = barycentricCoordinates3d(pos[0], pos[1], pos[2], _objectToMove->GetPosition());
+
+            glm::vec3 baryc = BarycentricCoordinates3d(pos[0], pos[1], pos[2], _objectToMove->GetPosition());
             if (InTriangle(currentTriangle, _objectToMove->GetPosition())) {
                 // in bounds
                 glm::vec3 calcpos = pos[0] * baryc.x + pos[1] * baryc.y + pos[2] * baryc.z;
                 return calcpos;
             }
             // search nearest neighbour
-
             // find nearest
 
             int edge[2];
@@ -142,9 +144,55 @@ namespace KT {
                 edge[1] = triIndices[1];
             }
 
-                        
+            int neighbourTri = FindNeighbourTriangle(edge[0], edge[1], currentTriangle);
+            std::cout << " edge " << edge[0] << " " << edge[1] << " | " << neighbourTri << std::endl;
+            if (neighbourTri != -1 && InTriangle(neighbourTri, _objectToMove->GetPosition())) {
+                GetTrianglePositions(neighbourTri, pos);
+                // baryc = BarycentricCoordinates3d(pos.begin()._Ptr, _objectToMove->GetPosition());
+                baryc = BarycentricCoordinates3d(pos[0], pos[1], pos[2], _objectToMove->GetPosition());
+                currentTriangle = neighbourTri;
+                std::cout << "Did transition " << currentTriangle << std::endl;
+                std::cout << "diff : " << glm::distance(baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2], _objectToMove->GetPosition()) << std::endl;
+                return baryc.x * pos[0] +baryc.y * pos[1] + baryc.z * pos[2];
+            }
+
+            std::cout << "augh" << std::endl;
+            return _objectToMove->GetPosition();
         }
 
+        glm::vec3 SearchEntireTopology(int& outTriangle) {
+            for (int i = 0; i < mIndices.size() / 3; ++i) {
+                glm::vec3 p1, p2, p3, x;
+                p1 = mVertices[mIndices[i * 3 + 0]].posToVec3();
+                p2 = mVertices[mIndices[i * 3 + 1]].posToVec3();
+                p3 = mVertices[mIndices[i * 3 + 2]].posToVec3();
+                // i += 2;
+                x = _objectToMove->GetPosition();
+
+                glm::vec3 baryc = BarycentricCoordinates3d(p1, p2, p3, x);
+                // std::cout << baryc.x << " " << baryc.y << " " << baryc.z << " | " << baryc.x + baryc.y + baryc.z <<
+                // std::endl;
+                if (baryc.x >= 0 && baryc.y >= 0 && baryc.z >= 0) {
+                    // std::cout << "FOUND POINT IN TRIANGLE" << std::endl;
+
+                    float zz = (p1 * baryc.x + p2 * baryc.y + p3 * baryc.z).z;
+                    glm::vec3 newPos = _objectToMove->GetPosition();
+                    newPos.z = zz;
+                    outTriangle = i;
+
+                    return newPos;
+                    // _objectToMove->SetPosition(newPos);
+                    break;
+                }
+            }
+            return _objectToMove->GetPosition();
+        }
+
+        void Update(float deltaTime) override {
+            glm::vec3 pos = SearchCurrentAndNearest(currentTriangle);
+
+            _objectToMove->SetPosition(pos);
+        }
 
     private:
         std::vector<Vertex> ReadFileVertex(const std::string& filePath) {
@@ -168,7 +216,7 @@ namespace KT {
                     vertex.m_normal[2] = col;
                     vertices.push_back(vertex);
 
-                    std::cout << vertex << std::endl;
+                    // std::cout << vertex << std::endl;
                 }
             }
             return vertices;
@@ -201,8 +249,8 @@ namespace KT {
                     adjecents.push_back(adjacent[1]);
                     adjecents.push_back(adjacent[2]);
 
-                    std::cout << vertex[0] << " " << vertex[1] << " " << vertex[2] << " | "
-                        << adjacent[0] << " " << adjacent[1] << " " << adjacent[2] << std::endl;
+                    // std::cout << vertex[0] << " " << vertex[1] << " " << vertex[2] << " | "
+                    // << adjacent[0] << " " << adjacent[1] << " " << adjacent[2] << std::endl;
                 }
             }
             outIndices = indices;
