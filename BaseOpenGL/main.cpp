@@ -164,12 +164,33 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
 typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 
-int main() {
-    
 
+int main() {
+    std::cout << "TASK 6.4.2" << std::endl;
+    // P(0,1), Q(1.5, 0) og R(2.5, 1)
+    glm::vec3 P(0,1,0);
+    glm::vec3 Q(1.5,0,0);
+    glm::vec3 R(2.5,1,0);
+    glm::vec3 X(1./2., 1./2., 0.);
+    glm::vec3 bar = KT::BarycentricCoordinates3d(P,Q,R, X);
+    std::cout << "1)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z) << std::endl;
+
+    X = glm::vec3(1.0, 0.5, 0.);
+    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
+    std::cout << "2)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
+
+    X = glm::vec3(2.0, 0.5, 0.);
+    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
+    std::cout << "3)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
     
-        
-            
+    X = glm::vec3(3.0/2.0, 2., 0.);
+    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
+    std::cout << "4)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
+    
+    X = glm::vec3(3.0/2.0, 3./2., 0.);
+    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
+    std::cout << "5)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
+    std::cout << "TASK 6.4.2 FINISHED" << std::endl;
     // dynamic matrix X for unknown
 
     // glfw: initialize and configure

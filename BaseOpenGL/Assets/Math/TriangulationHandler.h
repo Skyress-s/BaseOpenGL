@@ -5,13 +5,46 @@
 #include "../IO/FileHandler.h"
 
 namespace KT {
-    typedef std::pair<int[3], int[3]> TriVertex;
+    struct tri_data {
+    public:
+        int vertex_indices[3]{};
+        int neighbour_triangles[3]{};
+
+
+        // tri_data() {
+        //     vertex_indices[0] = vertex_indices[1] = vertex_indices[2] = -1;
+        //     neighbour_triangles[0] = neighbour_triangles[1] = neighbour_triangles[2] = -1;
+        // }
+
+        tri_data(int vertex_indices[3], int neighbour_triangles[3]) {
+            // std::memcpy(this->vertex_indices, vertex_indices, sizeof(int) * 3);
+            // std::memcpy(this->neighbour_triangles, neighbour_triangles, sizeof(int) * 3);
+            this->vertex_indices[0] = vertex_indices[0];
+            this->vertex_indices[1] = vertex_indices[1];
+            this->vertex_indices[2] = vertex_indices[2];
+            this->neighbour_triangles[0] = neighbour_triangles[0];
+            this->neighbour_triangles[1] = neighbour_triangles[1];
+            this->neighbour_triangles[2] = neighbour_triangles[2];
+        }
+
+        void print_data() {
+            std::cout << "vertex_indices : " << vertex_indices[0] << " " << vertex_indices[1] << " " << vertex_indices[
+                2] << std::endl;
+            std::cout << "neighbour_triangles : ";
+            for (int i = 0; i < 3; ++i)
+                std::cout << neighbour_triangles[i] << " ";
+            std::cout << std::endl;
+        }
+    };
 
     class TriangulationHandler : public VisualObject {
     private:
         std::vector<int> adjecents{};
         VisualObject* _objectToMove = nullptr;
         int currentTriangle = -1;
+
+        // new way
+        std::vector<tri_data> tri_datas;
 
     public:
         TriangulationHandler(const std::string& vertexFilePath, const std::string& metaFilePath,
@@ -21,18 +54,69 @@ namespace KT {
             mVertices = ReadFileVertex(vertexFilePath);
             // std::cout << "TRIANGULATION HANDLER READING META DATA" << std::endl;
             ReadFileMeta(metaFilePath, mIndices, adjecents);
-            for (int i = 0; i < mIndices.size(); ++i) {
-                std::cout << mIndices[i] << " " << mIndices[i + 1] << " " << mIndices[i + 2] << std::endl;
-                i += 2;
-                /*
-                std::cout << mIndices[i] << " ";
-                std::cout << mIndices[++i] << " ";
-                std::cout << mIndices[++i];
-                std::cout << std::endl;
-            */
-            }
+            // for (int i = 0; i < mIndices.size(); ++i) {
+            //     std::cout << mIndices[i] << " " << mIndices[i + 1] << " " << mIndices[i + 2] << std::endl;
+            //     i += 2;
+            //     /*
+            //     std::cout << mIndices[i] << " ";
+            //     std::cout << mIndices[++i] << " ";
+            //     std::cout << mIndices[++i];
+            //     std::cout << std::endl;
+            // */
+            // }
 
             SearchEntireTopology(currentTriangle);
+
+            int neigbour[3];
+            int indices[3];
+            for (int i = 0; i < mIndices.size() / 3; ++i) {
+                neigbour[0] = adjecents[i * 3 + 0];
+                neigbour[1] = adjecents[i * 3 + 1];
+                neigbour[2] = adjecents[i * 3 + 2];
+
+                indices[0] = mIndices[i * 3 + 0];
+                indices[1] = mIndices[i * 3 + 1];
+                indices[2] = mIndices[i * 3 + 2];
+                tri_data data = tri_data(indices, neigbour);
+                tri_datas.push_back(data);
+
+                data.print_data();
+            }
+
+            // find normals
+            std::vector<glm::vec3> normals = CalculateNormals();
+        }
+
+        // returns a normal for each vertex in mVertices
+        std::vector<glm::vec3> CalculateNormals() {
+            std::vector<glm::vec3> retVal = std::vector<glm::vec3>();
+
+
+            for (int i = 0; i < mVertices.size(); ++i) {
+                std::vector<int> trianglesWithSameVertex = FindNeighbourTriangles(i);
+                glm::vec3 normal = glm::vec3(0.f);
+                for (int j = 0; j < trianglesWithSameVertex.size(); ++j) {
+                    normal += calculate_normal_of_triangle_weighted(trianglesWithSameVertex[j]);
+                    // std::cout << normal.x << " " << normal.y << " " << normal.z << std::endl;
+                }
+                normal = glm::normalize(normal);
+                mVertices[i].m_normal[0] = normal.x;
+                mVertices[i].m_normal[1] = normal.y;
+                mVertices[i].m_normal[2] = normal.z;
+            }
+
+
+            return retVal;
+        }
+
+        glm::vec3 calculate_normal_of_triangle_weighted(const int& triangleIndex) {
+            int indices[3];
+            glm::vec3 positions[3];
+            GetTriangleIndices(triangleIndex, indices);
+            GetTrianglePositions(triangleIndex, positions);
+            glm::vec3 u = positions[0] - positions[1];
+            glm::vec3 v = positions[2] - positions[1];
+            return glm::cross(v, u);
         }
 
         void draw() override {
@@ -99,13 +183,13 @@ namespace KT {
 
                 auto start = mIndices.begin();
                 auto end = mIndices.begin();
-                std::advance(start, i*3);
-                std::advance(end, i*3);
+                std::advance(start, i * 3);
+                std::advance(end, i * 3);
                 std::advance(end, 3); // advance two i last, move one further becouse of the != end check further down
-                std::cout << "distance : " << std::distance(start,end) << std::endl;
+                // std::cout << "distance : " << std::distance(start, end) << std::endl;
                 vector<int>::iterator x = std::find(start, end, a);
                 vector<int>::iterator y = std::find(start, end, b);
-                
+
                 if (x != end && y != end) {
                     if (i != ignoreTri) {
                         return i;
@@ -113,6 +197,21 @@ namespace KT {
                 }
             }
             return -1;
+        }
+
+        std::vector<int> FindNeighbourTriangles(const int& vertexIndex) {
+            std::vector<int> triangleNeighbours{};
+
+            for (int i = 0; i < tri_datas.size(); ++i) {
+                for (int j = 0; j < 3; ++j) {
+                    if (tri_datas[i].vertex_indices[j] == vertexIndex) {
+                        triangleNeighbours.push_back(i);
+                        break;
+                    }
+                }
+            }
+
+            return triangleNeighbours;
         }
 
         glm::vec3 SearchCurrentAndNearest(int& outTriangle) {
@@ -152,8 +251,9 @@ namespace KT {
                 baryc = BarycentricCoordinates3d(pos[0], pos[1], pos[2], _objectToMove->GetPosition());
                 currentTriangle = neighbourTri;
                 std::cout << "Did transition " << currentTriangle << std::endl;
-                std::cout << "diff : " << glm::distance(baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2], _objectToMove->GetPosition()) << std::endl;
-                return baryc.x * pos[0] +baryc.y * pos[1] + baryc.z * pos[2];
+                std::cout << "diff : " << glm::distance(baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2],
+                                                        _objectToMove->GetPosition()) << std::endl;
+                return baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2];
             }
 
             std::cout << "augh" << std::endl;
@@ -210,7 +310,8 @@ namespace KT {
                     // inn >> vertex;
                     inn >> vertex.m_xyz[0] >> vertex.m_xyz[1] >> vertex.m_xyz[2];
                     // std::copy(std::begin(vertex.m_xyz), std::end(vertex.m_xyz), std::begin(vertex.m_normal));
-                    float col = (float)i / (float)n;
+                    // float col = (float)i / (float)n;
+                    float col = 0.f;
                     vertex.m_normal[0] = col;
                     vertex.m_normal[1] = col;
                     vertex.m_normal[2] = col;
@@ -219,6 +320,7 @@ namespace KT {
                     // std::cout << vertex << std::endl;
                 }
             }
+            inn.close();
             return vertices;
         }
 
@@ -253,6 +355,7 @@ namespace KT {
                     // << adjacent[0] << " " << adjacent[1] << " " << adjacent[2] << std::endl;
                 }
             }
+            inn.close();
             outIndices = indices;
             outAdjecent = adjecents;
         }
