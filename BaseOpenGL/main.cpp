@@ -280,35 +280,41 @@ int main() {
     // leksjon2Shader.use();
     // GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
+    unsigned int wall = TextureFromFile("wall.jpg", "Assets/Textures");
+    unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     // texture shader
     Shader textureShader = Shader("Assets/Art/Shaders/SimpleTexV.glsl",
         "Assets/Art/Shaders/SimpleTexF.glsl");
-    textureShader.use();
+    // textureShader.use();
     GLint matrixUniform = glGetUniformLocation(textureShader.ID, "matrix");
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char *data = stbi_load(("Assets/Textures/wall.jpg"), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    // unsigned int texture1;
+    // glGenTextures(1, &texture1);
+    // glBindTexture(GL_TEXTURE_2D, texture1);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // // set texture filtering parameters
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // int width, height, nrChannels;
+    // stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    // unsigned char *data = stbi_load(("Assets/Textures/wall.jpg"), &width, &height, &nrChannels, 0);
+    // if (data)
+    // {
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    //     glGenerateMipmap(GL_TEXTURE_2D);
+    // }
+    // else
+    // {
+    //     std::cout << "Failed to load texture" << std::endl;
+    // }
+    // stbi_image_free(data);
 
     textureShader.use();
+    // glUniform1i(glGetUniformLocation(textureShader.ID, "texture1"), rick);
     textureShader.setInt("texture1", 0);
+    textureShader.setInt("texture2", 1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, rick);
     // triangulation
 
     KT::TextureTest* texture_test = new KT::TextureTest();
