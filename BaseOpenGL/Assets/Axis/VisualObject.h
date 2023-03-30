@@ -5,9 +5,15 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+
+#include "../Shader/Shader.h"
+#include "../Structure/CameraMatricies.h"
 #include "../Structure/Vertex.h"
 
+class Shader;
+
 namespace KT {
+
     class VisualObject {
     public:
         VisualObject();
@@ -79,7 +85,7 @@ namespace KT {
         }
 
         void SetRotation(glm::quat rot) {
-            _rotation = rot;   
+            _rotation = rot;
         }
 
         void SetRotation(const float& x, const float& y, const float& z) {
@@ -87,8 +93,7 @@ namespace KT {
         }
 
         // model data
-        void SetVertices(const std::vector<Vertex>& vertices, const std::vector<int>& indices)
-        {
+        void SetVertices(const std::vector<Vertex>& vertices, const std::vector<int>& indices) {
             mVertices = vertices;
             mIndices = indices;
         }
@@ -101,6 +106,10 @@ namespace KT {
         GLuint mEBO{0};
         GLuint mMatrixUniform{0};
         glm::mat4x4 mModelMatrix;
+
+        Shader* mShader;
+        std::vector<unsigned int> mTextures{};
+
 
         glm::mat4 GetModelMatrix() const {
             glm::mat4 mat = glm::mat4(1.f);
@@ -127,13 +136,39 @@ namespace KT {
             glBindVertexArray(0);
         }
 
-        void DrawElements(GLenum drawMode, glm::mat4 modelMatrix)
-        {
+        void DrawElements(GLenum drawMode, glm::mat4 modelMatrix) {
             glBindVertexArray(mVAO);
-            
+
             glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
             glDrawElements(drawMode, static_cast<unsigned int>(mIndices.size()), GL_UNSIGNED_INT, 0);
-            
+
+            glBindVertexArray(0);
+        }
+
+        void DrawElementsWithShader(GLenum drawMode, const glm::mat4 model) {
+            mShader->use();
+
+            mShader->setMat4("view", CameraView);
+            mShader->setMat4("projection", CameraProjection);
+            mShader->setMat4("matrix", model);
+            // set the textures
+            // TODO add support for multiple shaders
+            if (mTextures.size() >= 1) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, mTextures[0]);
+            }
+            if (mTextures.size() >= 2) {
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, mTextures[0]);
+            }
+
+            // normal stuff
+
+            glBindVertexArray(mVAO);
+
+            // glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
+            glDrawElements(drawMode, static_cast<unsigned int>(mIndices.size()), GL_UNSIGNED_INT, 0);
+
             glBindVertexArray(0);
         }
 

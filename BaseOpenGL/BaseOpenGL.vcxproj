@@ -167,6 +167,7 @@
     <ClCompile Include="Assets\Shader\Shader.cpp" />
     <ClCompile Include="Assets\SpacePartition\QuadTree.cpp" />
     <ClCompile Include="Assets\Structure\Bounds.cpp" />
+    <ClCompile Include="Assets\Structure\CameraMatricies.cpp" />
     <ClCompile Include="Assets\Structure\Cube.cpp" />
     <ClCompile Include="Assets\Structure\Disc.cpp" />
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="Assets\Shader\Shader.h" />
     <ClInclude Include="Assets\SpacePartition\QuadTree.h" />
     <ClInclude Include="Assets\Structure\Bounds.h" />
+    <ClInclude Include="Assets\Structure\CameraMatricies.h" />
     <ClInclude Include="Assets\Structure\Cube.h" />
     <ClInclude Include="Assets\Structure\Disc.h" />
     <ClInclude Include="Assets\Structure\Graph2D.h" />

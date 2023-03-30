@@ -1,8 +1,13 @@
 ﻿#pragma once
+#include "CameraMatricies.h"
+
 namespace KT {
     class TextureTest : public VisualObject {
     public:
-        TextureTest() {
+        TextureTest(Shader* shader, unsigned int texture) {
+            mShader = shader;
+            mTextures.push_back(texture);
+            
             mVertices.clear();
             glm::vec3 nor = glm::vec3(0,0,1);
             mVertices.push_back(Vertex(0,0,0, nor.x, nor.y, nor.z, 0,0));
@@ -24,7 +29,8 @@ namespace KT {
         }
         
         void draw() override {
-            DrawElements(GL_TRIANGLES, GetModelMatrix());
+            DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
+            // DrawElements(GL_TRIANGLES, GetModelMatrix());
             // std::cout << "being drawn!" << std::endl;
         }
     };
