@@ -64,7 +64,7 @@ const unsigned int SCR_HEIGHT = 800;
 // std::shared_ptr<Camera> camera1 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
 // std::shared_ptr<Camera> camera1;
 // std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
-std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 10.f)); 
+std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 10.f));
 
 
 float mouseLastX = SCR_WIDTH / 2.f;
@@ -168,31 +168,6 @@ typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 
 int main() {
-    std::cout << "TASK 6.4.2" << std::endl;
-    // P(0,1), Q(1.5, 0) og R(2.5, 1)
-    glm::vec3 P(0,1,0);
-    glm::vec3 Q(1.5,0,0);
-    glm::vec3 R(2.5,1,0);
-    glm::vec3 X(1./2., 1./2., 0.);
-    glm::vec3 bar = KT::BarycentricCoordinates3d(P,Q,R, X);
-    std::cout << "1)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z) << std::endl;
-
-    X = glm::vec3(1.0, 0.5, 0.);
-    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
-    std::cout << "2)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
-
-    X = glm::vec3(2.0, 0.5, 0.);
-    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
-    std::cout << "3)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
-    
-    X = glm::vec3(3.0/2.0, 2., 0.);
-    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
-    std::cout << "4)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
-    
-    X = glm::vec3(3.0/2.0, 3./2., 0.);
-    bar = KT::BarycentricCoordinates3d(P,Q,R, X);
-    std::cout << "5)" <<  bar.x << " " << bar.y << " " << bar.z << "  Length : " << (bar.x+bar.y+bar.z)<< std::endl;
-    std::cout << "TASK 6.4.2 FINISHED" << std::endl;
     // dynamic matrix X for unknown
 
     // glfw: initialize and configure
@@ -227,7 +202,6 @@ int main() {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
     // IMGUI
     // ----------------------------------------
 
@@ -273,19 +247,34 @@ int main() {
     std::vector<KT::VisualObject*> mObjects{};
     std::unordered_map<std::string, KT::VisualObject*> mMap{};
 
-    
-    
+
     //Shader
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
-    "Assets/Art/Shaders/Lek2F.glsl");
+                                   "Assets/Art/Shaders/Lek2F.glsl");
     leksjon2Shader.use();
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
-    unsigned int wall = TextureFromFile("wall.jpg", "Assets/Textures");
+    unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
     unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
+
+    // print the info
+    KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
+    
+    
+    // for (int y = 0; y < texture_2d.height; ++y) {
+    //     for (int x = 0; x < texture_2d.width; ++x) {
+    //         int index = (y * texture_2d.width + x) * texture_2d.nrChannels;
+    //         texture_2d.data[index] = 100;
+    //         texture_2d.data[index + 1] = 100;
+    //         texture_2d.data[index + 2] = 100;
+    //         texture_2d.data[index + 3] = 100;
+    //     }
+    // }
+
+    
     // texture shader
     Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
-        "Assets/Art/Shaders/SimpleTexF.glsl");
+                                       "Assets/Art/Shaders/SimpleTexF.glsl");
     textureShader->use();
     // GLint matrixUniform = glGetUniformLocation(textureShader.ID, "matrix");
 
@@ -298,18 +287,23 @@ int main() {
     // triangulation
 
     KT::TextureTest* texture_test = new KT::TextureTest(textureShader, wall);
-    texture_test->SetPosition(0,0,0);
+    texture_test->SetPosition(0, 0, 0);
     mMap.insert(MapPair("tex", texture_test));
-    
+
     // main surface
     KT::TriangleSurface* ground = new KT::TriangleSurface();
     ground->constructWithLambda(KT::Graph::Franke);
     ground->SetPosition(0, 0, 0);
     ground->SetScale(1.f);
     mMap.insert(MapPair("ground", ground));
+
+    // second surface
+    KT::TriangleSurface* surface1 = new KT::TriangleSurface();
+    surface1->constructWithTexture(texture_2d);
+    surface1->SetPosition(0, 0, 5);
+    mMap.insert(MapPair("surface", surface1));
     
-    
-    
+
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
@@ -324,7 +318,7 @@ int main() {
     // mObjects.push_back(cube);
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
-    
+
     // PROG3D 
     // ----------------------------------------
 
@@ -341,14 +335,15 @@ int main() {
     graphNPCWalker->SetPosition(-3, -4, 0);
     mMap.insert(MapPair("walker", graphNPCWalker));
 
-    KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler("TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
+    KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
+        "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
     mMap.insert(MapPair("triHandler", triangulationHandler));
 
     // TROPHIES
     // ----------------------------------------
     for (int i = 0; i < 6; ++i) {
         float x = KT::Random::Random(-1.f, 1.f);
-        
+
         float z = KT::Random::Random(-1.f, 1.f);
 
         // std::cout << "xz : " << x << " " << z <<std::endl;
@@ -362,23 +357,23 @@ int main() {
     // -----------------------------------------------------------------------------------------------------------------
     KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
     door->SetScale(0.5f);
-    door->SetPosition(0.21,0.6f - 5.2f,1.0f);
+    door->SetPosition(0.21, 0.6f - 5.2f, 1.0f);
     mMap.insert(MapPair("door", door));
 
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
     // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    KT::House* house = new KT::House("Assets/Art/Models/better_elsa.fbx", leksjon2Shader);
-    house->SetPosition(glm::vec3(0,0.2 - 5.2f,1.5f));
+    KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    house->SetPosition(glm::vec3(0, 0.2 - 5.2f, 1.5f));
     house->SetScale(0.5f);
     mMap.insert(MapPair("house", house));
 
     // IN HOUSE OBJECT
     // -----------------------------------------------------------------------------------------------------------------
     KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
-    houseObject->SetPosition(0,0.4,1.4);
+    houseObject->SetPosition(0, 0.4, 1.4);
     mMap.insert(MapPair("houseObject", houseObject));
-    
+
     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
     float mathScale = 0.4f;
     math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
@@ -398,9 +393,10 @@ int main() {
                                     "Assets/Art/Shaders/NormalGeoG.glsl");
 
     glm::mat4x4 model = glm::mat4x4(1.f);
-    glm::mat4x4 projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+    glm::mat4x4 projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT,
+                                              0.1f,
                                               100.f);
-    
+
 
     // LEKSJON 2
     // ----------------------------------------
@@ -408,7 +404,7 @@ int main() {
     // -----------------------------------------------------------------------------------------------------------------
     // uncomment this call to draw in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    
+
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -481,7 +477,8 @@ int main() {
         }
 
         glm::mat4x4 view = activeCamera->GetViewMatrix();
-        projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
+        projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+                                      100.f);
 
         // INPUT
         // ----------------------------------------
@@ -508,10 +505,9 @@ int main() {
         leksjon2Shader.setMat4("projection", CameraProjection);
         leksjon2Shader.setMat4("view", CameraView);
 
-        
-        
+
         // leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
-        
+
         for (auto object : mMap) {
             leksjon2Shader.use();
             object.second->draw();
@@ -526,7 +522,7 @@ int main() {
             (*it)->draw();
         }
         */
-        
+
         if (bDrawNormals) {
             normalGeoShader.use();
             normalGeoShader.setFloat("MAGNITUDE", drawNormalLength);
@@ -536,7 +532,6 @@ int main() {
             for (auto m_object : mMap) {
                 m_object.second->draw();
             }
-            
         }
 
 

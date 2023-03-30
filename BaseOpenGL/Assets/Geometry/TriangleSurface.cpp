@@ -87,27 +87,29 @@ namespace KT {
     void TriangleSurface::draw() {
         mModelMatrix = GetModelMatrix();
 
-        glBindVertexArray(mVAO);
-        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
-        glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
-        
+        if (mShader == nullptr) {
+            glBindVertexArray(mVAO);
+            glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
+            glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
+            return;
+        }
+
+        // DrawWithShader(GL_TRIANGLES);
+        DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
     }
 
 
     void TriangleSurface::construct() {
+        glm::mat<4, 4, glm::f32, glm::defaultp> a;
 
-        glm::mat<4,4, glm::f32, glm::defaultp> a;
-        
         mVertices.clear();
         const float k_pi = glm::pi<float>();
         const float e = glm::e<float>();
-        auto aaa = [k_pi](float x, float y)
-        {
+        auto aaa = [k_pi](float x, float y) {
             return sin(x * k_pi) * sin(y * k_pi);
         };
 
-        auto franke = [e](float x, float y)
-        {
+        auto franke = [e](float x, float y) {
             float f1 = -(pow(9.f * x - 2.f, 2.f) + pow(9.f * y - 2.f, 2.f)) / 4.f;
             float f2 = -(pow(9.f * x + 1.f, 2.f) / 49.f + (9.f * y + 1.f) / 10.f);
             float f3 = -(pow(9.f * x - 7.f, 2.f) + pow(9.f * y - 3.f, 2.f)) / 4.f;
@@ -124,28 +126,24 @@ namespace KT {
         // float x1 = franke(x);
         // };
 
-        auto myFunc = [](float x, float y)
-        {
+        auto myFunc = [](float x, float y) {
             return x * x * y;
         };
 
-        auto funcX = [](float x, float y)
-        {
+        auto funcX = [](float x, float y) {
             return 2.f * x * y;
         };
 
-        auto funcY = [](float x, float y)
-        {
+        auto funcY = [](float x, float y) {
             return x * x;
         };
 
-        auto myFuncNormal = [funcX, funcY](float x, float y)
-        {
+        auto myFuncNormal = [funcX, funcY](float x, float y) {
             float xx = funcX(x, y);
             float yy = funcY(x, y);
 
             // new Anders amazing way, see proof in camera roll
-            return glm::normalize(glm::vec3(-funcX(x, y),  1,-funcY(x, y)));
+            return glm::normalize(glm::vec3(-funcX(x, y), 1, -funcY(x, y)));
             // old stinky stinky method >:(
             return normalize(glm::cross(glm::vec3(1, 0, xx), glm::vec3(0, 1, yy)));
         };
@@ -158,7 +156,7 @@ namespace KT {
                 glm::vec3 n;
                 y = myFunc(x, z + h);
                 n = myFuncNormal(x, z + h);
-                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
 
                 y = myFunc(x + h, z);
                 n = myFuncNormal(x + h, z);
@@ -178,26 +176,22 @@ namespace KT {
                 y = myFunc(x + h, z);
                 n = myFuncNormal(x + h, z);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
-                
+
                 y = myFunc(x, z + h);
                 n = myFuncNormal(x, z + h);
-                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
-
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
             }
     }
 
     void TriangleSurface::constructWithLambda(std::function<float(float, float)> func) {
-
-        
-        auto FindNormal = [](float x, float z, std::function<float(float,float)> funcc)
-        {
+        auto FindNormal = [](float x, float z, std::function<float(float, float)> funcc) {
             const float step = 0.01f;
-            float xx = funcc(x+step, z) - funcc(x-step,z);
-            xx /= (step*2.f);
-            float yy = funcc(x, z + step) - funcc(x, z-step);
-            yy /= (step*2.f);
+            float xx = funcc(x + step, z) - funcc(x - step, z);
+            xx /= (step * 2.f);
+            float yy = funcc(x, z + step) - funcc(x, z - step);
+            yy /= (step * 2.f);
 
-            return glm::normalize(glm::vec3(-xx,  1,-yy));
+            return glm::normalize(glm::vec3(-xx, 1, -yy));
         };
         mVertices.clear();
         float xmin = -1.f, xmax = 1.0f, zmin = -1.f, zmax = 1.0f;
@@ -205,34 +199,79 @@ namespace KT {
         for (float x = xmin; x < xmax; x += h)
             for (float z = zmin; z < zmax; z += h) {
                 float y;
-                glm::vec3 n = glm::vec3(1,1,1);
+                glm::vec3 n = glm::vec3(1, 1, 1);
                 y = func(x, z + h);
-                n = FindNormal(x, z + h,func);
-                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
+                n = FindNormal(x, z + h, func);
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
 
                 y = func(x + h, z);
-                n = FindNormal(x + h, z,func);
+                n = FindNormal(x + h, z, func);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
 
                 y = func(x, z);
-                n = FindNormal(x, z,func);
+                n = FindNormal(x, z, func);
                 mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
 
 
                 // second triangle
                 // ----------------------------------------
                 y = func(x + h, z + h);
-                n = FindNormal(x + h, z + h,func);
+                n = FindNormal(x + h, z + h, func);
                 mVertices.push_back(Vertex{x + h, y, z + h, n.x, n.y, n.z});
 
                 y = func(x + h, z);
-                n = FindNormal(x + h, z,func);
+                n = FindNormal(x + h, z, func);
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
-                
-                y = func(x, z + h);
-                n = FindNormal(x, z + h,func);
-                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
 
+                y = func(x, z + h);
+                n = FindNormal(x, z + h, func);
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
             }
+    }
+
+    void TriangleSurface::constructWithTexture(KTTexture2D texture) {
+        mVertices.clear();
+        float xmin = 0.f, xmax = 1.0f, zmin = 0.f, zmax = 1.0f;
+        float h = 1.f / (2 << 4);
+        for (float x = xmin; x < xmax; x += h)
+            for (float z = zmin; z < zmax; z += h) {
+                float y;
+                // first triangle
+                glm::vec3 n = glm::vec3(1, 1, 1);
+                y = texture.ValueAt(x / xmax, (z + h)/zmax)[0];
+                std::cout << "y: " << y << std::endl; 
+                // y = 0.f;
+                // n = FindNormal(x, z + h, func);
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
+
+                y = texture.ValueAt((x+h) / xmax, (z)/zmax)[0];
+                // y = 0.f;
+                // n = FindNormal(x + h, z, func);
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+
+                y = texture.ValueAt((x) / xmax, (z)/zmax)[0];
+                // y = 0.f;
+                // n = FindNormal(x, z, func);
+                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
+
+                //second triangle
+                y = texture.ValueAt((x+h) / xmax, (z+h)/zmax)[0];
+                // y = 0.f;
+                mVertices.push_back(Vertex{x + h, y, z + h, n.x, n.y, n.z});
+
+                y = texture.ValueAt((x+h) / xmax, (z)/zmax)[0];
+                // y = 0.f;
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+
+                y = texture.ValueAt((x) / xmax, (z+h)/zmax)[0];
+                // y = 0.f;
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
+            }
+        std::cout << "Constructed! " << mVertices.size() << std::endl;
+
+        for (int i = 0; i < mVertices.size(); ++i) {
+            mVertices[i].m_xyz[1] /= 350.f;
+        }
+        
     }
 }

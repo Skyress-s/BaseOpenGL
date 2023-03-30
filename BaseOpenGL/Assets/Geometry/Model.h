@@ -53,4 +53,31 @@ private:
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
+struct KTTexture2D {
+public:
+    unsigned char* data{}; 
+    unsigned int width;
+    unsigned int height;
+    unsigned int nrChannels;
+
+    std::vector<int> ValueAt(const float u, const float v) {
+        int x = u * (width-1); // max index = size - 1
+        int y = v * (height-1);
+
+        int index = (y * width + x) * 4;
+
+        // get the red, green, and blue color channel values of the pixel
+        std::vector<int> values{};
+        for (int i = 0; i < nrChannels; ++i) {
+            values.push_back(data[index+i]);
+        }
+        // unsigned char red = data[index];
+        // unsigned char green = data[index + 1];
+        // unsigned char blue = data[index + 2];
+        return values;
+    }
+    //TODO remember to deallocate memory
+};
+KTTexture2D KTTextureFromFile(const string &directory, bool gamma = false);
+
 #endif

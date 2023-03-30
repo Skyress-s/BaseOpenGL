@@ -16,5 +16,6 @@ namespace KT {
         void draw() override;
         void construct();
         void constructWithLambda(std::function<float(float, float)> func);
+    void constructWithTexture(KTTexture2D texture);
     };
 }

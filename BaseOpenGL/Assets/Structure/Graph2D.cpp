@@ -25,6 +25,7 @@ namespace KT
             std::cout << mVertices[i] << std::endl;
         }
         */
+        
 
         mModelMatrix = glm::mat4x4(1.f);
     }
@@ -34,6 +35,8 @@ namespace KT
         mVertices = verts;
         mModelMatrix = glm::mat4x4(1.f);
     }
+
+    
 
     void Graph2D::init(GLint matrixUniform)
     {

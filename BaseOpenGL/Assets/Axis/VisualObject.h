@@ -107,7 +107,7 @@ namespace KT {
         GLuint mMatrixUniform{0};
         glm::mat4x4 mModelMatrix;
 
-        Shader* mShader;
+        Shader* mShader = nullptr;
         std::vector<unsigned int> mTextures{};
 
 
@@ -169,6 +169,32 @@ namespace KT {
             // glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
             glDrawElements(drawMode, static_cast<unsigned int>(mIndices.size()), GL_UNSIGNED_INT, 0);
 
+            glBindVertexArray(0);
+        }
+
+        void DrawWithShader(GLenum drawMode) {
+            mShader->use();
+            
+            mShader->setMat4("view", CameraView);
+            mShader->setMat4("projection", CameraProjection);
+            mShader->setMat4("matrix", GetModelMatrix());
+            
+            // set the textures
+            // TODO add support for multiple shaders
+            if (mTextures.size() >= 1) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, mTextures[0]);
+            }
+            if (mTextures.size() >= 2) {
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, mTextures[1]);
+            }
+            
+            // mModelMatrix = GetModelMatrix();
+            glBindVertexArray(mVAO);
+
+            glDrawArrays(drawMode, 0, mVertices.size());
+            // good practice
             glBindVertexArray(0);
         }
 
