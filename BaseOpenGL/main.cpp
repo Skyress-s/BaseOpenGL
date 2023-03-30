@@ -254,8 +254,6 @@ int main() {
     leksjon2Shader.use();
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
-    unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
-    unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
 
     // print the info
     KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
@@ -271,14 +269,14 @@ int main() {
     //     }
     // }
 
+    unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
+    unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     
     // texture shader
     Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
                                        "Assets/Art/Shaders/SimpleTexF.glsl");
     textureShader->use();
     // GLint matrixUniform = glGetUniformLocation(textureShader.ID, "matrix");
-
-    textureShader->use();
     // glUniform1i(glGetUniformLocation(textureShader.ID, "texture1"), rick);
     textureShader->setInt("texture1", 0);
     textureShader->setInt("texture2", 1);
@@ -291,11 +289,11 @@ int main() {
     mMap.insert(MapPair("tex", texture_test));
 
     // main surface
-    KT::TriangleSurface* ground = new KT::TriangleSurface();
-    ground->constructWithLambda(KT::Graph::Franke);
-    ground->SetPosition(0, 0, 0);
-    ground->SetScale(1.f);
-    mMap.insert(MapPair("ground", ground));
+    // KT::TriangleSurface* ground = new KT::TriangleSurface();
+    // ground->constructWithLambda(KT::Graph::Franke);
+    // ground->SetPosition(0, 0, 0);
+    // ground->SetScale(1.f);
+    // mMap.insert(MapPair("ground", ground));
 
     // second surface
     KT::TriangleSurface* surface1 = new KT::TriangleSurface();
@@ -396,7 +394,6 @@ int main() {
     glm::mat4x4 projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT,
                                               0.1f,
                                               100.f);
-
 
     // LEKSJON 2
     // ----------------------------------------
@@ -561,6 +558,10 @@ int main() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    // other cleanup
+    delete textureShader;
+    delete[] texture_2d.data;
+    
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();

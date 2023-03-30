@@ -7,6 +7,7 @@ namespace KT {
     class TriangleSurface : public VisualObject {
     public:
         TriangleSurface();
+        TriangleSurface(Shader* shader);
         TriangleSurface(std::string fileName);
         ~TriangleSurface();
 

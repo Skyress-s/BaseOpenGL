@@ -159,7 +159,7 @@ namespace KT {
             }
             if (mTextures.size() >= 2) {
                 glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, mTextures[0]);
+                glBindTexture(GL_TEXTURE_2D, mTextures[1]);
             }
 
             // normal stuff

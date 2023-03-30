@@ -24,6 +24,10 @@ namespace KT {
         mModelMatrix = glm::mat4x4(1.f);
     }
 
+    TriangleSurface::TriangleSurface(Shader* shader) {
+        mShader = shader;
+    }
+
     TriangleSurface::TriangleSurface(std::string fileName) {
         readFile(fileName);
         mModelMatrix = glm::mat4x4(1.f);
@@ -61,7 +65,9 @@ namespace KT {
 
     void TriangleSurface::init(GLint matrixUniform) {
         mMatrixUniform = matrixUniform;
+        VisualObject::init(matrixUniform);
 
+        return;
         // Create and bind vertex arrays, the object that will hold the Vertex Buffer Object
         glGenVertexArrays(1, &mVAO);
         glBindVertexArray(mVAO);
@@ -86,16 +92,15 @@ namespace KT {
 
     void TriangleSurface::draw() {
         mModelMatrix = GetModelMatrix();
-
         if (mShader == nullptr) {
-            glBindVertexArray(mVAO);
-            glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
-            glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
+            DrawElements(GL_TRIANGLES, GetModelMatrix());
+            // glBindVertexArray(mVAO);
+            // glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
+            // glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
             return;
         }
-
-        // DrawWithShader(GL_TRIANGLES);
         DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
+        // DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
     }
 
 
@@ -236,41 +241,36 @@ namespace KT {
         for (float x = xmin; x < xmax; x += h)
             for (float z = zmin; z < zmax; z += h) {
                 float y;
-                // first triangle
+                
                 glm::vec3 n = glm::vec3(1, 1, 1);
-                y = texture.ValueAt(x / xmax, (z + h)/zmax)[0];
-                std::cout << "y: " << y << std::endl; 
-                // y = 0.f;
-                // n = FindNormal(x, z + h, func);
-                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
-
-                y = texture.ValueAt((x+h) / xmax, (z)/zmax)[0];
-                // y = 0.f;
-                // n = FindNormal(x + h, z, func);
-                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
-
-                y = texture.ValueAt((x) / xmax, (z)/zmax)[0];
-                // y = 0.f;
-                // n = FindNormal(x, z, func);
+                
+                // vertices
+                y = texture.ValueAt(x / xmax, (z)/zmax)[0];
                 mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
+                mIndices.push_back(mVertices.size() - 1);
 
-                //second triangle
-                y = texture.ValueAt((x+h) / xmax, (z+h)/zmax)[0];
-                // y = 0.f;
-                mVertices.push_back(Vertex{x + h, y, z + h, n.x, n.y, n.z});
+                
+                y = texture.ValueAt((x) / xmax, (z+h)/zmax)[0];
+                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
+                mIndices.push_back(mVertices.size() - 1);
 
                 y = texture.ValueAt((x+h) / xmax, (z)/zmax)[0];
-                // y = 0.f;
                 mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+                mIndices.push_back(mVertices.size() - 1);
 
-                y = texture.ValueAt((x) / xmax, (z+h)/zmax)[0];
-                // y = 0.f;
-                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z});
+
+                y = texture.ValueAt((x+h) / xmax, (z+h)/zmax)[0];
+                mVertices.push_back(Vertex{x+h, y, z + h, n.x, n.y, n.z});
+                mIndices.push_back(mVertices.size() - 1);
+                mIndices.push_back(mVertices.size() - 1-1);
+                mIndices.push_back(mVertices.size() - 1-2);
+                
+                // indices
             }
-        std::cout << "Constructed! " << mVertices.size() << std::endl;
 
+        // reduce height
         for (int i = 0; i < mVertices.size(); ++i) {
-            mVertices[i].m_xyz[1] /= 350.f;
+            mVertices[i].m_xyz[1] /= 950.f;
         }
         
     }
