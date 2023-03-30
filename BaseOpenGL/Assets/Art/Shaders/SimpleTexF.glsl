@@ -6,9 +6,9 @@ in vec2 texCoords;
 in vec4 color;                           //color sent to rest of pipeline
 
 uniform sampler2D texture1;
-uniform sampler2D texture2;
+//uniform sampler2D texture2;
 void main()
 {
-    // FragColor = color;
+    //FragColor = vec4(1,1,1,1);
     FragColor = texture(texture1, texCoords);
 }

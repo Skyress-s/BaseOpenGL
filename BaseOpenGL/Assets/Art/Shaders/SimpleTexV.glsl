@@ -13,9 +13,11 @@ uniform mat4 projection;
 uniform mat4 view;
 
 void main() {
-  color = colorIn;                       //passing on the vertex color
   texCoords = uvIn;
+  color = colorIn;                       //passing on the vertex color
   //gl_Position = matrix * positionIn;      //calculate the position of the model
   //gl_Position =  positionIn;
+  
+ // gl_Position = positionIn;
   gl_Position = projection * view * matrix * (positionIn);
 }

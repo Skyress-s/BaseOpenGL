@@ -15,13 +15,14 @@ namespace KT {
         return m;
     }
 
-        std::random_device dev;
-        std::mt19937 rng(dev());
-        std::uniform_int_distribution<std::mt19937::result_type> dist6(1.f, 6.f); // distribution in range [1, 6]
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(1.f, 6.f); // distribution in range [1, 6]
 
-        float Random::Random(const float& from, const float& to) {
-            std::uniform_real_distribution<> distribution(from, to);
-            // distribution in range [1, 6]
-            return distribution(rng);
+    float Random::Random(const float& from, const float& to) {
+        std::uniform_real_distribution<> distribution(from, to);
+        // distribution in range [1, 6]
+        return distribution(rng);
     }
+
 }

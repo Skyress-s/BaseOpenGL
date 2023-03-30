@@ -8,7 +8,7 @@ namespace KT {
         static glm::mat4 TRS(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
 
         template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-        static GLM_FUNC_QUALIFIER void printt(glm::mat<C, R, T, Q> const& m) {
+        static GLM_FUNC_QUALIFIER void print_matrix(glm::mat<C, R, T, Q> const& m) {
             for (int y = 0; y < R; ++y) {
                 for (int x = 0; x < C; ++x) {
                     std::cout << m[x][y];
@@ -18,10 +18,9 @@ namespace KT {
         }
     };
 
-    
-    
+
     static glm::vec3 BarycentricCoordinates3d(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
-                                             glm::vec3 x) {
+                                              glm::vec3 x) {
         // 2d plane (xy) 
         p1.z = 0;
         p2.z = 0;
@@ -53,7 +52,7 @@ namespace KT {
         baryc.z = n.z / areal_123;
         return baryc;
     }
-    
+
     static glm::vec3 BarycentricCoordinates3d(glm::vec3 pps[3], glm::vec3 x) {
         return BarycentricCoordinates3d(pps[0], pps[1], pps[2], x);
     }

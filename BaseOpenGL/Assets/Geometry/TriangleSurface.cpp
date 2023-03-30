@@ -238,6 +238,7 @@ namespace KT {
         mVertices.clear();
         float xmin = 0.f, xmax = 1.0f, zmin = 0.f, zmax = 1.0f;
         float h = 1.f / (2 << 4);
+         h = 1.f / 35;
         for (float x = xmin; x < xmax; x += h)
             for (float z = zmin; z < zmax; z += h) {
                 float y;
@@ -246,21 +247,21 @@ namespace KT {
                 
                 // vertices
                 y = texture.ValueAt(x / xmax, (z)/zmax)[0];
-                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
+                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z, x/xmax, z/zmax});
                 mIndices.push_back(mVertices.size() - 1);
 
                 
                 y = texture.ValueAt((x) / xmax, (z+h)/zmax)[0];
-                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z});
+                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z, x/xmax, (z+h)/zmax});
                 mIndices.push_back(mVertices.size() - 1);
 
                 y = texture.ValueAt((x+h) / xmax, (z)/zmax)[0];
-                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z});
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z, (x+h)/xmax, z/zmax});
                 mIndices.push_back(mVertices.size() - 1);
 
 
                 y = texture.ValueAt((x+h) / xmax, (z+h)/zmax)[0];
-                mVertices.push_back(Vertex{x+h, y, z + h, n.x, n.y, n.z});
+                mVertices.push_back(Vertex{x+h, y, z + h, n.x, n.y, n.z, (x+h)/xmax, (z+h)/zmax});
                 mIndices.push_back(mVertices.size() - 1);
                 mIndices.push_back(mVertices.size() - 1-1);
                 mIndices.push_back(mVertices.size() - 1-2);

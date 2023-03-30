@@ -6,6 +6,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include "../Math/MathHelpers.h"
 #include "../Shader/Shader.h"
 #include "../Structure/CameraMatricies.h"
 #include "../Structure/Vertex.h"
@@ -138,7 +139,7 @@ namespace KT {
 
         void DrawElements(GLenum drawMode, glm::mat4 modelMatrix) {
             glBindVertexArray(mVAO);
-
+            
             glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
             glDrawElements(drawMode, static_cast<unsigned int>(mIndices.size()), GL_UNSIGNED_INT, 0);
 
@@ -147,10 +148,11 @@ namespace KT {
 
         void DrawElementsWithShader(GLenum drawMode, const glm::mat4 model) {
             mShader->use();
-
+            MathHelpers::print_matrix(CameraView);
             mShader->setMat4("view", CameraView);
             mShader->setMat4("projection", CameraProjection);
-            mShader->setMat4("matrix", model);
+            mShader->setMat4("matrix", glm::mat4(1.f));
+            
             // set the textures
             // TODO add support for multiple shaders
             if (mTextures.size() >= 1) {
@@ -161,11 +163,9 @@ namespace KT {
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, mTextures[1]);
             }
-
-            // normal stuff
-
+            
+            mShader->use();
             glBindVertexArray(mVAO);
-
             // glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &modelMatrix[0][0]);
             glDrawElements(drawMode, static_cast<unsigned int>(mIndices.size()), GL_UNSIGNED_INT, 0);
 

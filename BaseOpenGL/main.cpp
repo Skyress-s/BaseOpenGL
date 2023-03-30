@@ -103,15 +103,6 @@ float falloffFunc(float x) {
     return cos(4.f * x) * 1.f / exp(x);
 }
 
-template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-GLM_FUNC_QUALIFIER void print(glm::mat<C, R, T, Q> const& m) {
-    for (int y = 0; y < R; ++y) {
-        for (int x = 0; x < C; ++x) {
-            std::cout << m[x][y];
-        }
-        std::cout << std::endl;
-    }
-}
 
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
@@ -269,17 +260,17 @@ int main() {
     //     }
     // }
 
-    unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
-    unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     
     // texture shader
+    // Shader* textureShader = new Shader("Assets/Art/Shaders/Lek2V.glsl",
+                                   // "Assets/Art/Shaders/Lek2F.glsl");
     Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
                                        "Assets/Art/Shaders/SimpleTexF.glsl");
     textureShader->use();
-    // GLint matrixUniform = glGetUniformLocation(textureShader.ID, "matrix");
-    // glUniform1i(glGetUniformLocation(textureShader.ID, "texture1"), rick);
+    unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
+    // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     textureShader->setInt("texture1", 0);
-    textureShader->setInt("texture2", 1);
+    // textureShader->setInt("texture2", 1);
     // glActiveTexture(GL_TEXTURE0);
     // glBindTexture(GL_TEXTURE_2D, rick);
     // triangulation
@@ -296,88 +287,90 @@ int main() {
     // mMap.insert(MapPair("ground", ground));
 
     // second surface
-    KT::TriangleSurface* surface1 = new KT::TriangleSurface();
-    surface1->constructWithTexture(texture_2d);
-    surface1->SetPosition(0, 0, 5);
-    mMap.insert(MapPair("surface", surface1));
-    
+     KT::TriangleSurface* surface1 = new KT::TriangleSurface();
+     surface1->constructWithTexture(texture_2d);
+     surface1->SetPosition(0, 0, 5);
+     mMap.insert(MapPair("surface", surface1));
+     
 
-    KT::VisualObject* xyz = new KT::XYZ();
-    xyz->name = "XYZ";
-    xyz->SetPosition(glm::vec3(0, 0, 0));
-    // mObjects.push_back(xyz);
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
+     /*
+     KT::VisualObject* xyz = new KT::XYZ();
+     xyz->name = "XYZ";
+     xyz->SetPosition(glm::vec3(0, 0, 0));
+     // mObjects.push_back(xyz);
+     mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
-    KT::InteractiveObject* cube = new KT::Cube();
-    cube->SetPosition(glm::vec3(2.9f, 3.55f, -0.9f));
-    cube->SetScale(glm::vec3(0.05f));
-    cube->name = "CUBE";
-    currentPossesedObject = cube;
-    // mObjects.push_back(cube);
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
+     KT::InteractiveObject* cube = new KT::Cube();
+     cube->SetPosition(glm::vec3(2.9f, 3.55f, -0.9f));
+     cube->SetScale(glm::vec3(0.05f));
+     cube->name = "CUBE";
+     currentPossesedObject = cube;
+     // mObjects.push_back(cube);
+     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
 
-    // PROG3D 
-    // ----------------------------------------
+     // PROG3D 
+     // ----------------------------------------
 
-    KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
-    graph1->SetPosition(-3, -4, 0);
-    mMap.insert(MapPair("graph1", graph1));
+     KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
+     graph1->SetPosition(-3, -4, 0);
+     mMap.insert(MapPair("graph1", graph1));
 
-    KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
-    graph2->SetPosition(-3, -4, 0);
-    mMap.insert(MapPair("graph2", graph2));
+     KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
+     graph2->SetPosition(-3, -4, 0);
+     mMap.insert(MapPair("graph2", graph2));
 
-    GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
-                                                        Range{-2, 4});
-    graphNPCWalker->SetPosition(-3, -4, 0);
-    mMap.insert(MapPair("walker", graphNPCWalker));
+     GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
+                                                         Range{-2, 4});
+     graphNPCWalker->SetPosition(-3, -4, 0);
+     mMap.insert(MapPair("walker", graphNPCWalker));
 
-    KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
-        "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
-    mMap.insert(MapPair("triHandler", triangulationHandler));
+     KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
+         "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
+     mMap.insert(MapPair("triHandler", triangulationHandler));
 
-    // TROPHIES
-    // ----------------------------------------
-    for (int i = 0; i < 6; ++i) {
-        float x = KT::Random::Random(-1.f, 1.f);
+     // TROPHIES
+     // ----------------------------------------
+     for (int i = 0; i < 6; ++i) {
+         float x = KT::Random::Random(-1.f, 1.f);
 
-        float z = KT::Random::Random(-1.f, 1.f);
+         float z = KT::Random::Random(-1.f, 1.f);
 
-        // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
-        trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
-        std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
-        mMap.insert(MapPair("t" + std::to_string(i), trophy));
-    }
+         // std::cout << "xz : " << x << " " << z <<std::endl;
+         KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
+         trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
+         std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
+         mMap.insert(MapPair("t" + std::to_string(i), trophy));
+     }
 
-    // DOOR
-    // -----------------------------------------------------------------------------------------------------------------
-    KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
-    door->SetScale(0.5f);
-    door->SetPosition(0.21, 0.6f - 5.2f, 1.0f);
-    mMap.insert(MapPair("door", door));
+     // DOOR
+     // -----------------------------------------------------------------------------------------------------------------
+     KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
+     door->SetScale(0.5f);
+     door->SetPosition(0.21, 0.6f - 5.2f, 1.0f);
+     mMap.insert(MapPair("door", door));
 
-    // HOUSE
-    // -----------------------------------------------------------------------------------------------------------------
-    // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    house->SetPosition(glm::vec3(0, 0.2 - 5.2f, 1.5f));
-    house->SetScale(0.5f);
-    mMap.insert(MapPair("house", house));
+     // HOUSE
+     // -----------------------------------------------------------------------------------------------------------------
+     // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+     KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+     house->SetPosition(glm::vec3(0, 0.2 - 5.2f, 1.5f));
+     house->SetScale(0.5f);
+     mMap.insert(MapPair("house", house));
 
-    // IN HOUSE OBJECT
-    // -----------------------------------------------------------------------------------------------------------------
-    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
-    houseObject->SetPosition(0, 0.4, 1.4);
-    mMap.insert(MapPair("houseObject", houseObject));
+     // IN HOUSE OBJECT
+     // -----------------------------------------------------------------------------------------------------------------
+     KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
+     houseObject->SetPosition(0, 0.4, 1.4);
+     mMap.insert(MapPair("houseObject", houseObject));
 
-    KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
-    float mathScale = 0.4f;
-    math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
-    math_comp2_handler->SetPosition(0.f, 4, 0);
-    math_comp2_handler->SetRotation(0, 0, 0);
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
+     KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
+     float mathScale = 0.4f;
+     math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
+     math_comp2_handler->SetPosition(0.f, 4, 0);
+     math_comp2_handler->SetRotation(0, 0, 0);
+     mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
+     */
 
     for (auto object : mMap) {
         object.second->init(matrixUniform);
@@ -448,7 +441,7 @@ int main() {
                 ImGui::SliderFloat("NormalVectorLength", &drawNormalLength, 0.01f, 2.f);
             }
 
-            ImGui::Checkbox("GraphToggle", &graphNPCWalker->toggle);
+            // ImGui::Checkbox("GraphToggle", &graphNPCWalker->toggle);
             ImGui::End();
             /*
             ImGui::Begin("awdawdHelalo, world!"); // Create a window called "Hello, world!" and append into it.
@@ -476,7 +469,6 @@ int main() {
         glm::mat4x4 view = activeCamera->GetViewMatrix();
         projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
                                       100.f);
-
         // INPUT
         // ----------------------------------------
         processInput(window);
@@ -498,15 +490,16 @@ int main() {
 
         CameraProjection = projection;
         CameraView = view;
+        
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", CameraProjection);
         leksjon2Shader.setMat4("view", CameraView);
 
 
-        // leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
+        leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
 
         for (auto object : mMap) {
-            leksjon2Shader.use();
+            // leksjon2Shader.use();
             object.second->draw();
         }
 
@@ -559,8 +552,8 @@ int main() {
     ImGui::DestroyContext();
 
     // other cleanup
-    delete textureShader;
-    delete[] texture_2d.data;
+    // delete textureShader;
+    // delete[] texture_2d.data;
     
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

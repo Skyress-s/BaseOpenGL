@@ -25,12 +25,14 @@ namespace KT {
             mIndices.push_back(2);
         }
         void init(GLint matrixUniform) override {
-        VisualObject::init(matrixUniform);
+            mShader->use();
+            VisualObject::init(matrixUniform);
         }
         
         void draw() override {
-            DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
             // DrawElements(GL_TRIANGLES, GetModelMatrix());
+            DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
+            // DrawWithShader(GL_TRIANGLES);
             // std::cout << "being drawn!" << std::endl;
         }
     };
