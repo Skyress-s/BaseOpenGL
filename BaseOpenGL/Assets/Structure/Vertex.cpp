@@ -18,6 +18,24 @@ namespace KT {
         m_st[1] = 0;
     }
 
+    Vertex::Vertex(float x, float y, float z, float r, float g, float b, float u, float v) {
+        m_xyz[0] = x;
+        m_xyz[1] = y;
+        m_xyz[2] = z;
+
+        m_normal[0] = r;
+        m_normal[1] = g;
+        m_normal[2] = b;
+
+        m_st[0] = u;
+        m_st[1] = v;
+    }
+
+    Vertex::Vertex(glm::vec3 xyz, glm::vec3 rgb, glm::vec2 uv):
+        Vertex(xyz[0],xyz[1], xyz[2], rgb[0], rgb[1], rgb[2], uv[0], uv[1]) {
+            
+    }
+
     Vertex::Vertex(float x, float y, float z, glm::vec3 nor) : Vertex(glm::vec3(x,y,z), nor) {
         
     }

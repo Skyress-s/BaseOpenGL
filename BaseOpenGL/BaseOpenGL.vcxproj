@@ -175,6 +175,7 @@
     <ClCompile Include="Assets\Structure\Primitives.cpp" />
     <ClCompile Include="Assets\Structure\Range.cpp" />
     <ClCompile Include="Assets\Structure\Tetrahedron.cpp" />
+    <ClCompile Include="Assets\Structure\TextureTest.cpp" />
     <ClCompile Include="Assets\Structure\Trophy.cpp" />
     <ClCompile Include="Assets\Structure\Vertex.cpp" />
     <ClCompile Include="Assets\Structure\XYZ.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="Assets\Structure\Primitives.h" />
     <ClInclude Include="Assets\Structure\Range.h" />
     <ClInclude Include="Assets\Structure\Tetrahedron.h" />
+    <ClInclude Include="Assets\Structure\TextureTest.h" />
     <ClInclude Include="Assets\Structure\Trophy.h" />
     <ClInclude Include="Assets\Structure\Vertex.h" />
     <ClInclude Include="Assets\Structure\XYZ.h" />
@@ -280,6 +282,8 @@
     <Content Include="Assets\Art\Shaders\NormalGeoF.glsl" />
     <Content Include="Assets\Art\Shaders\NormalGeoG.glsl" />
     <Content Include="Assets\Art\Shaders\NormalGeoV.glsl" />
+    <Content Include="Assets\Art\Shaders\SimpleTexF.glsl" />
+    <Content Include="Assets\Art\Shaders\SimpleTexV.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionF.glsl" />
     <Content Include="Assets\Art\Shaders\SSimpleEmissionV.glsl" />
     <Content Include="Assets\Geometry\cubeTri.txt" />
@@ -295,6 +299,7 @@
     <Content Include="Assets\Latex\test.pdf" />
     <Content Include="Assets\Latex\test.synctex.gz" />
     <Content Include="Assets\Latex\test.tex" />
+    <Content Include="Assets\Textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

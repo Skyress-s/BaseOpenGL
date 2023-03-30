@@ -45,6 +45,7 @@
 #include "Assets/Structure/Graph2D.h"
 #include "Assets/Structure/ModelVisualObject.h"
 #include "Assets/Structure/OctahedronBall.h"
+#include "Assets/Structure/TextureTest.h"
 #include "Assets/Structure/Trophy.h"
 #include "Assets/VisualObjectUI/TransformUI.h"
 #include "Vendor/imgui/imgui_internal.h"
@@ -274,13 +275,45 @@ int main() {
     
     
     //Shader
-    Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
-                                   "Assets/Art/Shaders/Lek2F.glsl");
-    leksjon2Shader.use();
-    GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
+    // Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
+    //                                "Assets/Art/Shaders/Lek2F.glsl");
+    // leksjon2Shader.use();
+    // GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
+    // texture shader
+    Shader textureShader = Shader("Assets/Art/Shaders/SimpleTexV.glsl",
+        "Assets/Art/Shaders/SimpleTexF.glsl");
+    textureShader.use();
+    GLint matrixUniform = glGetUniformLocation(textureShader.ID, "matrix");
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    unsigned char *data = stbi_load(("Assets/Textures/wall.jpg"), &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
+    textureShader.use();
+    textureShader.setInt("texture1", 0);
     // triangulation
+
+    KT::TextureTest* texture_test = new KT::TextureTest();
+    texture_test->SetPosition(0,0,0);
+    mMap.insert(MapPair("tex", texture_test));
     
     // main surface
     KT::TriangleSurface* ground = new KT::TriangleSurface();
@@ -341,7 +374,7 @@ int main() {
 
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
-    KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
+    KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", textureShader);
     door->SetScale(0.5f);
     door->SetPosition(0.21,0.6f - 5.2f,1.0f);
     mMap.insert(MapPair("door", door));
@@ -349,14 +382,14 @@ int main() {
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
     // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    KT::House* house = new KT::House("Assets/Art/Models/better_elsa.fbx", leksjon2Shader);
+    KT::House* house = new KT::House("Assets/Art/Models/better_elsa.fbx", textureShader);
     house->SetPosition(glm::vec3(0,0.2 - 5.2f,1.5f));
     house->SetScale(0.5f);
     mMap.insert(MapPair("house", house));
 
     // IN HOUSE OBJECT
     // -----------------------------------------------------------------------------------------------------------------
-    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
+    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", textureShader);
     houseObject->SetPosition(0,0.4,1.4);
     mMap.insert(MapPair("houseObject", houseObject));
     
@@ -388,7 +421,7 @@ int main() {
     // OTHER ENABLES
     // -----------------------------------------------------------------------------------------------------------------
     // uncomment this call to draw in wireframe polygons.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
@@ -483,10 +516,12 @@ int main() {
             object.second->Update(deltaTime);
         }
 
-        leksjon2Shader.use();
-        leksjon2Shader.setMat4("projection", projection);
-        leksjon2Shader.setMat4("view", view);
+        textureShader.use();
+        textureShader.setMat4("projection", projection);
+        textureShader.setMat4("view", view);
 
+        
+        
         // leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
         
         for (auto object : mMap) {
@@ -494,7 +529,7 @@ int main() {
         }
 
         glm::mat4 matrix = KT::MathHelpers::TRS(glm::vec3(0,0,5), glm::quat(1,0,0,0), glm::vec3(1,1,1));
-        leksjon2Shader.setMat4("matrix", matrix);
+        textureShader.setMat4("matrix", matrix);
         // modela.Draw(leksjon2Shader);
         // doorr.Draw(leksjon2Shader);
         /*
