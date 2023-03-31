@@ -18,6 +18,39 @@ namespace KT {
         }
     };
 
+    static glm::vec3 BarycentricCoordinatesXZ(const glm::vec2& pp1, const glm::vec2& pp2, const glm::vec2& pp3,
+                                              const glm::vec2& xx) {
+        // 2d plane (xy)
+        glm::vec3 p1 = glm::vec3(pp1.x, pp1.y, 0);
+        glm::vec3 p2 = glm::vec3(pp2.x, pp2.y, 0);
+        glm::vec3 p3 = glm::vec3(pp3.x, pp3.y, 0);
+        glm::vec3 x = glm::vec3(xx.x, xx.y, 0);
+
+        // actual code
+        glm::vec3 p12 = p2 - p1;
+        glm::vec3 p13 = p3 - p1;
+        glm::vec3 n = glm::cross(p12, p13);
+        // float areal_123 = n.length(); // dobbelt areal
+        float areal_123 = glm::length(n); // dobbelt areal
+        // std::cout << areal_123 << std::endl;
+        glm::vec3 baryc; // til retur. Husk
+        // u
+        glm::vec3 p = p2 - x;
+        glm::vec3 q = p3 - x;
+        n = glm::cross(p, q);
+        baryc.x = n.z / areal_123;
+        // v
+        p = p3 - x;
+        q = p1 - x;
+        n = glm::cross(p, q);
+        baryc.y = n.z / areal_123;
+        // w
+        p = p1 - x;
+        q = p2 - x;
+        n = glm::cross(p, q);
+        baryc.z = n.z / areal_123;
+        return baryc;
+    }
 
     static glm::vec3 BarycentricCoordinates3d(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
                                               glm::vec3 x) {

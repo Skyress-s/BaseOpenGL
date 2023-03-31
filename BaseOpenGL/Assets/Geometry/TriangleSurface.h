@@ -38,7 +38,7 @@ namespace KT {
 
                 for (int j = 0; j < 3; ++j) {
                     // a tridata can only have three adjacent neighbours
-                    int neighbourTriIndex = FindNeighbourTriangleRaw(indices[(0 + j) % 3], indices[(1 + j) % 3], i);
+                    int neighbourTriIndex = FindNeighbourTriangleRaw(indices[(1 + j) % 3], indices[(2 + j) % 3], i);
                     if (neighbourTriIndex != -1) {
                         tri_data.neighbour_triangles[j] = neighbourTriIndex;
                     }
@@ -88,14 +88,19 @@ namespace KT {
         bool InTriangle(const int& i, const glm::vec3& x) {
             glm::vec3 positions[3];
             GetTrianglePositions(i, positions);
-            glm::vec3 baryc = BarycentricCoordinates3d(positions[0], positions[1], positions[2],
-                                                       x);
+            glm::vec2 pos2d[3];
+            pos2d[0] = glm::vec2(positions[0].z, positions[0].x);
+            pos2d[1] = glm::vec2(positions[1].z, positions[1].x);
+            pos2d[2] = glm::vec2(positions[2].z, positions[2].x);
+            glm::vec3 baryc = BarycentricCoordinatesXZ(pos2d[0], pos2d[1], pos2d[2],
+                                                       glm::vec2(x.z, x.x));
+            std::cout << "baryc : " << baryc.x << ", " << baryc.y << ", " << baryc.z << std::endl;
             if (baryc.x < 0 || baryc.y < 0 || baryc.z < 0)
                 return false;
             return true;
         }
 
-        
+
         int FindNeighbourTriangleRaw(const int& vertexIndexA, const int& vertexIndexB, const int& ignoreTriIndex) {
             int indices[3];
             for (int i = 0; i < mIndices.size() / 3; ++i) {
@@ -119,10 +124,90 @@ namespace KT {
             return -1;
         }
 
+        int FindNeigbourTriangle(const int& currentTriangle, const int& edge1, const int& edge2) {
+            const int sum = edge1 + edge2;
+            switch (sum) {
+            case 1:
+                return mTriDatas_[currentTriangle].neighbour_triangles[2];
+            case 2:
+                return mTriDatas_[currentTriangle].neighbour_triangles[1];
+            case 3:
+                return mTriDatas_[currentTriangle].neighbour_triangles[0];
+            default:
+                return -1;
+            }
+        }
+
+        glm::vec3 SearchCurrentAndNearest(unsigned int& outCurrentTriangle, const glm::vec3& x) {
+            // search current
+            glm::vec3 pos[3];
+            int triIndices[3];
+            GetTrianglePositions(outCurrentTriangle, pos);
+            GetTriangleIndices(outCurrentTriangle, triIndices);
+            glm::vec2 pos2d[3];
+            pos2d[0] = glm::vec2(pos[0].z, pos[0].x);
+            pos2d[1] = glm::vec2(pos[1].z, pos[1].x);
+            pos2d[2] = glm::vec2(pos[2].z, pos[2].x);
+            glm::vec2 xx = glm::vec2(x.z, x.x);
+            glm::vec3 baryc = BarycentricCoordinatesXZ(pos2d[0], pos2d[1], pos2d[2], xx);
+                std::cout << "X " << x.x << ", " << x.y << ", " << x.z << std::endl;
+                std::cout << "X " << pos[0].x << ", " << pos[0].y << ", " << pos[0].z << std::endl;
+                std::cout << "Y " << pos[1].x << ", " << pos[1].y << ", " << pos[1].z << std::endl;
+                std::cout << "Z " << pos[2].x << ", " << pos[2].y << ", " << pos[2].z << std::endl;
+            std::cout << "baryc : " << baryc.x << ", " << baryc.y << ", " << baryc.z << std::endl;
+            
+            if (InTriangle(outCurrentTriangle, x)) {
+                // in bounds
+                glm::vec3 calcpos = pos[0] * baryc.x + pos[1] * baryc.y + pos[2] * baryc.z;
+                std::cout << "IN TRIANGLE " << outCurrentTriangle << std::endl;
+                return calcpos;
+            }
+                std::cout << "NOT IN TRIANGLE " << outCurrentTriangle << std::endl;
+            std::cout << "NEIGHBOURS : " << mTriDatas_[outCurrentTriangle].neighbour_triangles[0] << ", " << mTriDatas_[outCurrentTriangle].neighbour_triangles[1] << ", " << mTriDatas_[outCurrentTriangle].neighbour_triangles[2] << std::endl;
+            // search nearest neighbour
+            
+            // find nearest
+            int edge[2];
+            if (baryc.x < baryc.y && baryc.x < baryc.z) {
+                edge[0] = 1;
+                edge[1] = 2;
+                
+            }
+            if (baryc.y < baryc.z && baryc.y < baryc.x) {
+                edge[0] = 0;
+                edge[1] = 2;
+            }
+            if (baryc.z < baryc.y && baryc.z < baryc.x) {
+                edge[0] = 0;
+                edge[1] = 1;
+            }
+
+            int neighbourTri = FindNeigbourTriangle(outCurrentTriangle, edge[0], edge[1]);
+            std::cout << " edge " << edge[0] << " " << edge[1] << " | " << neighbourTri << std::endl;
+            std::cout << "neightbourTri : " << neighbourTri << std::endl;
+            if (neighbourTri != -1 && InTriangle(neighbourTri, x)) {
+                GetTrianglePositions(neighbourTri, pos);
+                pos2d[0] = glm::vec2(pos[0].z, pos[0].x);
+                pos2d[1] = glm::vec2(pos[1].z, pos[1].x);
+                pos2d[2] = glm::vec2(pos[2].z, pos[2].x);
+                xx = glm::vec2(x.z, x.x);
+                // baryc = BarycentricCoordinates3d(pos.begin()._Ptr, _objectToMove->GetPosition());
+                baryc = BarycentricCoordinatesXZ(pos2d[0], pos2d[1], pos2d[2], xx);
+                outCurrentTriangle = neighbourTri;
+                // std::cout << "Did transition " << outCurrentTriangle << std::endl;
+                // std::cout << "diff : " << glm::distance(baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2],
+                //                                         x) << std::endl;
+                return baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2];
+            }
+
+            return x;
+        }
     private:
+        /*
         std::vector<int> neighbour_triangle_indices(int index) {
             std::vector<int> retVal{};
             const unsigned int numTriangles = mIndices.size() / 3;
         }
+    */
     };
 }

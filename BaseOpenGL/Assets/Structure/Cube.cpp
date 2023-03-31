@@ -2,7 +2,9 @@
 #include "Cube.h"
 
 namespace KT {
-    Cube::Cube() {
+    Cube::Cube(TriangleSurface* target) {
+        mTarget = target;
+        
         // front
         mVertices.push_back(Vertex(-1,-1,1    ,1,1,1));
         mVertices.push_back(Vertex(1,-1,1    ,1,1,1));
@@ -72,38 +74,19 @@ namespace KT {
     }
 
     void Cube::init(GLint matrixUniform) {
-        mMatrixUniform = matrixUniform;
+        mCurrentTriangle = 0;
+        
 
-        // Create and bind vertex arrays, the object that will hold the Vertex Buffer Object
-        glGenVertexArrays(1, &mVAO);
-        glBindVertexArray(mVAO);
-
-        // Create, bind and populate Vertex Buffer Object,
-        glGenBuffers(1, &mVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_STATIC_DRAW);
-
-        // tells the GPU shader program the structure and size of the data we pass
-        // XYZ
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
-
-        // RGB
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-
-        // Good practice to unbind vertex arrays
-        glBindVertexArray(0);
+        glm::vec3 positions[3];
+        mTarget->GetTrianglePositions(mCurrentTriangle, positions);
+        glm::vec3 pos = 1.f / 3.f * positions[0] + 1.f / 3.f * positions[1] + 1.f / 3.f * positions[2];
+        SetPosition(pos);
+        VisualObject::init(matrixUniform);
     }
 
     void Cube::draw() {
-        mModelMatrix = GetModelMatrix();
-        
-        glBindVertexArray(mVAO);
-        glUniformMatrix4fv(mMatrixUniform, 1, GL_FALSE, &mModelMatrix[0][0]);
-        glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
-
-
-        // mMatrix = glm::rotate(mMatrix, 0.0005f, glm::vec3(0.2,1,0));
+        VisualObject::Draw(GL_TRIANGLES, GetModelMatrix());
     }
+
+    
 }

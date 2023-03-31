@@ -104,7 +104,6 @@ float falloffFunc(float x) {
 }
 
 
-
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
     static_assert(R == C, "Rows and Collums has to be equal!");
@@ -155,7 +154,6 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
 }
 
 typedef std::pair<std::string, KT::VisualObject*> MapPair;
-
 
 
 int main() {
@@ -248,8 +246,8 @@ int main() {
 
     // print the info
     KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
-    
-    
+
+
     // for (int y = 0; y < texture_2d.height; ++y) {
     //     for (int x = 0; x < texture_2d.width; ++x) {
     //         int index = (y * texture_2d.width + x) * texture_2d.nrChannels;
@@ -260,10 +258,10 @@ int main() {
     //     }
     // }
 
-    
+
     // texture shader
     // Shader* textureShader = new Shader("Assets/Art/Shaders/Lek2V.glsl",
-                                   // "Assets/Art/Shaders/Lek2F.glsl");
+    // "Assets/Art/Shaders/Lek2F.glsl");
     Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
                                        "Assets/Art/Shaders/SimpleTexF.glsl");
     textureShader->use();
@@ -287,90 +285,90 @@ int main() {
     // mMap.insert(MapPair("ground", ground));
 
     // second surface
-     KT::TriangleSurface* surface1 = new KT::TriangleSurface(textureShader, wall);
-     surface1->constructWithTexture(texture_2d);
-     surface1->SetPosition(0, 0, 0);
+    // std::shared_ptr<KT::TriangleSurface> surface1 = std::make_shared<KT::TriangleSurface>(textureShader, wall);
+    KT::TriangleSurface* surface1 = new KT::TriangleSurface(textureShader, wall);
+    surface1->constructWithTexture(texture_2d);
+    surface1->SetPosition(0, 0, 0);
     surface1->SetupTriData();
-     mMap.insert(MapPair("surface", surface1));
-     
+    mMap.insert(MapPair("surface", surface1));
 
-       KT::VisualObject* xyz = new KT::XYZ();
-       xyz->name = "XYZ";
-       xyz->SetPosition(glm::vec3(0, 0, 5));
-       mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
-       KT::InteractiveObject* cube = new KT::Cube();
-       cube->SetPosition(glm::vec3(2.9f, 3.55f, -0.9f));
-       cube->SetScale(glm::vec3(0.05f));
-       cube->name = "CUBE";
-       currentPossesedObject = cube;
-       // mObjects.push_back(cube);
-       mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
+    KT::VisualObject* xyz = new KT::XYZ();
+    xyz->name = "XYZ";
+    xyz->SetPosition(glm::vec3(0, 0, 0));
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
-       /*
+    KT::InteractiveObject* cube = new KT::Cube(surface1);
+    cube->SetScale(glm::vec3(0.005f));
+    cube->name = "CUBE";
+    currentPossesedObject = cube;
+    // mObjects.push_back(cube);
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
-       // PROG3D 
-       // ----------------------------------------
+    /*
 
-       KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
-       graph1->SetPosition(-3, -4, 0);
-       mMap.insert(MapPair("graph1", graph1));
+    // PROG3D 
+    // ----------------------------------------
 
-       KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
-       graph2->SetPosition(-3, -4, 0);
-       mMap.insert(MapPair("graph2", graph2));
+    KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
+    graph1->SetPosition(-3, -4, 0);
+    mMap.insert(MapPair("graph1", graph1));
 
-       GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
-                                                           Range{-2, 4});
-       graphNPCWalker->SetPosition(-3, -4, 0);
-       mMap.insert(MapPair("walker", graphNPCWalker));
+    KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
+    graph2->SetPosition(-3, -4, 0);
+    mMap.insert(MapPair("graph2", graph2));
 
-       KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
-           "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
-       mMap.insert(MapPair("triHandler", triangulationHandler));
+    GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
+                                                        Range{-2, 4});
+    graphNPCWalker->SetPosition(-3, -4, 0);
+    mMap.insert(MapPair("walker", graphNPCWalker));
 
-       // TROPHIES
-       // ----------------------------------------
-       for (int i = 0; i < 6; ++i) {
-           float x = KT::Random::Random(-1.f, 1.f);
+    KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
+        "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
+    mMap.insert(MapPair("triHandler", triangulationHandler));
 
-           float z = KT::Random::Random(-1.f, 1.f);
+    // TROPHIES
+    // ----------------------------------------
+    for (int i = 0; i < 6; ++i) {
+        float x = KT::Random::Random(-1.f, 1.f);
 
-           // std::cout << "xz : " << x << " " << z <<std::endl;
-           KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
-           trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
-           std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
-           mMap.insert(MapPair("t" + std::to_string(i), trophy));
-       }
+        float z = KT::Random::Random(-1.f, 1.f);
 
-       // DOOR
-       // -----------------------------------------------------------------------------------------------------------------
-       KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
-       door->SetScale(0.5f);
-       door->SetPosition(0.21, 0.6f - 5.2f, 1.0f);
-       mMap.insert(MapPair("door", door));
+        // std::cout << "xz : " << x << " " << z <<std::endl;
+        KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
+        trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
+        std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
+        mMap.insert(MapPair("t" + std::to_string(i), trophy));
+    }
 
-       // HOUSE
-       // -----------------------------------------------------------------------------------------------------------------
-       // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-       KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-       house->SetPosition(glm::vec3(0, 0.2 - 5.2f, 1.5f));
-       house->SetScale(0.5f);
-       mMap.insert(MapPair("house", house));
+    // DOOR
+    // -----------------------------------------------------------------------------------------------------------------
+    KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
+    door->SetScale(0.5f);
+    door->SetPosition(0.21, 0.6f - 5.2f, 1.0f);
+    mMap.insert(MapPair("door", door));
 
-       // IN HOUSE OBJECT
-       // -----------------------------------------------------------------------------------------------------------------
-       KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
-       houseObject->SetPosition(0, 0.4, 1.4);
-       mMap.insert(MapPair("houseObject", houseObject));
+    // HOUSE
+    // -----------------------------------------------------------------------------------------------------------------
+    // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
+    house->SetPosition(glm::vec3(0, 0.2 - 5.2f, 1.5f));
+    house->SetScale(0.5f);
+    mMap.insert(MapPair("house", house));
 
-       KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
-       float mathScale = 0.4f;
-       math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
-       math_comp2_handler->SetPosition(0.f, 4, 0);
-       math_comp2_handler->SetRotation(0, 0, 0);
-       mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
-       */
+    // IN HOUSE OBJECT
+    // -----------------------------------------------------------------------------------------------------------------
+    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
+    houseObject->SetPosition(0, 0.4, 1.4);
+    mMap.insert(MapPair("houseObject", houseObject));
+
+    KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
+    float mathScale = 0.4f;
+    math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
+    math_comp2_handler->SetPosition(0.f, 4, 0);
+    math_comp2_handler->SetRotation(0, 0, 0);
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
+    */
 
     for (auto object : mMap) {
         object.second->init(matrixUniform);
@@ -490,7 +488,7 @@ int main() {
 
         CameraProjection = projection;
         CameraView = view;
-        
+
         leksjon2Shader.use();
         leksjon2Shader.setMat4("projection", CameraProjection);
         leksjon2Shader.setMat4("view", CameraView);
@@ -554,7 +552,7 @@ int main() {
     // other cleanup
     delete textureShader;
     delete[] texture_2d.data;
-    
+
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
@@ -607,11 +605,11 @@ void processInput(GLFWwindow* window) {
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         // currentPossesedObject->move(0, -moveScalar, KT::Graph::Franke);
-        currentPossesedObject->move(0, -moveScalar, 0);
+        currentPossesedObject->move(0,0, -moveScalar);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         // currentPossesedObject->move(0, moveScalar, KT::Graph::Franke);
-        currentPossesedObject->move(0, +moveScalar, 0);
+        currentPossesedObject->move(0,0, +moveScalar);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         // currentPossesedObject->move(-moveScalar, 0, KT::Graph::Franke);

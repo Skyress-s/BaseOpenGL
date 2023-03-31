@@ -9,8 +9,8 @@ namespace KT {
         InteractiveObject();
         ~InteractiveObject() override;
             
-        void move(float x, float y, std::function<float(float,float)>);
-        void move(float x, float y, float z);
+        virtual void move(float x, float y, std::function<float(float,float)>);
+        virtual void move(float x, float y, float z);
 
     private:
     };

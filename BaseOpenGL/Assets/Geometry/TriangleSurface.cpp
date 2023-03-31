@@ -97,28 +97,7 @@ namespace KT {
     void TriangleSurface::init(GLint matrixUniform) {
         mMatrixUniform = matrixUniform;
         VisualObject::init(matrixUniform);
-
         return;
-        // Create and bind vertex arrays, the object that will hold the Vertex Buffer Object
-        glGenVertexArrays(1, &mVAO);
-        glBindVertexArray(mVAO);
-
-        // Create, bind and populate Vertex Buffer Object,
-        glGenBuffers(1, &mVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_STATIC_DRAW);
-
-        // tells the GPU shader program the structure and size of the data we pass
-        // XYZ
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
-
-        // RGB / NORMAL >:)
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-
-        // Good practice to unbind vertex arrays
-        glBindVertexArray(0);
     }
 
     void TriangleSurface::draw() {
