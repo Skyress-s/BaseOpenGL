@@ -25,7 +25,6 @@ namespace KT {
             mIndices.push_back(2);
         }
         void init(GLint matrixUniform) override {
-            mShader->use();
             VisualObject::init(matrixUniform);
         }
         

@@ -148,10 +148,10 @@ namespace KT {
 
         void DrawElementsWithShader(GLenum drawMode, const glm::mat4 model) {
             mShader->use();
-            MathHelpers::print_matrix(CameraView);
+            // MathHelpers::print_matrix(CameraView);
             mShader->setMat4("view", CameraView);
             mShader->setMat4("projection", CameraProjection);
-            mShader->setMat4("matrix", glm::mat4(1.f));
+            mShader->setMat4("matrix", model);
             
             // set the textures
             // TODO add support for multiple shaders

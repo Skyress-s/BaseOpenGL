@@ -60,10 +60,23 @@ public:
     unsigned int height;
     unsigned int nrChannels;
 
-    std::vector<int> ValueAt(const float u, const float v) {
+    std::vector<int> ValueAt(float u, float v) {
+        // clamp u and v to [0, 1]
+
+        // use u and v to get the index of the pixel
         int x = u * (width-1); // max index = size - 1
         int y = v * (height-1);
+        y = height - y - 1; // flip y axis // thank you github copilot
 
+        if (x < 0) 
+            x = 0;
+        if (x > width-1)
+            x = width-1;
+        if (y < 0) 
+            y = 0;
+        if (y > height-1)
+            y = height-1;
+        
         int index = (y * width + x) * 4;
 
         // get the red, green, and blue color channel values of the pixel
@@ -71,9 +84,38 @@ public:
         for (int i = 0; i < nrChannels; ++i) {
             values.push_back(data[index+i]);
         }
-        // unsigned char red = data[index];
-        // unsigned char green = data[index + 1];
-        // unsigned char blue = data[index + 2];
+        
+        return values;
+    }
+    std::vector<int> ValueAt(float u, float v, int offsetx, int offsety) {
+        // clamp u and v to [0, 1]
+
+        // use u and v to get the index of the pixel
+        int x = u * (width-1); // max index = size - 1
+        int y = v * (height-1);
+        y = height - y - 1; // flip y axis // thank you github copilot
+
+        // apply offset
+        x+=offsetx;
+        y+=offsety;
+        
+        if (x < 0) 
+            x = 0;
+        if (x > width-1)
+            x = width-1;
+        if (y < 0) 
+            y = 0;
+        if (y > height-1)
+            y = height-1;
+        
+        int index = (y * width + x) * 4;
+
+        // get the red, green, and blue color channel values of the pixel
+        std::vector<int> values{};
+        for (int i = 0; i < nrChannels; ++i) {
+            values.push_back(data[index+i]);
+        }
+        
         return values;
     }
     //TODO remember to deallocate memory

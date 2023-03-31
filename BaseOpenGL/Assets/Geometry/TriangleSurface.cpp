@@ -2,6 +2,7 @@
 #include "TriangleSurface.h"
 
 #include <fstream>
+#include <thread>
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -24,8 +25,9 @@ namespace KT {
         mModelMatrix = glm::mat4x4(1.f);
     }
 
-    TriangleSurface::TriangleSurface(Shader* shader) {
+    TriangleSurface::TriangleSurface(Shader* shader, unsigned int texture) {
         mShader = shader;
+        mTextures.push_back(texture);
     }
 
     TriangleSurface::TriangleSurface(std::string fileName) {
@@ -99,8 +101,8 @@ namespace KT {
             // glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
             return;
         }
+        // Draw(GL_NONE, GetModelMatrix());
         DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
-        // DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
     }
 
 
@@ -234,38 +236,110 @@ namespace KT {
             }
     }
 
+    /**
+     * \brief 
+     * \param texture 
+     */
     void TriangleSurface::constructWithTexture(KTTexture2D texture) {
         mVertices.clear();
+        mIndices.clear();
+        // zero to one
+
+        // construct the vertices
+        int numWidthVertices = 170; // xxxxx
+        int numHeightVertices = 170; // yyyyy
+        float widthLength = 1.f;
+        float heightLength = 1.f;
+
+        auto funcX = [numWidthVertices](int x, int z) {
+            return (z * numWidthVertices + x);
+        };
+
+
+
+        
+        for (int z = 0; z < numHeightVertices; ++z) {
+            for (int x = 0; x < numWidthVertices; ++x) {
+                float yavg = 0.f;
+                glm::vec3 n = glm::vec3(0, 1, 0);
+                glm::vec3 p = glm::vec3(0, 0, 0);
+                glm::vec2 uv = glm::vec2(0, 0);
+
+                uv = glm::vec2(static_cast<float>(x) / ((float)numWidthVertices - 1.f),
+                               static_cast<float>(z) / ((float)numHeightVertices - 1.f));
+                const int offset = 5;
+                float y1 = texture.ValueAt(uv.x , uv.y )[0];
+                float y2 = texture.ValueAt(uv.x , uv.y, offset,0 )[0];
+                float y3 = texture.ValueAt(uv.x , uv.y,-offset,0)[0];
+                float y4 = texture.ValueAt(uv.x , uv.y,0,offset)[0];
+                float y5 = texture.ValueAt(uv.x , uv.y,0,-offset)[0];
+                yavg = (y1 + y2 + y3 + y4 + y5) / 5.f;
+                
+                
+                p = glm::vec3(uv.x * widthLength, yavg, uv.y * heightLength);
+                mVertices.push_back(Vertex(p.x, p.y, p.z, n.x, n.y, n.z, uv.x, uv.y));
+            }
+        }
+
+        // loop through all execpt the last row and column
+        for (int z = 0; z < numHeightVertices - 1; ++z) {
+            for (int x = 0; x < numWidthVertices - 1; ++x) {
+                // first triangle
+                mIndices.push_back(funcX(x, z));
+                mIndices.push_back(funcX(x, z + 1));
+                mIndices.push_back(funcX(x + 1, z));
+
+                // second triangle
+                mIndices.push_back(funcX(x + 1, z + 1));
+                mIndices.push_back(funcX(x + 1, z));
+                mIndices.push_back(funcX(x, z + 1));
+            }
+        }
+
+        GLint maxIndices;
+        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxIndices);
+        std::cout << "MAX ELEMENTS : " <<  maxIndices << " CURRENT : " << mIndices.size() << " VALID ? " <<
+            (maxIndices > mIndices.size()) << std::endl;
+        std::cout << "MAX VERTICES : " << GL_MAX_ELEMENTS_VERTICES << " CURRENT : " << mVertices.size() << " VALID ? " <<
+            (GL_MAX_ELEMENTS_VERTICES > mVertices.size()) << std::endl;
+        //reduce height
+        for (auto& v : mVertices) {
+            v.m_xyz[1] *= 1.f / 1900.f;
+        }
+
+        return;
+        /*
         float xmin = 0.f, xmax = 1.0f, zmin = 0.f, zmax = 1.0f;
+
         float h = 1.f / (2 << 4);
-         h = 1.f / 35;
-        for (float x = xmin; x < xmax; x += h)
-            for (float z = zmin; z < zmax; z += h) {
+        h = 1.f / 35;
+        for (float x = xmin; x < xmax - h / 2.; x += h)
+            for (float z = zmin; z < zmax - h / 2.; z += h) {
                 float y;
-                
+
                 glm::vec3 n = glm::vec3(1, 1, 1);
-                
+
                 // vertices
-                y = texture.ValueAt(x / xmax, (z)/zmax)[0];
-                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z, x/xmax, z/zmax});
-                mIndices.push_back(mVertices.size() - 1);
-
-                
-                y = texture.ValueAt((x) / xmax, (z+h)/zmax)[0];
-                mVertices.push_back(Vertex{x, y, z+h, n.x, n.y, n.z, x/xmax, (z+h)/zmax});
-                mIndices.push_back(mVertices.size() - 1);
-
-                y = texture.ValueAt((x+h) / xmax, (z)/zmax)[0];
-                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z, (x+h)/xmax, z/zmax});
+                y = texture.ValueAt(x / xmax, (z) / zmax)[0];
+                mVertices.push_back(Vertex{x, y, z, n.x, n.y, n.z, x / xmax, z / zmax});
                 mIndices.push_back(mVertices.size() - 1);
 
 
-                y = texture.ValueAt((x+h) / xmax, (z+h)/zmax)[0];
-                mVertices.push_back(Vertex{x+h, y, z + h, n.x, n.y, n.z, (x+h)/xmax, (z+h)/zmax});
+                y = texture.ValueAt((x) / xmax, (z + h) / zmax)[0];
+                mVertices.push_back(Vertex{x, y, z + h, n.x, n.y, n.z, x / xmax, (z + h) / zmax});
                 mIndices.push_back(mVertices.size() - 1);
-                mIndices.push_back(mVertices.size() - 1-1);
-                mIndices.push_back(mVertices.size() - 1-2);
-                
+
+                y = texture.ValueAt((x + h) / xmax, (z) / zmax)[0];
+                mVertices.push_back(Vertex{x + h, y, z, n.x, n.y, n.z, (x + h) / xmax, z / zmax});
+                mIndices.push_back(mVertices.size() - 1);
+
+
+                y = texture.ValueAt((x + h) / xmax, (z + h) / zmax)[0];
+                mVertices.push_back(Vertex{x + h, y, z + h, n.x, n.y, n.z, (x + h) / xmax, (z + h) / zmax});
+                mIndices.push_back(mVertices.size() - 1);
+                mIndices.push_back(mVertices.size() - 1 - 1);
+                mIndices.push_back(mVertices.size() - 1 - 2);
+
                 // indices
             }
 
@@ -273,6 +347,8 @@ namespace KT {
         for (int i = 0; i < mVertices.size(); ++i) {
             mVertices[i].m_xyz[1] /= 950.f;
         }
-        
+            */
     }
+    
+    
 }

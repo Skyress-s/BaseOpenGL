@@ -38,7 +38,7 @@ void KT::VisualObject::init(GLint matrixUniform)
     // alt 1: Bind Element Buffer
     glGenBuffers(1, &mEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO); // binds EBO to VBO!
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Vertex) * mIndices.size(), mIndices.data(), GL_STATIC_DRAW);// sets data
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mIndices.size(), mIndices.data(), GL_STATIC_DRAW);// sets data
 
     // attrib pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
