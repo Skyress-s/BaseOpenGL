@@ -11,10 +11,10 @@ namespace KT {
         int neighbour_triangles[3]{};
 
 
-        // tri_data() {
-        //     vertex_indices[0] = vertex_indices[1] = vertex_indices[2] = -1;
-        //     neighbour_triangles[0] = neighbour_triangles[1] = neighbour_triangles[2] = -1;
-        // }
+        tri_data() {
+            vertex_indices[0] = vertex_indices[1] = vertex_indices[2] = -1;
+            neighbour_triangles[0] = neighbour_triangles[1] = neighbour_triangles[2] = -1;
+        }
 
         tri_data(int vertex_indices[3], int neighbour_triangles[3]) {
             // std::memcpy(this->vertex_indices, vertex_indices, sizeof(int) * 3);

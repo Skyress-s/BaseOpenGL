@@ -289,7 +289,8 @@ int main() {
     // second surface
      KT::TriangleSurface* surface1 = new KT::TriangleSurface(textureShader, wall);
      surface1->constructWithTexture(texture_2d);
-     surface1->SetPosition(0, 0, 5);
+     surface1->SetPosition(0, 0, 0);
+    surface1->SetupTriData();
      mMap.insert(MapPair("surface", surface1));
      
 
@@ -298,7 +299,6 @@ int main() {
        xyz->SetPosition(glm::vec3(0, 0, 5));
        mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
-       /*
        KT::InteractiveObject* cube = new KT::Cube();
        cube->SetPosition(glm::vec3(2.9f, 3.55f, -0.9f));
        cube->SetScale(glm::vec3(0.05f));
@@ -307,6 +307,7 @@ int main() {
        // mObjects.push_back(cube);
        mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
+       /*
 
        // PROG3D 
        // ----------------------------------------

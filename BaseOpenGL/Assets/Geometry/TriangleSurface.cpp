@@ -3,10 +3,39 @@
 
 #include <fstream>
 #include <thread>
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <GLFW/glfw3native.h>
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/gtc/constants.hpp>
 
 namespace KT {
+    void process_chunk(std::vector<std::atomic<Vertex>>& data, int startIndex, int endIndex,
+                       KTTexture2D texture, int numWidthVertices, int numHeightVertices) {
+        for (int i = startIndex; i < endIndex; ++i) {
+            float u = (float)(i % numWidthVertices) / (float)numWidthVertices;
+            float v = (float)(i / numWidthVertices) / (float)numHeightVertices; // i / numWidthVertices used truncation
+
+            float yavg = 0.f;
+            glm::vec3 n = glm::vec3(0, 1, 0);
+            glm::vec3 p = glm::vec3(0, 0, 0);
+            const int offset = 5;
+            float y1 = texture.ValueAt(u, v)[0];
+            float y2 = texture.ValueAt(u, v, offset, 0)[0];
+            float y3 = texture.ValueAt(u, v, -offset, 0)[0];
+            float y4 = texture.ValueAt(u, v, 0, offset)[0];
+            float y5 = texture.ValueAt(u, v, 0, -offset)[0];
+            yavg = (y1 + y2 + y3 + y4 + y5) / 5.f;
+
+            p.x = u; // * widthLength;
+            p.z = v; // * heightLength;
+            p.y = yavg;
+            data[i] = Vertex{p.x, p.y, p.z, n.x, n.y, n.z, u, v};
+            // mVertices.push_back(Vertex{p.x, p.y, p.z, n.x, n.y, n.z, u, v});
+        }
+        std::cout << "Thread " << std::this_thread::get_id() << " finished  " << "iterations : " << endIndex-startIndex << " of total : " << numWidthVertices * numHeightVertices << std::endl;
+    }
+
     TriangleSurface::TriangleSurface() {
         //                x    y     z   r g b
         Vertex v0{0.0, 0.0, 0.0, 1, 0, 0};
@@ -236,6 +265,7 @@ namespace KT {
             }
     }
 
+
     /**
      * \brief 
      * \param texture 
@@ -244,43 +274,87 @@ namespace KT {
         mVertices.clear();
         mIndices.clear();
         // zero to one
-
         // construct the vertices
-        int numWidthVertices = 170; // xxxxx
-        int numHeightVertices = 170; // yyyyy
+        int numWidthVertices = 2 << 3; // xxxxx
+        int numHeightVertices = 2 << 3; // yyyyy
         float widthLength = 1.f;
         float heightLength = 1.f;
-
         auto funcX = [numWidthVertices](int x, int z) {
             return (z * numWidthVertices + x);
         };
-
-
-
+        std::vector<std::atomic<Vertex>> data = std::vector<std::atomic<Vertex>>(numHeightVertices * numWidthVertices);
         
+        float time = glfwGetTime();
+        
+        int numThreads = 4;
+        int chunckSize = numHeightVertices * numWidthVertices / numThreads;
+        std::vector<std::thread> threads(numThreads);
+        
+        for (int i = 0; i < numThreads; ++i) {
+            int startIndex = i * chunckSize;
+            int endIndex = (i == numThreads - 1) ? numHeightVertices * numWidthVertices : (i + 1) * chunckSize;
+            // last thread, make sure all data is processed
+            threads[i] = std::thread(process_chunk, std::ref(data), startIndex, endIndex, texture,
+                                     numWidthVertices, numHeightVertices);
+            std::cout << "thread " << i << " " <<threads[i].get_id() << " start" << std::endl;
+        }
+        
+        for (auto& thread : threads) {
+        std::cout << "waiting for thread to finish " <<thread.get_id() << std::endl;
+        thread.join();
+        }
+        mVertices = std::vector<Vertex>(data.begin(), data.end());
+        // memcpy(mVertices.data(), data.data(), sizeof(Vertex) * numHeightVertices * numWidthVertices);
+        
+        // mVertices = std::vector<Vertex>(data.begin(), data.end());
+
+        // for (int i = 0; i < numHeightVertices * numWidthVertices; ++i) {
+        //     float u = (float)(i % numWidthVertices) / (float)numWidthVertices;
+        //     float v = (float)(i / numWidthVertices) / (float)numHeightVertices; // i / numWidthVertices used truncation
+        //
+        //     float yavg = 0.f;
+        //     glm::vec3 n = glm::vec3(0, 1, 0);
+        //     glm::vec3 p = glm::vec3(0, 0, 0);
+        //     const int offset = 5;
+        //     float y1 = texture.ValueAt(u, v)[0];
+        //     float y2 = texture.ValueAt(u, v, offset, 0)[0];
+        //     float y3 = texture.ValueAt(u, v, -offset, 0)[0];
+        //     float y4 = texture.ValueAt(u, v, 0, offset)[0];
+        //     float y5 = texture.ValueAt(u, v, 0, -offset)[0];
+        //     yavg = (y1 + y2 + y3 + y4 + y5) / 5.f;
+        //
+        //     p.x = u * widthLength;
+        //     p.z = v * heightLength;
+        //     p.y = yavg;
+        //
+        //     mVertices.push_back(Vertex{p.x, p.y, p.z, n.x, n.y, n.z, u, v});
+        // }
+
+
+        /*
         for (int z = 0; z < numHeightVertices; ++z) {
             for (int x = 0; x < numWidthVertices; ++x) {
                 float yavg = 0.f;
                 glm::vec3 n = glm::vec3(0, 1, 0);
                 glm::vec3 p = glm::vec3(0, 0, 0);
                 glm::vec2 uv = glm::vec2(0, 0);
-
                 uv = glm::vec2(static_cast<float>(x) / ((float)numWidthVertices - 1.f),
                                static_cast<float>(z) / ((float)numHeightVertices - 1.f));
                 const int offset = 5;
-                float y1 = texture.ValueAt(uv.x , uv.y )[0];
-                float y2 = texture.ValueAt(uv.x , uv.y, offset,0 )[0];
-                float y3 = texture.ValueAt(uv.x , uv.y,-offset,0)[0];
-                float y4 = texture.ValueAt(uv.x , uv.y,0,offset)[0];
-                float y5 = texture.ValueAt(uv.x , uv.y,0,-offset)[0];
+                float y1 = texture.ValueAt(uv.x, uv.y)[0];
+                float y2 = texture.ValueAt(uv.x, uv.y, offset, 0)[0];
+                float y3 = texture.ValueAt(uv.x, uv.y, -offset, 0)[0];
+                float y4 = texture.ValueAt(uv.x, uv.y, 0, offset)[0];
+                float y5 = texture.ValueAt(uv.x, uv.y, 0, -offset)[0];
                 yavg = (y1 + y2 + y3 + y4 + y5) / 5.f;
-                
-                
+
+
                 p = glm::vec3(uv.x * widthLength, yavg, uv.y * heightLength);
                 mVertices.push_back(Vertex(p.x, p.y, p.z, n.x, n.y, n.z, uv.x, uv.y));
             }
         }
-
+        */
+        std::cout << "Time used for constructing vertices : " << glfwGetTime() - time << "s" << std::endl;
         // loop through all execpt the last row and column
         for (int z = 0; z < numHeightVertices - 1; ++z) {
             for (int x = 0; x < numWidthVertices - 1; ++x) {
@@ -296,12 +370,11 @@ namespace KT {
             }
         }
 
-        GLint maxIndices;
-        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxIndices);
-        std::cout << "MAX ELEMENTS : " <<  maxIndices << " CURRENT : " << mIndices.size() << " VALID ? " <<
-            (maxIndices > mIndices.size()) << std::endl;
-        std::cout << "MAX VERTICES : " << GL_MAX_ELEMENTS_VERTICES << " CURRENT : " << mVertices.size() << " VALID ? " <<
-            (GL_MAX_ELEMENTS_VERTICES > mVertices.size()) << std::endl;
+        // GLint maxIndices;
+        // glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxIndices);
+        // std::cout << "MAX ELEMENTS : " <<  maxIndices << " CURRENT : " << mIndices.size() << " VALID ? " <<
+        //     (maxIndices > mIndices.size()) << std::endl;
+
         //reduce height
         for (auto& v : mVertices) {
             v.m_xyz[1] *= 1.f / 1900.f;
@@ -349,6 +422,5 @@ namespace KT {
         }
             */
     }
-    
-    
+
 }

@@ -55,6 +55,18 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 
 struct KTTexture2D {
 public:
+    KTTexture2D() = default;
+    KTTexture2D(const KTTexture2D& other) { // copy constructor
+        width = other.width;
+        height = other.height;
+        nrChannels = other.nrChannels;
+        
+        data = new unsigned char[width * height * nrChannels];
+        memcpy(data, other.data, width * height * nrChannels); 
+    }
+
+    
+    
     unsigned char* data{}; 
     unsigned int width;
     unsigned int height;
@@ -80,9 +92,9 @@ public:
         int index = (y * width + x) * 4;
 
         // get the red, green, and blue color channel values of the pixel
-        std::vector<int> values{};
+        std::vector<int> values(nrChannels, 0);
         for (int i = 0; i < nrChannels; ++i) {
-            values.push_back(data[index+i]);
+            values[i] = (data[index+i]);
         }
         
         return values;
