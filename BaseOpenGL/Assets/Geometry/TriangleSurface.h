@@ -88,12 +88,8 @@ namespace KT {
         bool InTriangle(const int& i, const glm::vec3& x) {
             glm::vec3 positions[3];
             GetTrianglePositions(i, positions);
-            glm::vec2 pos2d[3];
-            pos2d[0] = glm::vec2(positions[0].z, positions[0].x);
-            pos2d[1] = glm::vec2(positions[1].z, positions[1].x);
-            pos2d[2] = glm::vec2(positions[2].z, positions[2].x);
-            glm::vec3 baryc = BarycentricCoordinatesXZ(pos2d[0], pos2d[1], pos2d[2],
-                                                       glm::vec2(x.z, x.x));
+            glm::vec3 baryc = BarycentricCoordinatesXZ(positions[0], positions[1], positions[2],
+                                                       x);
             std::cout << "baryc : " << baryc.x << ", " << baryc.y << ", " << baryc.z << std::endl;
             if (baryc.x < 0 || baryc.y < 0 || baryc.z < 0)
                 return false;
@@ -144,26 +140,13 @@ namespace KT {
             int triIndices[3];
             GetTrianglePositions(outCurrentTriangle, pos);
             GetTriangleIndices(outCurrentTriangle, triIndices);
-            glm::vec2 pos2d[3];
-            pos2d[0] = glm::vec2(pos[0].z, pos[0].x);
-            pos2d[1] = glm::vec2(pos[1].z, pos[1].x);
-            pos2d[2] = glm::vec2(pos[2].z, pos[2].x);
-            glm::vec2 xx = glm::vec2(x.z, x.x);
-            glm::vec3 baryc = BarycentricCoordinatesXZ(pos2d[0], pos2d[1], pos2d[2], xx);
-                std::cout << "X " << x.x << ", " << x.y << ", " << x.z << std::endl;
-                std::cout << "X " << pos[0].x << ", " << pos[0].y << ", " << pos[0].z << std::endl;
-                std::cout << "Y " << pos[1].x << ", " << pos[1].y << ", " << pos[1].z << std::endl;
-                std::cout << "Z " << pos[2].x << ", " << pos[2].y << ", " << pos[2].z << std::endl;
-            std::cout << "baryc : " << baryc.x << ", " << baryc.y << ", " << baryc.z << std::endl;
+            glm::vec3 baryc = BarycentricCoordinatesXZ(pos[0], pos[1], pos[2], x);
             
             if (InTriangle(outCurrentTriangle, x)) {
                 // in bounds
                 glm::vec3 calcpos = pos[0] * baryc.x + pos[1] * baryc.y + pos[2] * baryc.z;
-                std::cout << "IN TRIANGLE " << outCurrentTriangle << std::endl;
                 return calcpos;
             }
-                std::cout << "NOT IN TRIANGLE " << outCurrentTriangle << std::endl;
-            std::cout << "NEIGHBOURS : " << mTriDatas_[outCurrentTriangle].neighbour_triangles[0] << ", " << mTriDatas_[outCurrentTriangle].neighbour_triangles[1] << ", " << mTriDatas_[outCurrentTriangle].neighbour_triangles[2] << std::endl;
             // search nearest neighbour
             
             // find nearest
@@ -183,20 +166,11 @@ namespace KT {
             }
 
             int neighbourTri = FindNeigbourTriangle(outCurrentTriangle, edge[0], edge[1]);
-            std::cout << " edge " << edge[0] << " " << edge[1] << " | " << neighbourTri << std::endl;
-            std::cout << "neightbourTri : " << neighbourTri << std::endl;
             if (neighbourTri != -1 && InTriangle(neighbourTri, x)) {
                 GetTrianglePositions(neighbourTri, pos);
-                pos2d[0] = glm::vec2(pos[0].z, pos[0].x);
-                pos2d[1] = glm::vec2(pos[1].z, pos[1].x);
-                pos2d[2] = glm::vec2(pos[2].z, pos[2].x);
-                xx = glm::vec2(x.z, x.x);
                 // baryc = BarycentricCoordinates3d(pos.begin()._Ptr, _objectToMove->GetPosition());
-                baryc = BarycentricCoordinatesXZ(pos2d[0], pos2d[1], pos2d[2], xx);
+                baryc = BarycentricCoordinatesXZ(pos[0], pos[1], pos[2], x);
                 outCurrentTriangle = neighbourTri;
-                // std::cout << "Did transition " << outCurrentTriangle << std::endl;
-                // std::cout << "diff : " << glm::distance(baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2],
-                //                                         x) << std::endl;
                 return baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2];
             }
 
