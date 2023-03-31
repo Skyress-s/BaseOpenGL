@@ -13,8 +13,8 @@ namespace KT {
     void process_chunk(std::vector<std::atomic<Vertex>>& data, int startIndex, int endIndex,
                        KTTexture2D texture, int numWidthVertices, int numHeightVertices) {
         for (int i = startIndex; i < endIndex; ++i) {
-            float u = (float)(i % numWidthVertices) / (float)numWidthVertices;
-            float v = (float)(i / numWidthVertices) / (float)numHeightVertices; // i / numWidthVertices used truncation
+            float u = (float)(i % numWidthVertices) / ((float)numWidthVertices - 1);
+            float v = (float)(i / numWidthVertices) / ((float)numHeightVertices - 1); // i / numWidthVertices used truncation
 
             float yavg = 0.f;
             glm::vec3 n = glm::vec3(0, 1, 0);
@@ -110,6 +110,11 @@ namespace KT {
             return;
         }
         // Draw(GL_NONE, GetModelMatrix());
+        mShader->use();
+        mShader->setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        mShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        mShader->setVec3("lightPos", glm::vec3(0.5f, 0.5f, 0.5f*sin(glfwGetTime()) + 0.5f));
+        mShader->setVec3("viewPos", CameraPosition);
         DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
     }
 
@@ -254,8 +259,8 @@ namespace KT {
         mIndices.clear();
         // zero to one
         // construct the vertices
-        int numWidthVertices = 2 << 3; // xxxxx
-        int numHeightVertices = 2 << 3; // yyyyy
+        int numWidthVertices = 2 << 4; // xxxxx
+        int numHeightVertices = 2 << 4; // yyyyy
         float widthLength = 1.f;
         float heightLength = 1.f;
         auto funcX = [numWidthVertices](int x, int z) {

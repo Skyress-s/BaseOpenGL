@@ -302,7 +302,6 @@ int main() {
     cube->SetScale(glm::vec3(0.005f));
     cube->name = "CUBE";
     currentPossesedObject = cube;
-    // mObjects.push_back(cube);
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
 
     /*
@@ -465,6 +464,7 @@ int main() {
         }
 
         glm::mat4x4 view = activeCamera->GetViewMatrix();
+        CameraPosition = activeCamera->position;
         projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
                                       100.f);
         // INPUT

@@ -6,6 +6,8 @@ layout(location = 2) in vec2 uvIn;          // 3rd attribute buffer = UV
 
 out vec4 color;                           //color sent to rest of pipeline
 out vec2 texCoords;
+out vec3 Normal;
+out vec3 FragPos;
 
 
 uniform mat4 matrix;                //the matrix for the model
@@ -15,9 +17,9 @@ uniform mat4 view;
 void main() {
   texCoords = uvIn;
   color = colorIn;                       //passing on the vertex color
-  //gl_Position = matrix * positionIn;      //calculate the position of the model
-  //gl_Position =  positionIn;
+  FragPos = vec3(matrix * positionIn);
+  Normal = mat3(transpose(inverse(matrix))) * vec3(colorIn.xyz);  
   
- // gl_Position = positionIn;
+  
   gl_Position = projection * view * matrix * (positionIn);
 }

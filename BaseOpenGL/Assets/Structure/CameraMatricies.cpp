@@ -3,3 +3,4 @@
 
  glm::mat4 CameraProjection{};
   glm::mat4 CameraView{};
+glm::vec3 CameraPosition{};

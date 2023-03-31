@@ -24,6 +24,7 @@ namespace KT {
         void constructWithTexture(KTTexture2D texture);
 
         void SetupTriData() {
+            // return;
             const unsigned int numTriangles = mIndices.size() / 3;
 
             for (int i = 0; i < numTriangles; ++i) {
@@ -84,18 +85,15 @@ namespace KT {
             indices[2] = mIndices[i * 3 + 2];
         }
 
-
         bool InTriangle(const int& i, const glm::vec3& x) {
             glm::vec3 positions[3];
             GetTrianglePositions(i, positions);
             glm::vec3 baryc = BarycentricCoordinatesXZ(positions[0], positions[1], positions[2],
                                                        x);
-            std::cout << "baryc : " << baryc.x << ", " << baryc.y << ", " << baryc.z << std::endl;
             if (baryc.x < 0 || baryc.y < 0 || baryc.z < 0)
                 return false;
             return true;
         }
-
 
         int FindNeighbourTriangleRaw(const int& vertexIndexA, const int& vertexIndexB, const int& ignoreTriIndex) {
             int indices[3];
@@ -173,9 +171,24 @@ namespace KT {
                 outCurrentTriangle = neighbourTri;
                 return baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2];
             }
+            if (neighbourTri != -1) { // not in triangle but found a neighbour
+                outCurrentTriangle = neighbourTri;
+                std::cout << "DID RECURSIVE SEARCH" << std::endl;
+                return SearchCurrentAndNearest(outCurrentTriangle, x);
+            }
 
-            return x;
+            tri_data triData = mTriDatas_[outCurrentTriangle];
+            glm::vec3 p1 = mVertices[triData.vertex_indices[edge[0]]].posToVec3();
+            glm::vec3 p2 = mVertices[triData.vertex_indices[edge[1]]].posToVec3();
+            const float ratio = baryc[edge[1]] + (baryc[edge[0]]);
+            float a,b;
+            a = baryc[edge[0]] / ratio;
+            b = baryc[edge[1]] / ratio;
+            return p1 * baryc[edge[0]]/ratio + p2 * baryc[edge[1]]/ratio;
+            
         }
+        
+        ///write a functions that projects a point onto a line
     private:
         /*
         std::vector<int> neighbour_triangle_indices(int index) {

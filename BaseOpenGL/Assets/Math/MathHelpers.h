@@ -33,7 +33,6 @@ namespace KT {
         glm::vec3 n = glm::cross(p12, p13);
         // float areal_123 = n.length(); // dobbelt areal
         float areal_123 = glm::length(n); // dobbelt areal
-        std::cout << "AREAL : " << areal_123 << std::endl;
         // std::cout << areal_123 << std::endl;
         glm::vec3 baryc; // til retur. Husk
         // u
