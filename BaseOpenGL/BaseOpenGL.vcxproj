@@ -157,6 +157,7 @@
     <ClCompile Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.cpp" />
     <ClCompile Include="Assets\Courses\MathCourse\MathComp2Handler.cpp" />
     <ClCompile Include="Assets\Door.cpp" />
+    <ClCompile Include="Assets\Geometry\GeometryHelpers.cpp" />
     <ClCompile Include="Assets\Geometry\Model.cpp" />
     <ClCompile Include="Assets\Geometry\TriangleSurface.cpp" />
     <ClCompile Include="Assets\Gizmo\GizmoDrawer.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.h" />
     <ClInclude Include="Assets\Courses\MathCourse\MathComp2Handler.h" />
     <ClInclude Include="Assets\Door.h" />
+    <ClInclude Include="Assets\Geometry\GeometryHelpers.h" />
     <ClInclude Include="Assets\Geometry\Mesh.h" />
     <ClInclude Include="Assets\Geometry\Model.h" />
     <ClInclude Include="Assets\Geometry\TriangleSurface.h" />

@@ -52,3 +52,10 @@ void KT::VisualObject::init(GLint matrixUniform)
 
     glBindVertexArray(0);
 }
+
+void KT::VisualObject::forceDrawElements() {
+    if (mIndices.size() != 0 && mVertices.size() != 0) {
+        DrawElements(GL_TRIANGLES, GetModelMatrix());
+    }
+                
+}

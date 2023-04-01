@@ -27,6 +27,7 @@ namespace KT {
         virtual void init(GLint matrixUniform);
 
         virtual void draw() = 0;
+        void forceDrawElements();
         virtual void Update(float deltaTime);
         std::string name{"N/A"};
 
@@ -100,6 +101,7 @@ namespace KT {
         }
 
     protected:
+        
         std::vector<KT::Vertex> mVertices;
         std::vector<int> mIndices;
         GLuint mVAO{0};

@@ -15,9 +15,9 @@ namespace KT {
             mVertices = std::vector<Vertex>();
             mVertices = OctahedronBall::makeUnitBall(2); // skateboard trick
             for (int i = 0; i < mVertices.size(); ++i) {
-                mVertices[i].m_xyz[0] *= 0.1f;
-                mVertices[i].m_xyz[1] *= 0.1f;
-                mVertices[i].m_xyz[2] *= 0.1f;
+                mVertices[i].m_xyz[0] *= 0.01f;
+                mVertices[i].m_xyz[1] *= 0.01f;
+                mVertices[i].m_xyz[2] *= 0.01f;
                 
             }
             for (auto vert : mVertices) {

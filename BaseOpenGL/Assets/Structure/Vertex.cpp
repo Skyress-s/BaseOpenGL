@@ -32,12 +32,10 @@ namespace KT {
     }
 
     Vertex::Vertex(glm::vec3 xyz, glm::vec3 rgb, glm::vec2 uv):
-        Vertex(xyz[0],xyz[1], xyz[2], rgb[0], rgb[1], rgb[2], uv[0], uv[1]) {
-            
+        Vertex(xyz[0], xyz[1], xyz[2], rgb[0], rgb[1], rgb[2], uv[0], uv[1]) {
     }
 
-    Vertex::Vertex(float x, float y, float z, glm::vec3 nor) : Vertex(glm::vec3(x,y,z), nor) {
-        
+    Vertex::Vertex(float x, float y, float z, glm::vec3 nor) : Vertex(glm::vec3(x, y, z), nor) {
     }
 
     Vertex::Vertex(glm::vec3 pos, glm::vec3 nor = glm::vec3(1.f)) {
@@ -48,13 +46,25 @@ namespace KT {
         m_normal[0] = nor.x;
         m_normal[1] = nor.y;
         m_normal[2] = nor.z;
-        
+
         m_st[0] = 0;
         m_st[1] = 0;
     }
 
-    const glm::vec3 Vertex::posToVec3() {
+    glm::vec3 Vertex::posToVec3() const {
         return glm::vec3(m_xyz[0], m_xyz[1], m_xyz[2]);
+    }
+
+    void Vertex::set_position(const glm::vec3& pos) {
+        m_xyz[0] = pos.x;
+        m_xyz[1] = pos.y;
+        m_xyz[2] = pos.z;
+    }
+
+    void Vertex::set_normal(const glm::vec3& nor) {
+        m_normal[0] = nor.x;
+        m_normal[1] = nor.y;
+        m_normal[2] = nor.z;
     }
 
 

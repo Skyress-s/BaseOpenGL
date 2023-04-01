@@ -127,7 +127,6 @@ namespace KT {
             VisualObject::init(matrixUniform);
         }
 
-
         // void GetTrianglePositions(const int& i, vector<glm::vec3>& outPositions) {
         void GetTrianglePositions(const int& i, glm::vec3 outPositions[3]) {
             glm::vec3 p1, p2, p3;
@@ -148,7 +147,6 @@ namespace KT {
             indices[1] = mIndices[i * 3 + 1];
             indices[2] = mIndices[i * 3 + 2];
         }
-
 
         bool InTriangle(const int& i, const glm::vec3& x) {
             glm::vec3 positions[3];

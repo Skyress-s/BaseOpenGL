@@ -26,7 +26,9 @@ namespace KT {
         float m_st[2]{};
 
         // converions
-        const glm::vec3 posToVec3();
+        glm::vec3 posToVec3() const;
+        void set_position(const glm::vec3 &pos);
+        void set_normal(const glm::vec3 &nor);
 
     private:
         friend std::ostream& operator<<(std::ostream&, const Vertex&);

@@ -6,7 +6,7 @@ in VS_OUT {
     vec3 normal;
 } gs_in[];
 
-const float MAGNITUDE = 0.4;
+const float MAGNITUDE = 0.01;
 //uniform float MAGNITUDE; // TODO why does chaning the position of this remove world position?
   
 uniform mat4 projection;

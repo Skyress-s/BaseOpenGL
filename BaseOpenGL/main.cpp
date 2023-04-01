@@ -8,14 +8,12 @@
 #include "Assets/Camera/Camera.h"
 #include "Assets/Geometry/TriangleSurface.h"
 #include "Assets/Shader/Shader.h"
-#include "Assets/Structure/Tetrahedron.h"
 #include "Assets/Structure/XYZ.h"
 
 // imgui
 #include "Vendor/imgui/imgui.h"
 #include "Vendor/imgui/imgui_impl_glfw.h"
 #include "Vendor/imgui/imgui_impl_opengl3.h"
-#include <stdio.h>
 
 
 #define GL_SILENCE_DEPRECATION
@@ -30,25 +28,11 @@
 #include <unordered_map>
 #include <GLFW/glfw3.h>
 
-#include "Assets/Door.h"
 #include "Assets/House.h"
 #include "Assets/Axis/InteractiveObject.h"
-#include "Assets/Camera/FollowCamera.h"
-#include "Assets/Courses/3DProgCourse/GraphNPCWalker.h"
-#include "Assets/Courses/3DProgCourse/Prog3DComp2Handler.h"
-#include "Assets/IO/FileHandler.h"
-#include "Assets/Math/Graphs.h"
-#include "Assets/Courses/MathCourse/MathComp2Handler.h"
-#include "Assets/Math/TriangulationHandler.h"
 #include "Assets/Structure/CameraMatricies.h"
 #include "Assets/Structure/Cube.h"
-#include "Assets/Structure/Disc.h"
-#include "Assets/Structure/Graph2D.h"
-#include "Assets/Structure/ModelVisualObject.h"
-#include "Assets/Structure/OctahedronBall.h"
-#include "Assets/Structure/TextureTest.h"
 #include "Assets/Structure/Trophy.h"
-#include "Assets/VisualObjectUI/TransformUI.h"
 #include "Vendor/imgui/imgui_internal.h"
 
 
@@ -290,6 +274,7 @@ int main() {
     surface1->constructWithTexture(texture_2d);
     surface1->SetPosition(0, 0, 0);
     surface1->SetupTriData();
+    surface1->CalculateNormals();
     mMap.insert(MapPair("surface", surface1));
 
 
@@ -325,21 +310,21 @@ int main() {
     KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
         "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
     mMap.insert(MapPair("triHandler", triangulationHandler));
-
+    */
     // TROPHIES
     // ----------------------------------------
     for (int i = 0; i < 6; ++i) {
-        float x = KT::Random::Random(-1.f, 1.f);
+        float x = KT::Random::Random(0, 1.f);
 
-        float z = KT::Random::Random(-1.f, 1.f);
+        float z = KT::Random::Random(0, 1.f);
 
         // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Trophy* trophy = new KT::Trophy(cube, 0.1f);
-        trophy->SetPosition(x, KT::Graph::Franke(x, z), z);
-        std::cout << trophy->GetPosition().x << " " << trophy->GetPosition().z << std::endl;
+        KT::Trophy* trophy = new KT::Trophy(cube, 0.01f);
+        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x,0,z)));
         mMap.insert(MapPair("t" + std::to_string(i), trophy));
     }
-
+    
+    /*
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
     KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
@@ -518,7 +503,7 @@ int main() {
             normalGeoShader.setMat4("view", view);
             normalGeoShader.setMat4("projection", projection);
             for (auto m_object : mMap) {
-                m_object.second->draw();
+                m_object.second->forceDrawElements();
             }
         }
 
