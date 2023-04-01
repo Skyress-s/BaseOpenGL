@@ -153,6 +153,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Assets\Camera\FlyCameraController.cpp" />
+    <ClCompile Include="Assets\Camera\ThirdPersonController.cpp" />
     <ClCompile Include="Assets\Courses\3DProgCourse\GraphNPCWalker.cpp" />
     <ClCompile Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.cpp" />
     <ClCompile Include="Assets\Courses\MathCourse\MathComp2Handler.cpp" />
@@ -171,7 +173,10 @@
     <ClCompile Include="Assets\Structure\CameraMatricies.cpp" />
     <ClCompile Include="Assets\Structure\Cube.cpp" />
     <ClCompile Include="Assets\Structure\Disc.cpp" />
+    <ClCompile Include="Assets\Structure\Enemy.cpp" />
+    <ClCompile Include="Assets\Structure\GlobalLightData.cpp" />
     <ClCompile Include="Assets\Structure\Graph2D.cpp" />
+    <ClCompile Include="Assets\Structure\GeneralVisualObject.cpp" />
     <ClCompile Include="Assets\Structure\ModelVisualObject.cpp" />
     <ClCompile Include="Assets\Structure\OctahedronBall.cpp" />
     <ClCompile Include="Assets\Structure\Primitives.cpp" />
@@ -232,6 +237,9 @@
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
     <ClInclude Include="Assets\Camera\FollowCamera.h" />
+    <ClInclude Include="Assets\Camera\FlyCameraController.h" />
+    <ClInclude Include="Assets\Camera\IController.h" />
+    <ClInclude Include="Assets\Camera\ThirdPersonController.h" />
     <ClInclude Include="Assets\Courses\3DProgCourse\GraphNPCWalker.h" />
     <ClInclude Include="Assets\Courses\3DProgCourse\Prog3DComp2Handler.h" />
     <ClInclude Include="Assets\Courses\MathCourse\MathComp2Handler.h" />
@@ -254,7 +262,10 @@
     <ClInclude Include="Assets\Structure\CameraMatricies.h" />
     <ClInclude Include="Assets\Structure\Cube.h" />
     <ClInclude Include="Assets\Structure\Disc.h" />
+    <ClInclude Include="Assets\Structure\Enemy.h" />
+    <ClInclude Include="Assets\Structure\GlobalLightData.h" />
     <ClInclude Include="Assets\Structure\Graph2D.h" />
+    <ClInclude Include="Assets\Structure\GeneralVisualObject.h" />
     <ClInclude Include="Assets\Structure\ModelVisualObject.h" />
     <ClInclude Include="Assets\Structure\OctahedronBall.h" />
     <ClInclude Include="Assets\Structure\Primitives.h" />

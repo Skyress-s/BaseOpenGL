@@ -30,8 +30,12 @@
 
 #include "Assets/House.h"
 #include "Assets/Axis/InteractiveObject.h"
+#include "Assets/Camera/FlyCameraController.h"
+#include "Assets/Camera/ThirdPersonController.h"
 #include "Assets/Structure/CameraMatricies.h"
 #include "Assets/Structure/Cube.h"
+#include "Assets/Structure/Enemy.h"
+#include "Assets/Structure/GeneralVisualObject.h"
 #include "Assets/Structure/Trophy.h"
 #include "Vendor/imgui/imgui_internal.h"
 
@@ -48,8 +52,8 @@ const unsigned int SCR_HEIGHT = 800;
 // std::shared_ptr<Camera> camera1 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
 // std::shared_ptr<Camera> camera1;
 // std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
-std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 10.f));
-
+std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 3.f));
+std::unique_ptr<IController> camera_controller;
 
 float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
@@ -286,9 +290,9 @@ int main() {
     KT::InteractiveObject* cube = new KT::Cube(surface1);
     cube->SetScale(glm::vec3(0.005f));
     cube->name = "CUBE";
-    currentPossesedObject = cube;
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
-
+    // std::shared_ptr<KT::InteractiveObject> aa(cube);
+    camera_controller = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
     /*
 
     // PROG3D 
@@ -320,10 +324,31 @@ int main() {
 
         // std::cout << "xz : " << x << " " << z <<std::endl;
         KT::Trophy* trophy = new KT::Trophy(cube, 0.01f);
-        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x,0,z)));
+        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
         mMap.insert(MapPair("t" + std::to_string(i), trophy));
     }
-    
+
+    // ENEMIES
+    // -----------------------------------------------------------------------------------------------------------------
+    for (int i = 0; i < 4; ++i) {
+        float x = KT::Random::Random(0, 1.f);
+
+        float z = KT::Random::Random(0, 1.f);
+
+        // std::cout << "xz : " << x << " " << z <<std::endl;
+        KT::Enemy* enemy = new KT::Enemy(cube, 0.01f);
+        enemy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
+        mMap.insert(MapPair("enemy_" + std::to_string(i), enemy));
+    }
+
+    std::vector<KT::Vertex> lightMeshVerts = KT::OctahedronBall::makeUnitBall(2);
+    for (int i = 0; i < lightMeshVerts.size(); ++i)
+        lightMeshVerts[i].set_normal(glm::vec3(1.f));
+        
+    KT::VisualObject* lightMesh = new KT::GeneralVisualObject(lightMeshVerts);
+    lightMesh->SetPosition(0.5, 0.1f, 0.5);
+    lightMesh->SetScale(glm::vec3(0.01f));
+    mMap.insert(MapPair("light", lightMesh));
     /*
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
@@ -481,6 +506,18 @@ int main() {
 
         leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
 
+        // setting shader light uniforms
+        glm::vec3 lightPos = glm::vec3(0.5f * sin(glfwGetTime() + 0.5f), 0.3f, 0.5f * cos(glfwGetTime() + 0.5f));
+        lightPos += glm::vec3(0.5f, 0.f, 0.5f);
+        lightMesh->SetPosition(lightPos);
+
+        textureShader->use();
+        textureShader->setVec3("objectColor", 1.0f, 1.f, 1.f);
+        textureShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        textureShader->setVec3("lightPos", lightPos);
+        textureShader->setVec3("viewPos", CameraPosition);
+
+
         for (auto object : mMap) {
             leksjon2Shader.use();
             object.second->draw();
@@ -576,25 +613,25 @@ void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         keyboardAxis.z += -1.f;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        keyboardAxis.x += -1.f;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         keyboardAxis.x += 1.f;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        keyboardAxis.x += -1.f;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         keyboardAxis.y += -1.f;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         keyboardAxis.y += 1.f;
-    activeCamera->ProcessKeyboard(keyboardAxis, deltaTime);
+    camera_controller->ProcessKeyboard(keyboardAxis, deltaTime);
 
     // possesed object
     float moveScalar = 0.01f;
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         // currentPossesedObject->move(0, -moveScalar, KT::Graph::Franke);
-        currentPossesedObject->move(0,0, -moveScalar);
+        currentPossesedObject->move(0, 0, -moveScalar);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         // currentPossesedObject->move(0, moveScalar, KT::Graph::Franke);
-        currentPossesedObject->move(0,0, +moveScalar);
+        currentPossesedObject->move(0, 0, +moveScalar);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         // currentPossesedObject->move(-moveScalar, 0, KT::Graph::Franke);
@@ -618,16 +655,16 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     mouseLastY = ypos;
 
     if (!UI_enabled) {
-        activeCamera->ProcessMouseMovement(offsetX, offsetY, true, true);
+        camera_controller->ProcessMouseMovement(offsetX, offsetY, true, true);
     }
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        activeCamera->ProcessMouseScroll(yoffset, true);
+        camera_controller->ProcessMouseScroll(yoffset, true);
     }
     else {
-        activeCamera->ProcessMouseScroll(yoffset, false);
+        camera_controller->ProcessMouseScroll(yoffset, false);
     }
 }
 

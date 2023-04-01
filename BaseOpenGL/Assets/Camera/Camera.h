@@ -15,8 +15,6 @@ const glm::vec3 UP = glm::vec3(0,1,0);
 
 const float YAW = -90.f;
 const float PITCH = 0.f;
-const float SPEED = 5.5f;
-const float SENSETIVITY = 0.05f;
 const float FOV = 60.f;
 
 class Camera {
@@ -28,7 +26,7 @@ public:
     glm::vec3 right;
     glm::vec3 worldUp;
 
-    bool mLocked = false;
+    // bool mLocked = false;
 
     
     float pitch;
@@ -37,13 +35,13 @@ public:
 
     
     //movement
-    float speed;
-    float sensetivity;
+    // float speed;
+    // float sensetivity;
     //other
     float fov = 70.f;
 
 
-    Camera(glm::vec3 _position = POSITION, glm::vec3 _up = UP, float _yaw = YAW, float _pitch = PITCH): forward(FRONT), speed(SPEED), sensetivity(SENSETIVITY), fov(FOV) {
+    Camera(glm::vec3 _position = POSITION, glm::vec3 _up = UP, float _yaw = YAW, float _pitch = PITCH): forward(FRONT), fov(FOV) {
         position = _position;
         worldUp = _up;
         yaw = _yaw;
@@ -58,53 +56,6 @@ public:
         // return SelfLookAtImplementation(position, position + forward, up);
     }
 
-    virtual void ProcessKeyboard(glm::vec3 input, float deltaTime) {
-        if (mLocked)
-            return;
-            
-        float velocity = deltaTime * speed;
-        position += right * input.x * velocity;
-        position += forward * input.z * velocity;
-        position += up * input.y * velocity;
-    }
-
-    virtual void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true, GLboolean bInvertY = true) {
-        if (mLocked)
-            return;
-            
-        xoffset *= sensetivity;
-        yoffset *= sensetivity;
-        
-        if (bInvertY)
-            yoffset *= -1.f;
-        
-        yaw     += xoffset;
-        pitch   += yoffset;
-        //clamps
-        if (bConstrainPitch) {
-            //clamps
-            float maxPitch = 89.5f;
-            pitch = pitch > maxPitch ? maxPitch : pitch;
-            pitch = pitch < -maxPitch ? -maxPitch : pitch;
-        }
-        UpdateCameraVectors();
-    }
-
-    void ProcessMouseScroll(float yoffset, bool bFOV = false) {
-        if (mLocked)
-            return;
-        
-        if (bFOV) {
-            fov += -yoffset * 5.f;
-            fov = fov < 1.f ? 1.f : fov;
-            fov = fov > 80.f ? 80.f : fov;
-        }
-        else {
-            speed += yoffset;
-            speed = speed > 145.f ? 145.f : speed;
-            speed = speed < 1.f ? 1.f : speed;
-        }
-    }
 
     
     

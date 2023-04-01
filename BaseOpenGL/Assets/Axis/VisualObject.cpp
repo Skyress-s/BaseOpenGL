@@ -57,5 +57,8 @@ void KT::VisualObject::forceDrawElements() {
     if (mIndices.size() != 0 && mVertices.size() != 0) {
         DrawElements(GL_TRIANGLES, GetModelMatrix());
     }
+    else {
+        Draw(GL_TRIANGLES, GetModelMatrix());
+    }
                 
 }

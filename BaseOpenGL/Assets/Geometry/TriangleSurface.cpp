@@ -111,11 +111,6 @@ namespace KT {
             return;
         }
         // Draw(GL_NONE, GetModelMatrix());
-        mShader->use();
-        mShader->setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        mShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        mShader->setVec3("lightPos", glm::vec3(0.5f, 0.5f, 0.5f*sin(glfwGetTime()) + 0.5f));
-        mShader->setVec3("viewPos", CameraPosition);
         DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
     }
 
@@ -260,8 +255,8 @@ namespace KT {
         mIndices.clear();
         // zero to one
         // construct the vertices
-        int numWidthVertices = 2 << 5; // xxxxx
-        int numHeightVertices = 2 << 5; // yyyyy
+        int numWidthVertices = 2 << 6; // xxxxx
+        int numHeightVertices = 2 << 6; // yyyyy
         float widthLength = 1.f;
         float heightLength = 1.f;
         auto funcX = [numWidthVertices](int x, int z) {
@@ -362,7 +357,7 @@ namespace KT {
 
         //reduce height
         for (auto& v : mVertices) {
-            v.m_xyz[1] *= 1.f / 1900.f;
+            v.m_xyz[1] *= 1.f / 5900.f;
         }
 
         return;
