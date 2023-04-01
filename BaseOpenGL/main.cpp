@@ -74,9 +74,17 @@ bool show_another_window = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 // decalring functions
 
+// SETUP AND CLEANUP
+void setupVisualObjects() {
+}
+
+void cleanupVisualObjects() {
+}
+
 
 // global easy
 
+// CALLBACKS
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 void processInput(GLFWwindow* window);
@@ -85,6 +93,89 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
+// GENEREAL SETUP
+int setupGLFW_IMGUI_glad(GLFWwindow*& outWindow) {
+    // glfw: initialize and configure
+    // ------------------------------
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // Decide GL+GLSL versions
+    // GL 3.0 + GLSL 130
+    const char* glsl_version = "#version 130";
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+
+    // glfw window creation
+    // --------------------
+    outWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    if (outWindow == NULL) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(outWindow);
+    glfwSetFramebufferSizeCallback(outWindow, framebuffer_size_callback);
+    glfwSwapInterval(1);
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+    // IMGUI
+    // ----------------------------------------
+
+    {
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+        // Setup Imgui style
+        ImGui::StyleColorsDark();
+        // ImGui::StyleColorsLight();
+
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForOpenGL(outWindow, true);
+        ImGui_ImplOpenGL3_Init(glsl_version);
+    }
+
+    // CALLBACKS
+    // ----------------------------------------
+
+    //mouse settings
+    //------------------------------------------------
+    //hide and capture mouse
+    glfwSetInputMode(outWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    //setup mouse input callback
+    // glfwSetCursorPosCallback(window, mouseCallback); //TODO NOTE THIS DISABLES IMGUI
+
+    //scroll callback
+    glfwSetScrollCallback(outWindow, scrollCallback);
+
+    return 0;
+}
+
+
+void cleanupGLFW_IMGUI_glad(GLFWwindow* window) {
+    // IMGUI CLEANUP
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
 
 // falloff func
 float falloffFunc(float x) {
@@ -145,80 +236,15 @@ typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 
 int main() {
-    // dynamic matrix X for unknown
-
-    // glfw: initialize and configure
-    // ------------------------------
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // Decide GL+GLSL versions
-    // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSwapInterval(1);
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-    // IMGUI
-    // ----------------------------------------
-
-    {
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
-        (void)io;
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-        // Setup Imgui style
-        ImGui::StyleColorsDark();
-        // ImGui::StyleColorsLight();
-
-        // Setup Platform/Renderer backends
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init(glsl_version);
-    }
-
-    // CALLBACKS
-    // ----------------------------------------
-
-    //mouse settings
-    //------------------------------------------------
-    //hide and capture mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    //setup mouse input callback
-    // glfwSetCursorPosCallback(window, mouseCallback); //TODO NOTE THIS DISABLES IMGUI
-
-    //scroll callback
-    glfwSetScrollCallback(window, scrollCallback);
+    GLFWwindow* window{};
+    int valid = setupGLFW_IMGUI_glad(window);
+    if (valid != 0)
+        return valid;
 
 
     // USER STUFF
     // ----------------------------------------
 
-    // Model modela  = Model("Assets/Art/Models/cube.fbx");
-    // Model doorr = Model("Assets/Art/Models/Door.fbx");
     // objects in scene
     // std::vector<VisualObject*> mObjects{};
     std::vector<KT::VisualObject*> mObjects{};
@@ -236,17 +262,6 @@ int main() {
     KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
 
 
-    // for (int y = 0; y < texture_2d.height; ++y) {
-    //     for (int x = 0; x < texture_2d.width; ++x) {
-    //         int index = (y * texture_2d.width + x) * texture_2d.nrChannels;
-    //         texture_2d.data[index] = 100;
-    //         texture_2d.data[index + 1] = 100;
-    //         texture_2d.data[index + 2] = 100;
-    //         texture_2d.data[index + 3] = 100;
-    //     }
-    // }
-
-
     // texture shader
     // Shader* textureShader = new Shader("Assets/Art/Shaders/Lek2V.glsl",
     // "Assets/Art/Shaders/Lek2F.glsl");
@@ -256,21 +271,6 @@ int main() {
     unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
     // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     textureShader->setInt("texture1", 0);
-    // textureShader->setInt("texture2", 1);
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, wall);
-    // triangulation
-
-    // KT::TextureTest* texture_test = new KT::TextureTest(textureShader, wall);
-    // texture_test->SetPosition(0, 0, 0);
-    // mMap.insert(MapPair("tex", texture_test));
-
-    // main surface
-    // KT::TriangleSurface* ground = new KT::TriangleSurface();
-    // ground->constructWithLambda(KT::Graph::Franke);
-    // ground->SetPosition(0, 0, 0);
-    // ground->SetScale(1.f);
-    // mMap.insert(MapPair("ground", ground));
 
     // second surface
     // std::shared_ptr<KT::TriangleSurface> surface1 = std::make_shared<KT::TriangleSurface>(textureShader, wall);
@@ -297,23 +297,6 @@ int main() {
 
     // PROG3D 
     // ----------------------------------------
-
-    KT::Graph2D* graph1 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph1, 15, -2.f, 4.f);
-    graph1->SetPosition(-3, -4, 0);
-    mMap.insert(MapPair("graph1", graph1));
-
-    KT::Graph2D* graph2 = new KT::Graph2D(KT::Prog3DCom2Handler::Graph2, 15, -2.f, 4.f);
-    graph2->SetPosition(-3, -4, 0);
-    mMap.insert(MapPair("graph2", graph2));
-
-    GraphNPCWalker* graphNPCWalker = new GraphNPCWalker(KT::Prog3DCom2Handler::Graph1, KT::Prog3DCom2Handler::Graph2,
-                                                        Range{-2, 4});
-    graphNPCWalker->SetPosition(-3, -4, 0);
-    mMap.insert(MapPair("walker", graphNPCWalker));
-
-    KT::TriangulationHandler* triangulationHandler = new KT::TriangulationHandler(
-        "TriangulationData/Vertex.txt", "TriangulationData/Meta.txt", cube);
-    mMap.insert(MapPair("triHandler", triangulationHandler));
     */
     // TROPHIES
     // ----------------------------------------
@@ -344,7 +327,7 @@ int main() {
     std::vector<KT::Vertex> lightMeshVerts = KT::OctahedronBall::makeUnitBall(2);
     for (int i = 0; i < lightMeshVerts.size(); ++i)
         lightMeshVerts[i].set_normal(glm::vec3(1.f));
-        
+
     KT::VisualObject* lightMesh = new KT::GeneralVisualObject(lightMeshVerts);
     lightMesh->SetPosition(0.5, 0.1f, 0.5);
     lightMesh->SetScale(glm::vec3(0.01f));
@@ -556,7 +539,6 @@ int main() {
         // glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-
         // CLEAN UP / END OF FRAME RELEATED
         // -----------------------------------------------------------------------------------------------------------------
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -565,19 +547,12 @@ int main() {
         glfwSwapBuffers(window);
     }
 
-    // IMGUI CLEANUP
-    // ----------------------------------------
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    cleanupGLFW_IMGUI_glad(window);
 
     // other cleanup
     delete textureShader;
     delete[] texture_2d.data;
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
-    glfwTerminate();
     return 0;
 }
 

@@ -29,6 +29,7 @@ namespace KT {
         }
         void Update(float deltaTime) override {
             if (IsInRange()) {
+                _target->SetPosition(0 ,0,0);
                // DO SOMETHING 
             }
         }
