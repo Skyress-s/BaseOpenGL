@@ -36,6 +36,7 @@
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Enemy.h"
 #include "Assets/Structure/GeneralVisualObject.h"
+#include "Assets/Structure/ModelVisualObject.h"
 #include "Assets/Structure/Trophy.h"
 #include "Vendor/imgui/imgui_internal.h"
 
@@ -234,7 +235,6 @@ void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
 
 typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
-
 int main() {
     GLFWwindow* window{};
     int valid = setupGLFW_IMGUI_glad(window);
@@ -259,6 +259,7 @@ int main() {
 
 
     // print the info
+    // KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
     KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
 
 
@@ -269,6 +270,7 @@ int main() {
                                        "Assets/Art/Shaders/SimpleTexF.glsl");
     textureShader->use();
     unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
+    unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
     // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     textureShader->setInt("texture1", 0);
 
@@ -281,6 +283,11 @@ int main() {
     surface1->CalculateNormals();
     mMap.insert(MapPair("surface", surface1));
 
+    KT::ModelVisualObject* modelVis = new KT::ModelVisualObject("Assets/Art/Models/calc.fbx", *textureShader);
+    modelVis->SetPosition(0, 0.1f, 0);
+    modelVis->SetScale(0.1f);
+    modelVis->SetRotation(glm::vec3(180.f, 0,0));
+    mMap.insert(MapPair("model_vis", modelVis));
 
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
@@ -332,6 +339,14 @@ int main() {
     lightMesh->SetPosition(0.5, 0.1f, 0.5);
     lightMesh->SetScale(glm::vec3(0.01f));
     mMap.insert(MapPair("light", lightMesh));
+
+    // counter
+    KT::GeneralVisualObject* counter = new KT::GeneralVisualObject(KT::GeometryHelpers::planeVertices(), KT::GeometryHelpers::planeIndices());
+    counter->UseShader(textureShader);
+    counter->AddTexture(calcTexture);
+    counter->SetPosition(0.5, 0.05f, 0.5);
+    counter->SetScale(0.05f);
+    mMap.insert(MapPair("counter", counter));
     /*
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
@@ -500,7 +515,7 @@ int main() {
         textureShader->setVec3("lightPos", lightPos);
         textureShader->setVec3("viewPos", CameraPosition);
 
-
+        
         for (auto object : mMap) {
             leksjon2Shader.use();
             object.second->draw();

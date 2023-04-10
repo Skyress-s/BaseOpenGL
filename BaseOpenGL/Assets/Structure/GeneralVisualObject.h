@@ -18,6 +18,10 @@ namespace KT {
             mShader = shader;
         }
 
+        void AddTexture(unsigned int texture) {
+            mTextures.push_back(texture);
+        }
+
         void draw() override {
             const GLenum drawMode = GL_TRIANGLES;
             const glm::mat4 model = GetModelMatrix();

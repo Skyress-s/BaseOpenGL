@@ -314,8 +314,13 @@
     <Content Include="Assets\Latex\test.pdf" />
     <Content Include="Assets\Latex\test.synctex.gz" />
     <Content Include="Assets\Latex\test.tex" />
+    <Content Include="Assets\Textures\123.png" />
+    <Content Include="Assets\Textures\calc_albedo.jpg" />
     <Content Include="Assets\Textures\render.png" />
     <Content Include="Assets\Textures\wall.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Art\Textures\" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

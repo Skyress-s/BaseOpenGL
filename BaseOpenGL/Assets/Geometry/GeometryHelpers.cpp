@@ -40,5 +40,32 @@ glm::vec3 KT::GeometryHelpers::calculate_normal_of_triangle_weighted(const int& 
     return glm::cross(v, u);
 }
 
+std::vector<KT::Vertex> KT::GeometryHelpers::planeVertices() {
+    std::vector<Vertex> outVertices{};
+    outVertices.push_back(Vertex(-1, 0, -1, 0, 1, 0, 0, 1));
+    outVertices.push_back(Vertex(1, 0, -1, 0, 1, 0, 1, 1));
+    outVertices.push_back(Vertex(1, 0, 1, 0, 1, 0, 1, 0));
+    outVertices.push_back(Vertex(-1, 0, 1, 0, 1, 0, 0, 0));
+    return outVertices;
+}
+
+std::vector<int> KT::GeometryHelpers::planeIndices() {
+    std::vector<int> outIndices{};
+    outIndices.push_back(0);
+    outIndices.push_back(2);
+    outIndices.push_back(1);
+
+    outIndices.push_back(0);
+    outIndices.push_back(3);
+    outIndices.push_back(2);
+    return  outIndices;
+}
+
+void KT::GeometryHelpers::plane(std::vector<Vertex>& outVertices, std::vector<int>& outIndices) {
+    outVertices = planeVertices();
+
+    outIndices = planeIndices();
+}
+
 
 

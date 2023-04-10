@@ -83,7 +83,12 @@ namespace KT {
         }
 
         void SetRotation(glm::vec3 rot) {
+            rot.x =  glm::radians(rot.x);
+            rot.y =  glm::radians(rot.y);
+            rot.z =  glm::radians(rot.z);
+            
             _rotation = glm::quat(rot);
+            
         }
 
         void SetRotation(glm::quat rot) {
