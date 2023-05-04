@@ -28,7 +28,7 @@ public:
 
     void draw() override {
         
-        VisualObject::Draw(GL_TRIANGLES,
+        VisualObject::DrawVertices(GL_TRIANGLES,
             KT::MathHelpers::TRS(GetPosition() + glm::vec3(currX, currY,0), GetRotation(), GetScale())
             );
     }

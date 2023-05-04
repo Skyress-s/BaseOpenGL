@@ -133,7 +133,7 @@ namespace KT {
          * \brief 
          * \param drawMode typical GL_TRIANGLES, GL_LINES, GL_LINE_LOOP or GL_LINE_STRIP
          */
-        void Draw(GLenum drawMode, glm::mat4 modelMatrix) const {
+        void DrawVertices(GLenum drawMode, glm::mat4 modelMatrix) const {
             // mModelMatrix = GetModelMatrix();
             glBindVertexArray(mVAO);
 

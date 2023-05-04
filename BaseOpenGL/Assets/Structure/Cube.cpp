@@ -85,7 +85,7 @@ namespace KT {
     }
 
     void Cube::draw() {
-        VisualObject::Draw(GL_TRIANGLES, GetModelMatrix());
+        VisualObject::DrawVertices(GL_TRIANGLES, GetModelMatrix());
     }
 
     

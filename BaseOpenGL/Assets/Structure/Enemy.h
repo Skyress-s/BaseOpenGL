@@ -34,7 +34,7 @@ namespace KT {
             }
         }
         void draw() override {
-            Draw(GL_TRIANGLES, GetModelMatrix());
+            DrawVertices(GL_TRIANGLES, GetModelMatrix());
         }
     };
 }

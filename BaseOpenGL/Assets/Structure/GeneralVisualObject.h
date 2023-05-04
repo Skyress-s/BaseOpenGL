@@ -37,7 +37,7 @@ namespace KT {
 
             // vertex array
             if (mShader == nullptr) {
-                Draw(drawMode, model);
+                DrawVertices(drawMode, model);
                 return;
             }
             DrawWithShader(drawMode);

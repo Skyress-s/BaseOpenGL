@@ -255,8 +255,8 @@ namespace KT {
         mIndices.clear();
         // zero to one
         // construct the vertices
-        int numWidthVertices = 2 << 6; // xxxxx
-        int numHeightVertices = 2 << 6; // yyyyy
+        int numWidthVertices = 2 << 7;      // xxxxx // Skateboiard tricks
+        int numHeightVertices = 2 << 7;     // yyyyy// Skateboiard tricks
         float widthLength = 1.f;
         float heightLength = 1.f;
         auto funcX = [numWidthVertices](int x, int z) {
@@ -416,7 +416,7 @@ namespace KT {
 
     void TriangleSurface::SetupTriData() {
         // make an twodimensional vector, where the first layer is the length mVertices.size(),
-        // and the second, triangle indexes to triangles that have that mVertices as a vertex
+        // and the second layer, triangle indexes to triangles that have that mVertices as a vertex
         vertexTriangleIndexes = std::vector<std::vector<unsigned int>>(
             mVertices.size(), std::vector<unsigned int>());
         for (int i = 0; i < mIndices.size() / 3; i++) {
@@ -649,21 +649,22 @@ namespace KT {
         // search nearest neighbour
 
         // find nearest
-        int edge[2];
+        //todo use absolute - Staal
+        int edgeIndices[2];
         if (baryc.x < baryc.y && baryc.x < baryc.z) {
-            edge[0] = 1;
-            edge[1] = 2;
+            edgeIndices[0] = 1;
+            edgeIndices[1] = 2;
         }
         if (baryc.y < baryc.z && baryc.y < baryc.x) {
-            edge[0] = 0;
-            edge[1] = 2;
+            edgeIndices[0] = 0;
+            edgeIndices[1] = 2;
         }
         if (baryc.z < baryc.y && baryc.z < baryc.x) {
-            edge[0] = 0;
-            edge[1] = 1;
+            edgeIndices[0] = 0;
+            edgeIndices[1] = 1;
         }
 
-        int neighbourTri = FindNeigbourTriangle(outCurrentTriangle, edge[0], edge[1]);
+        int neighbourTri = FindNeigbourTriangle(outCurrentTriangle, edgeIndices[0], edgeIndices[1]);
         if (neighbourTri != -1 && InTriangleXZ(neighbourTri, x)) {
             GetTrianglePositions(neighbourTri, pos);
             // baryc = BarycentricCoordinates3d(pos.begin()._Ptr, _objectToMove->GetPosition());
@@ -679,13 +680,13 @@ namespace KT {
         }
 
         tri_data triData = mTriDatas_[outCurrentTriangle];
-        glm::vec3 p1 = mVertices[triData.vertex_indices[edge[0]]].posToVec3();
-        glm::vec3 p2 = mVertices[triData.vertex_indices[edge[1]]].posToVec3();
-        const float ratio = baryc[edge[1]] + (baryc[edge[0]]);
+        glm::vec3 p1 = mVertices[triData.vertex_indices[edgeIndices[0]]].posToVec3();
+        glm::vec3 p2 = mVertices[triData.vertex_indices[edgeIndices[1]]].posToVec3();
+        const float ratio = baryc[edgeIndices[1]] + (baryc[edgeIndices[0]]);
         float a, b;
-        a = baryc[edge[0]] / ratio;
-        b = baryc[edge[1]] / ratio;
-        return p1 * baryc[edge[0]] / ratio + p2 * baryc[edge[1]] / ratio;
+        a = baryc[edgeIndices[0]] / ratio;
+        b = baryc[edgeIndices[1]] / ratio;
+        return p1 * baryc[edgeIndices[0]] / ratio + p2 * baryc[edgeIndices[1]] / ratio;
     }
 
     glm::vec3 TriangleSurface::FindPointOnSurfaceXZ(const glm::vec3& point) const {

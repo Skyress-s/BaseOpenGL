@@ -32,6 +32,7 @@
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Camera/FlyCameraController.h"
 #include "Assets/Camera/ThirdPersonController.h"
+#include "Assets/Structure/BSpline.h"
 #include "Assets/Structure/CameraMatricies.h"
 #include "Assets/Structure/Cube.h"
 #include "Assets/Structure/Enemy.h"
@@ -289,6 +290,13 @@ int main() {
     modelVis->SetRotation(glm::vec3(180.f, 0,0));
     mMap.insert(MapPair("model_vis", modelVis));
 
+    KT::VisualObject* bSpline = new KT::BSpline();
+    bSpline->SetScale(0.1f);
+    bSpline->SetPosition(00-0.2,0.009,0.5);
+    mMap.insert(MapPair("b_spline", bSpline));
+    
+    
+    
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
@@ -445,7 +453,7 @@ int main() {
             if (bDrawNormals) {
                 ImGui::SliderFloat("NormalVectorLength", &drawNormalLength, 0.01f, 2.f);
             }
-
+            
             // ImGui::Checkbox("GraphToggle", &graphNPCWalker->toggle);
             ImGui::End();
             /*

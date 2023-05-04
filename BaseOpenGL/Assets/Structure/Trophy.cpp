@@ -3,7 +3,7 @@
 
 void KT::Trophy::draw() {
     if (!_collected) {
-        KT::VisualObject::Draw(GL_TRIANGLES, GetModelMatrix());
+        KT::VisualObject::DrawVertices(GL_TRIANGLES, GetModelMatrix());
     }
 }
 

@@ -58,7 +58,7 @@ void KT::VisualObject::forceDrawElements() {
         DrawElements(GL_TRIANGLES, GetModelMatrix());
     }
     else {
-        Draw(GL_TRIANGLES, GetModelMatrix());
+        DrawVertices(GL_TRIANGLES, GetModelMatrix());
     }
                 
 }

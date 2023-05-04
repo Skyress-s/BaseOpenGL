@@ -172,6 +172,7 @@
     <ClCompile Include="Assets\Structure\Bounds.cpp" />
     <ClCompile Include="Assets\Structure\CameraMatricies.cpp" />
     <ClCompile Include="Assets\Structure\Cube.cpp" />
+    <ClCompile Include="Assets\Structure\BSpline.cpp" />
     <ClCompile Include="Assets\Structure\Disc.cpp" />
     <ClCompile Include="Assets\Structure\Enemy.cpp" />
     <ClCompile Include="Assets\Structure\GlobalLightData.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="Assets\Structure\Bounds.h" />
     <ClInclude Include="Assets\Structure\CameraMatricies.h" />
     <ClInclude Include="Assets\Structure\Cube.h" />
+    <ClInclude Include="Assets\Structure\BSpline.h" />
     <ClInclude Include="Assets\Structure\Disc.h" />
     <ClInclude Include="Assets\Structure\Enemy.h" />
     <ClInclude Include="Assets\Structure\GlobalLightData.h" />
