@@ -15,6 +15,14 @@ namespace KT {
         return m;
     }
 
+    float MathHelpers::ReScale(const float& val, const float& startLow, const float& startHigh, const float& endLow,
+        const float& endHigh) {
+        // from low high to 0 - 1
+        float retVal = (val - startLow) / (startHigh - startLow);
+        retVal = retVal * (endHigh - endLow) + endLow;
+        return retVal;
+    }
+
     std::random_device dev;
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> dist6(1.f, 6.f); // distribution in range [1, 6]

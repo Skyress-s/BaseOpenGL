@@ -243,6 +243,8 @@ int main() {
         return valid;
 
 
+    KT::geometry_helpers::getInstance().init(0);
+
     // USER STUFF
     // ----------------------------------------
 
@@ -272,7 +274,7 @@ int main() {
     textureShader->use();
     unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
     unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
-    // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
+    unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
     textureShader->setInt("texture1", 0);
 
     // second surface
@@ -290,9 +292,14 @@ int main() {
     modelVis->SetRotation(glm::vec3(180.f, 0,0));
     mMap.insert(MapPair("model_vis", modelVis));
 
-    KT::VisualObject* bSpline = new KT::BSpline();
-    bSpline->SetScale(0.1f);
-    bSpline->SetPosition(00-0.2,0.009,0.5);
+
+    std::vector<glm::vec3> splinePoints{};
+    splinePoints.push_back(glm::vec3(0,0,0));
+    splinePoints.push_back(glm::vec3(1,0,0));
+    splinePoints.push_back(glm::vec3(2,1,0));
+    splinePoints.push_back(glm::vec3(0,2,0));
+    splinePoints.push_back(glm::vec3(0,4,2));
+    KT::VisualObject* bSpline = new KT::BSpline(splinePoints);
     mMap.insert(MapPair("b_spline", bSpline));
     
     
@@ -356,14 +363,19 @@ int main() {
     counter->SetPosition(0.5, 0.05f, 0.5);
     counter->SetScale(0.05f);
     mMap.insert(MapPair("counter", counter));
-    /*
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
-    KT::Door* door = new KT::Door(cube, "Assets/Art/Models/Door.fbx", leksjon2Shader);
+    std::vector<KT::Vertex> vertices{};
+    std::vector<int> indices{};
+    KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
+    
+    KT::GeneralVisualObject* door = new KT::GeneralVisualObject(vertices, indices);
     door->SetScale(0.5f);
-    door->SetPosition(0.21, 0.6f - 5.2f, 1.0f);
+    door->UseShader(textureShader);
+    door->AddTexture(rick);
     mMap.insert(MapPair("door", door));
 
+    /*
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
     // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <iostream>
+#include <GLFW/glfw3native.h>
 #include <glm/fwd.hpp>
 
 namespace KT {
@@ -16,6 +17,9 @@ namespace KT {
                 std::cout << std::endl;
             }
         }
+
+        static float ReScale(const float& val, const float& startLow, const float& startHigh, const float& endLow,
+                             const float& endHigh);
     };
 
 
@@ -56,6 +60,7 @@ namespace KT {
     static glm::vec3 BarycentricCoordinates3d(glm::vec3 pps[3], glm::vec3 x) {
         return BarycentricCoordinates3d(pps[0], pps[1], pps[2], x);
     }
+
     static glm::vec3 BarycentricCoordinatesXZ(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
                                               glm::vec3 x) {
         // saving x
@@ -97,6 +102,7 @@ namespace KT {
         baryc.z = n.z / areal_123;
         return baryc;
     }
+
 
     namespace Random {
         float Random(const float& from, const float& to);

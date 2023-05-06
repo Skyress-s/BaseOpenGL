@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "TriangleSurface.h"
+#include "../Structure/OctahedronBall.h"
 
 namespace KT {
     namespace GeometryHelpers {
@@ -20,5 +21,40 @@ namespace KT {
         std::vector<int> planeIndices();
 
         void plane(std::vector<Vertex>& outVertices, std::vector<int>& outIndices);
+
+
     }
+
+    class geometry_helpers : public VisualObject {
+    public:
+        static std::vector<Vertex> cube;
+        static geometry_helpers& getInstance(){
+            static geometry_helpers instance;
+            return instance;
+        }
+
+        void init(GLint matrixUniform) override {
+            mVertices = cube;
+            VisualObject::init(matrixUniform);   
+        }
+
+        void draw() override {
+            
+        }
+
+        void Draw(const glm::vec3& pos,const glm::quat& rot, const glm::vec3& scale) {
+            
+            VisualObject::DrawVertices(GL_TRIANGLES, MathHelpers::TRS(pos, rot, scale));
+        }
+
+        static void DrawSphere(const glm::vec3& pos,const glm::quat& rot, const glm::vec3& scale) {
+            getInstance().Draw(pos, rot, scale);
+        }
+
+    private:
+        geometry_helpers();
+
+        geometry_helpers(geometry_helpers const&) = delete;
+        void operator=(geometry_helpers const&) = delete;
+    };
 }

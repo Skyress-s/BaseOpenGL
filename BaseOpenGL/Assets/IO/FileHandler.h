@@ -36,6 +36,23 @@ namespace KT {
             return vertices;
         }
 
+        static void FromAssimp(const std::string& filePath, std::vector<Vertex>& vertices, std::vector<int>& indices) {
+            Model model = Model(filePath);
+            vertices.clear();
+            indices.clear();
+
+            for (int i = 0; i < model.meshes.size(); ++i) {
+                for (int x = 0; x < model.meshes[i].indices.size(); ++x) {
+                    indices.push_back(model.meshes[i].indices[x]);
+                }
+
+                for (int v = 0; v < model.meshes[i].vertices.size(); ++v) {
+                    ::Vertex vert = model.meshes[i].vertices[v];
+                    vertices.push_back(KT::Vertex(vert.Position, vert.Normal, vert.TexCoords));
+                }
+            }
+        }
+
         
     };
 }

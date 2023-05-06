@@ -1,8 +1,10 @@
 ﻿#include "pch.h"
 #include "GeometryHelpers.h"
 
+#include "../Structure/OctahedronBall.h"
+
 void KT::GeometryHelpers::GetTrianglePositions(const int& i, glm::vec3 outPositions[3], const vector<Vertex>& mVertices,
-    const vector<int>& mIndices) {
+                                               const vector<int>& mIndices) {
     glm::vec3 p1, p2, p3;
     p1 = mVertices[mIndices[i * 3 + 0]].posToVec3();
     p2 = mVertices[mIndices[i * 3 + 1]].posToVec3();
@@ -68,4 +70,7 @@ void KT::GeometryHelpers::plane(std::vector<Vertex>& outVertices, std::vector<in
 }
 
 
-
+KT::geometry_helpers::geometry_helpers() {
+    // cube = OctahedronBall::makeUnitBall(2, 1.f);
+}
+std::vector<KT::Vertex> KT::geometry_helpers::cube = OctahedronBall::makeUnitBall(2, 1.f);
