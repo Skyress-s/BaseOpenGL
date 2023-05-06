@@ -308,6 +308,7 @@ int main() {
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
     // std::shared_ptr<KT::InteractiveObject> aa(cube);
     camera_controller = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
+    camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
     /*
 
     // PROG3D 

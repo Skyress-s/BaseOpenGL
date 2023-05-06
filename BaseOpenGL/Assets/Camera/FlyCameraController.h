@@ -5,22 +5,25 @@ class Camera;
 
 const float SPEED = 5.5f;
 const float SENSETIVITY = 0.05f;
-class FlyCameraController : public IController {
-public:
+
+namespace KT {
+    class FlyCameraController : public IController {
+    public:
     
-    float speed;
-    float sensetivity;
-    bool mLocked = false;
+        float speed;
+        float sensetivity;
+        bool mLocked = false;
     
-    std::shared_ptr<Camera> mCamera{};
-    FlyCameraController(std::shared_ptr<Camera> camera) : mCamera(camera), speed(SPEED), sensetivity(SENSETIVITY) {
+        std::shared_ptr<Camera> mCamera{};
+        FlyCameraController(std::shared_ptr<Camera> camera) : mCamera(camera), speed(SPEED), sensetivity(SENSETIVITY) {
         
-    }
+        }
     
-    void ProcessKeyboard(glm::vec3 input, float deltaTime) override;
+        void ProcessKeyboard(glm::vec3 input, float deltaTime) override;
 
-    virtual void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true,
-                                      GLboolean bInvertY = true);
+        virtual void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true,
+                                          GLboolean bInvertY = true);
 
-    void ProcessMouseScroll(float yoffset, bool bFOV = false);
-};
+        void ProcessMouseScroll(float yoffset, bool bFOV = false);
+    };
+}
