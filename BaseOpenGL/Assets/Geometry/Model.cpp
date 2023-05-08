@@ -235,7 +235,6 @@ KTTexture2D KTTextureFromFile(const string& directory, bool gamma) {
         texture_2d.data = pixel_data;
         stbi_image_free(data);
 
-    std::cout <<"awdawd " <<  textureID << std::endl;
         return texture_2d;
     }
     else {

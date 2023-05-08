@@ -73,6 +73,6 @@ void KT::ThirdPersonController::ProcessMouseMovement(float xoffset, float yoffse
 
 
     mCamera->UpdateCameraVectors();
-    glm::vec3 pos = mTargetPlayer->GetPosition() - mCamera->forward * 0.4f;
+    glm::vec3 pos = mTargetPlayer->GetPosition() - mCamera->forward * 0.15f;
     mCamera->position = pos;
 }

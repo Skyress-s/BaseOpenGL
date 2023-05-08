@@ -36,7 +36,7 @@
 #include "Assets/Camera/ThirdPersonController.h"
 #include "Assets/Structure/BSpline.h"
 #include "Assets/Structure/CameraMatricies.h"
-#include "Assets/Structure/Cube.h"
+#include "Assets/Structure/playerObject.h"
 #include "Assets/Structure/Enemy.h"
 #include "Assets/Structure/GeneralVisualObject.h"
 #include "Assets/Structure/ModelVisualObject.h"
@@ -82,35 +82,65 @@ bool show_another_window = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 // decalring functions
 
+// setup trophies
+void setupTrophies(std::unordered_map<std::string, KT::VisualObject*>& mMap, KT::playerObject* player,
+                   const std::unordered_map<std::string, KTTexture2D>& textures,
+                   unsigned int& currentPlayerScore, Shader* unlitTextureShader, KT::TriangleSurface* surface1, bool initialize = false) {
+    currentPlayerScore = 0;
+    // Exam task 5
+    for (int i = 0; i < 6; ++i) {
+        float x = KT::Random::Random(0, 1.f);
+
+        float z = KT::Random::Random(0, 1.f);
+        KT::Trophy* trophy = new KT::Trophy(player, 0.01f, currentPlayerScore);
+        trophy->UseShader(unlitTextureShader);
+        trophy->AddTexture(textures.at("party").textureID);
+        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
+        std::string trophyName = "t" + std::to_string(i);
+        if (mMap.count(trophyName)) {
+            delete mMap.at(trophyName);
+            mMap.erase(trophyName);
+        }
+        
+        if (initialize) 
+            trophy->init(0);
+        
+        mMap.insert(MapPair(trophyName, trophy));
+    }
+}
+
 // SETUP AND CLEANUP
-void setupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap, const std::unordered_map<std::string, KTTexture2D>& textures,
-    unsigned int& currentPlayerScore, Shader* textureShader) {
-    // Shaders
-    
-    // Textures
-    // KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
-    //
-    // unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
-    // unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
-    // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
-    // // textureShader->setInt("texture1", 0);
-    // // shaders
-    
+void setupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap,
+                        const std::unordered_map<std::string, KTTexture2D>& textures,
+                        unsigned int& currentPlayerScore, Shader* textureShader, Shader* unlitTextureShader) {
+    // temporary containers, used to insert custom data into Visual Objects
+    std::vector<KT::Vertex> vertices{};
+    std::vector<int> indices{};
+
+    // Exam task 3
     // second surface
     KT::TriangleSurface* surface1 = new KT::TriangleSurface(textureShader, textures.at("heightmap").textureID);
     surface1->constructWithTexture(textures.at("heightmap"));
     surface1->SetPosition(0, 0, 0);
     surface1->SetupTriData();
+    // Exam task 10
     surface1->CalculateNormals();
     mMap.insert(MapPair("surface", surface1));
 
-    KT::ModelVisualObject* modelVis = new KT::ModelVisualObject("Assets/Art/Models/calc.fbx", *textureShader);
+    /*
+    KT::FileHandler::FromAssimp("Assets/Art/Models/cube.fbx", vertices, indices);
+    KT::GeneralVisualObject* modelVis = new KT::GeneralVisualObject(vertices, indices);
+    modelVis->UseShader(textureShader);
+    modelVis->AddTexture(textures.at("rick").textureID);
     modelVis->SetPosition(0, 0.1f, 0);
     modelVis->SetScale(0.1f);
     modelVis->SetRotation(glm::vec3(180.f, 0, 0));
     mMap.insert(MapPair("model_vis", modelVis));
+    */
 
 
+    // spline
+    /*
     std::vector<glm::vec3> splinePoints{};
     splinePoints.push_back(glm::vec3(0, 0, 0));
     splinePoints.push_back(glm::vec3(1, 0, 0));
@@ -120,46 +150,42 @@ void setupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap
     splinePoints.push_back(glm::vec3(0, 4, 4));
     KT::VisualObject* bSpline = new KT::BSpline(splinePoints, 3);
     mMap.insert(MapPair("b_spline", bSpline));
+    */
 
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
-    std::vector<KT::Vertex> vertices{};
-    std::vector<int> indices{};
+    vertices.clear();
+    indices.clear();
+    // Exam task 11   
     KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
-    KT::InteractiveObject* cube = new KT::Cube(surface1, vertices, indices, textureShader);
-    cube->AddTexture(textures.at("rick").textureID);
-    cube->SetScale(glm::vec3(0.010f));
-    cube->name = "CUBE";
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
+    KT::playerObject* player = new KT::playerObject(surface1, vertices, indices, textureShader); // Exam task 4
+    // Exam task 2
+    player->AddTexture(textures.at("wall").textureID);
+    player->SetScale(glm::vec3(0.010f));
+    player->name = "CUBE";
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"player", player});
     // std::shared_ptr<KT::InteractiveObject> aa(cube);
 
-    thirdPersonController = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
-    firstPersonController = std::make_unique<KT::FirstPersonController>(activeCamera, cube);
+    thirdPersonController = std::make_unique<KT::ThirdPersonController>(activeCamera, player);
+    firstPersonController = std::make_unique<KT::FirstPersonController>(activeCamera, player);
 
-    camera_controller = firstPersonController;
+    camera_controller = thirdPersonController;
     // camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
 
-    // EXAM 2023 RELATED
 
-    KT::KeySwitch* key = new KT::KeySwitch(cube, "Assets/Art/Models/key.obj");
-    key->SetPosition(0.1, 0.01, 0.1);
+    // Exam task 11   
+    KT::KeySwitch* key = new KT::KeySwitch(player, "Assets/Art/Models/key.obj");
+    key->UseShader(textureShader);
+    key->AddTexture(textures.at("wall").textureID);
+    key->SetPosition(0.35f, 0.05, 0.1);
     mMap.insert(MapPair("key", key));
 
     // TROPHIES
     // ----------------------------------------
-    for (int i = 0; i < 6; ++i) {
-        float x = KT::Random::Random(0, 1.f);
-
-        float z = KT::Random::Random(0, 1.f);
-
-        // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Trophy* trophy = new KT::Trophy(cube, 0.01f, currentPlayerScore);
-        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
-        mMap.insert(MapPair("t" + std::to_string(i), trophy));
-    }
+    setupTrophies(mMap, player, textures, currentPlayerScore, unlitTextureShader, surface1);
 
     // ENEMIES
     // -----------------------------------------------------------------------------------------------------------------
@@ -169,7 +195,7 @@ void setupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap
         float z = KT::Random::Random(0, 1.f);
 
         // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Enemy* enemy = new KT::Enemy(cube, 0.01f);
+        KT::Enemy* enemy = new KT::Enemy(player, 0.01f);
         enemy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
         mMap.insert(MapPair("enemy_" + std::to_string(i), enemy));
     }
@@ -188,22 +214,36 @@ void setupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap
                                                                    KT::GeometryHelpers::planeIndices());
     counter->UseShader(textureShader);
     counter->AddTexture(textures.at("123").textureID);
-    counter->SetPosition(0.5, 0.05f, 0.5);
+    counter->SetPosition(-0.02f, 0.05f, 0.3f);
+    counter->SetRotation(glm::vec3(-90,0,0));
     counter->SetScale(0.05f);
     mMap.insert(MapPair("counter", counter));
-    // DOOR
-    // -----------------------------------------------------------------------------------------------------------------
 
     KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
+    KT::GeneralVisualObject* sampleObject1 = new KT::GeneralVisualObject(vertices, indices);
+    sampleObject1->SetScale(0.04f);
+    sampleObject1->SetPosition(0.5f, 0.04f, 0.5f);
+    sampleObject1->UseShader(textureShader);
+    sampleObject1->AddTexture(textures.at("heightmap").textureID);
+    mMap.insert(MapPair("sample1", sampleObject1));
 
-    KT::GeneralVisualObject* door = new KT::GeneralVisualObject(vertices, indices);
-    door->SetScale(0.5f);
-    door->UseShader(textureShader);
-    door->AddTexture(textures.at("rick").textureID);
-    mMap.insert(MapPair("door", door));
+    
+    KT::FileHandler::FromAssimp("Assets/Art/Models/cubee.fbx", vertices, indices);
+    KT::GeneralVisualObject* sampleObject2 = new KT::GeneralVisualObject(vertices, indices);
+    sampleObject2->SetScale(0.04f);
+    sampleObject2->SetPosition(1.f, 0.04f, 1.f);
+    sampleObject2->SetRotation(90,0,180);
+    sampleObject2->UseShader(textureShader);
+    sampleObject2->AddTexture(textures.at("wall").textureID);
+    mMap.insert(MapPair("sample2", sampleObject2));
 }
 
-void cleanupVisualObjects() {
+void cleanupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap) {
+    for (auto visualElement : mMap) {
+        delete visualElement.second;
+    }
+
+    mMap.clear();
 }
 
 
@@ -307,16 +347,6 @@ void cleanupGLFW_IMGUI_glad(GLFWwindow* window) {
     glfwTerminate();
 }
 
-// runtime setup and cleanup
-
-void setupRuntime() {
-    
-}
-
-void cleanupRuntime() {
-    // cleanup
-}
-
 
 /*// falloff func
 float falloffFunc(float x) {
@@ -351,166 +381,22 @@ int main() {
     Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
                                        "Assets/Art/Shaders/SimpleTexF.glsl");
     textureShader->use();
+    Shader* unlitTextureShader = new Shader("Assets/Art/Shaders/UnlitTextureV.glsl",
+                                            "Assets/Art/Shaders/UnlitTextureF.glsl");
+    unlitTextureShader->use();
+
     // Textures
-    
-    mTextures.insert(std::pair<std::string, KTTexture2D>("123", KTTextureFromFile( "Assets/Textures/123.png")));
-    mTextures.insert(std::pair<std::string, KTTexture2D>("rick", KTTextureFromFile( "Assets/Textures/rick.jpg")));
-    mTextures.insert(std::pair<std::string, KTTexture2D>("heightmap", KTTextureFromFile( "Assets/Textures/render.png")));
-    std::cout << mTextures.at("123").textureID << " " << mTextures.at("rick").textureID << " " << mTextures.at("heightmap").textureID << std::endl;
-    // unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
-    // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
 
-    
-    
-    setupVisualObjects(mMap, mTextures, currentPlayerScore, textureShader);
+    mTextures.insert(std::pair<std::string, KTTexture2D>("123", KTTextureFromFile("Assets/Textures/123.png")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("rick", KTTextureFromFile("Assets/Textures/rick.jpg")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("heightmap", KTTextureFromFile("Assets/Textures/render.png")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("party", KTTextureFromFile("Assets/Textures/party.jpg")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("grass", KTTextureFromFile("Assets/Textures/metal.jpg")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("wall", KTTextureFromFile("Assets/Textures/wall.jpg")));
 
-    /*
-    // print the info
-    KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
+    setupVisualObjects(mMap, mTextures, currentPlayerScore, textureShader, unlitTextureShader);
 
-
-    // texture shader
-    // Shader* textureShader = new Shader("Assets/Art/Shaders/Lek2V.glsl",
-    // "Assets/Art/Shaders/Lek2F.glsl");
-    Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
-                                       "Assets/Art/Shaders/SimpleTexF.glsl");
-    textureShader->use();
-    unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
-    unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
-    unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
-    textureShader->setInt("texture1", 0);
-
-    // second surface
-    // std::shared_ptr<KT::TriangleSurface> surface1 = std::make_shared<KT::TriangleSurface>(textureShader, wall);
-    KT::TriangleSurface* surface1 = new KT::TriangleSurface(textureShader, wall);
-    surface1->constructWithTexture(texture_2d);
-    surface1->SetPosition(0, 0, 0);
-    surface1->SetupTriData();
-    surface1->CalculateNormals();
-    mMap.insert(MapPair("surface", surface1));
-
-    KT::ModelVisualObject* modelVis = new KT::ModelVisualObject("Assets/Art/Models/calc.fbx", *textureShader);
-    modelVis->SetPosition(0, 0.1f, 0);
-    modelVis->SetScale(0.1f);
-    modelVis->SetRotation(glm::vec3(180.f, 0, 0));
-    mMap.insert(MapPair("model_vis", modelVis));
-
-
-    std::vector<glm::vec3> splinePoints{};
-    splinePoints.push_back(glm::vec3(0, 0, 0));
-    splinePoints.push_back(glm::vec3(1, 0, 0));
-    splinePoints.push_back(glm::vec3(2, 1, 0));
-    splinePoints.push_back(glm::vec3(0, 2, 0));
-    splinePoints.push_back(glm::vec3(0, 4, 2));
-    splinePoints.push_back(glm::vec3(0, 4, 4));
-    KT::VisualObject* bSpline = new KT::BSpline(splinePoints, 3);
-    mMap.insert(MapPair("b_spline", bSpline));
-
-    KT::VisualObject* xyz = new KT::XYZ();
-    xyz->name = "XYZ";
-    xyz->SetPosition(glm::vec3(0, 0, 0));
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
-
-    std::vector<KT::Vertex> vertices{};
-    std::vector<int> indices{};
-    KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
-    KT::InteractiveObject* cube = new KT::Cube(surface1, vertices, indices, textureShader);
-    cube->AddTexture(rick);
-    cube->SetScale(glm::vec3(0.010f));
-    cube->name = "CUBE";
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
-    // std::shared_ptr<KT::InteractiveObject> aa(cube);
-
-    thirdPersonController = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
-    firstPersonController = std::make_unique<KT::FirstPersonController>(activeCamera, cube);
-
-    camera_controller = firstPersonController;
-    // camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
-
-    // EXAM 2023 RELATED
-
-    KT::KeySwitch* key = new KT::KeySwitch(cube, "Assets/Art/Models/key.obj");
-    key->SetPosition(0.1, 0.01, 0.1);
-    mMap.insert(MapPair("key", key));
-
-    // TROPHIES
-    // ----------------------------------------
-    for (int i = 0; i < 6; ++i) {
-        float x = KT::Random::Random(0, 1.f);
-
-        float z = KT::Random::Random(0, 1.f);
-
-        // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Trophy* trophy = new KT::Trophy(cube, 0.01f, currentPlayerScore);
-        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
-        mMap.insert(MapPair("t" + std::to_string(i), trophy));
-    }
-
-    // ENEMIES
-    // -----------------------------------------------------------------------------------------------------------------
-    for (int i = 0; i < 4; ++i) {
-        float x = KT::Random::Random(0, 1.f);
-
-        float z = KT::Random::Random(0, 1.f);
-
-        // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Enemy* enemy = new KT::Enemy(cube, 0.01f);
-        enemy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
-        mMap.insert(MapPair("enemy_" + std::to_string(i), enemy));
-    }
-
-    std::vector<KT::Vertex> lightMeshVerts = KT::OctahedronBall::makeUnitBall(2);
-    for (int i = 0; i < lightMeshVerts.size(); ++i)
-        lightMeshVerts[i].set_normal(glm::vec3(1.f));
-
-    KT::VisualObject* lightMesh = new KT::GeneralVisualObject(lightMeshVerts);
-    lightMesh->SetPosition(0.5, 0.1f, 0.5);
-    lightMesh->SetScale(glm::vec3(0.01f));
-    mMap.insert(MapPair("light", lightMesh));
-
-    // counter
-    KT::GeneralVisualObject* counter = new KT::GeneralVisualObject(KT::GeometryHelpers::planeVertices(),
-                                                                   KT::GeometryHelpers::planeIndices());
-    counter->UseShader(textureShader);
-    counter->AddTexture(calcTexture);
-    counter->SetPosition(0.5, 0.05f, 0.5);
-    counter->SetScale(0.05f);
-    mMap.insert(MapPair("counter", counter));
-    // DOOR
-    // -----------------------------------------------------------------------------------------------------------------
-
-    KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
-
-    KT::GeneralVisualObject* door = new KT::GeneralVisualObject(vertices, indices);
-    door->SetScale(0.5f);
-    door->UseShader(textureShader);
-    door->AddTexture(rick);
-    mMap.insert(MapPair("door", door));
-
-
-    // // HOUSE
-    // // -----------------------------------------------------------------------------------------------------------------
-    // KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
-    // KT::GeneralVisualObject* house = new KT::GeneralVisualObject(vertices, indices);
-    // house->SetPosition(glm::vec3(0, 0, 1.5f));
-    // mMap.insert(MapPair("house", house));
-    */
-
-    /*
-    // IN HOUSE OBJECT
-    // -----------------------------------------------------------------------------------------------------------------
-    KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
-    houseObject->SetPosition(0, 0.4, 1.4);
-    mMap.insert(MapPair("houseObject", houseObject));
-
-    KT::MathComp2Handler* math_comp2_handler = new KT::MathComp2Handler();
-    float mathScale = 0.4f;
-    math_comp2_handler->SetScale(mathScale, mathScale, mathScale);
-    math_comp2_handler->SetPosition(0.f, 4, 0);
-    math_comp2_handler->SetRotation(0, 0, 0);
-    mMap.insert(std::pair<std::string, KT::VisualObject*>{"math2comp", math_comp2_handler});
-    */
-
+    // Initialize Visual Objects
     for (auto object : mMap) {
         object.second->init(matrixUniform);
     }
@@ -568,12 +454,12 @@ int main() {
             ImGui::Begin("Controls");
 
             ImGui::Text("TAB - Enter/exit UI mode\n"
-                "ARROW KEYS   - Move cube\n"
-                "WASD KEYS    - Move Camera\n"
-                "MOVE MOUSE   - Look around");
+                "WASD KEYS    - Move Player\n"
+                "MOVE MOUSE   - Look around\n"
+                "C            - Toggle Camera\n");
             ImGui::End();
 
-            ImGui::Begin("Helalo, world!"); // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Hello World!"); // Create a window called "Hello, world!" and append into it.
 
             ImGui::Checkbox("Draw Normals", &bDrawNormals);
             if (bDrawNormals) {
@@ -622,6 +508,17 @@ int main() {
 
         // UPDATE
 
+        // Exam task 6
+        if (((KT::playerObject*)(mMap.at("player")))->mDead) {
+            std::cout << "Player is dead, resetting game" << std::endl;
+            auto player = ((KT::playerObject*)(mMap.at("player")));
+            player->mDead = false;
+            player->ResetToTriangle(1);
+            currentPlayerScore = 0;
+            setupTrophies(mMap, player, mTextures, currentPlayerScore, unlitTextureShader,
+                ((KT::TriangleSurface*)(mMap.at("surface"))), true);
+            
+        }
 
         // mMap["disc"]->SetPosition(mMap["disc"]->GetPosition() += glm::vec3(1,0,0)*deltaTime*2.f);
         for (auto object : mMap) {
@@ -638,6 +535,7 @@ int main() {
 
         leksjon2Shader.setMat4("matrix", glm::mat4(1.f));
 
+        // Exam task 8
         // setting shader light uniforms
         glm::vec3 lightPos = glm::vec3(0.5f * sin(glfwGetTime() + 0.5f), 0.3f, 0.5f * cos(glfwGetTime() + 0.5f));
         lightPos += glm::vec3(0.5f, 0.f, 0.5f);
@@ -645,14 +543,15 @@ int main() {
 
         textureShader->use();
         textureShader->setVec3("objectColor", 1.0f, 1.f, 1.f);
-        
+
         // Task 9
-        
-        if (((KT::KeySwitch*)(mMap.at("key")))->IsOn())
+        if (((KT::KeySwitch*)(mMap.at("key")))->IsOn()) {
             textureShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        else 
+        }
+        else {
             textureShader->setVec3("lightColor", 0.1f, 0.1f, 0.1f);
-            
+        }
+
         textureShader->setVec3("lightPos", lightPos);
         textureShader->setVec3("viewPos", CameraPosition);
 
@@ -661,7 +560,7 @@ int main() {
             leksjon2Shader.use();
             object.second->draw();
         }
-        
+
         if (bDrawNormals) {
             normalGeoShader.use();
             normalGeoShader.setFloat("MAGNITUDE", drawNormalLength);
@@ -699,6 +598,12 @@ int main() {
     // delete textureShader;
     // delete[] texture_2d.data;
 
+    cleanupVisualObjects(mMap);
+
+    for (auto texture : mTextures) {
+        delete texture.second.data;
+    }
+    delete textureShader;
     return 0;
 }
 
@@ -743,6 +648,7 @@ void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         keyboardAxis.y += 1.f;
 
+    // Exam task 1
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
         if (!cameraSwitchButton) {
             if (camera_controller == firstPersonController)

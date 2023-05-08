@@ -3,7 +3,7 @@
 #include "../Axis/InteractiveObject.h"
 
 namespace KT {
-    class Trophy : public VisualObject {
+    class Trophy : public GeneralVisualObject {
     private:
         InteractiveObject* _target;
         float _range;

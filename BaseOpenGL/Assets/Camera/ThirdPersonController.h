@@ -3,7 +3,7 @@
 #include "../Axis/InteractiveObject.h"
 
 class Camera;
-
+// Exam task 1
 namespace KT {
 
     class ThirdPersonController : public IController {

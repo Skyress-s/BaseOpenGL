@@ -61,7 +61,6 @@ public:
         height = other.height;
         nrChannels = other.nrChannels;
         textureID = other.textureID;
-        
         data = new unsigned char[width * height * nrChannels];
         memcpy(data, other.data, width * height * nrChannels); 
     }

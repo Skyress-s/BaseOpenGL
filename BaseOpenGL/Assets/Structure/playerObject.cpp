@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
-#include "Cube.h"
+#include "playerObject.h"
 
 namespace KT {
-    Cube::Cube(TriangleSurface* target, std::vector<Vertex> vertices, std::vector<int> indices, Shader* shader) {
+    playerObject::playerObject(TriangleSurface* target, std::vector<Vertex> vertices, std::vector<int> indices, Shader* shader) {
         mTarget = target;
         mVertices = vertices;
         mIndices = indices;
@@ -75,7 +75,7 @@ namespace KT {
         mModelMatrix = glm::mat4x4(1.f); // creates identity matrix
     }
 
-    void Cube::init(GLint matrixUniform) {
+    void playerObject::init(GLint matrixUniform) {
         mCurrentTriangle = 0;
         
 
@@ -87,7 +87,7 @@ namespace KT {
         VisualObject::init(matrixUniform);
     }
 
-    void Cube::draw() {
+    void playerObject::draw() {
         VisualObject::DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
         // VisualObject::DrawElements(GL_TRIANGLES, GetModelMatrix());
         // VisualObject::DrawVertices(GL_TRIANGLES, GetModelMatrix());

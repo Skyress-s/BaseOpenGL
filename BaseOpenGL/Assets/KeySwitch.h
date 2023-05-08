@@ -18,11 +18,14 @@ namespace KT {
         }
 
         void draw() override {
-            VisualObject::DrawElements(GL_TRIANGLES, GetModelMatrix());
+            VisualObject::DrawElementsWithShader(GL_TRIANGLES, GetModelMatrix());
         }
 
         bool IsInRange() {
-            if (glm::distance(GetPosition(), mTarget->GetPosition()) < 0.04)
+            // only check in xz plane
+            glm::vec2 p1 = glm::vec2(GetPosition().x, GetPosition().z);
+            glm::vec2 p2 = glm::vec2(mTarget->GetPosition().x, mTarget->GetPosition().z); 
+            if (glm::distance(p1,p2) < 0.04f)
                 return true;
             return false;
         }

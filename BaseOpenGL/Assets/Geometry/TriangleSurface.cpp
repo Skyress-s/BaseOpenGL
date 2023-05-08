@@ -246,8 +246,9 @@ namespace KT {
     }
 
 
+    // Exam task 3
     /**
-     * \brief 
+     * \brief Using multithreading to construct the vertices
      * \param texture 
      */
     void TriangleSurface::constructWithTexture(KTTexture2D texture) {
@@ -255,8 +256,8 @@ namespace KT {
         mIndices.clear();
         // zero to one
         // construct the vertices
-        int numWidthVertices = 2 << 7;      // xxxxx // Skateboiard tricks
-        int numHeightVertices = 2 << 7;     // yyyyy// Skateboiard tricks
+        int numWidthVertices = 2 << 7;      // xxxxx 
+        int numHeightVertices = 2 << 7;     // yyyyy
         float widthLength = 1.f;
         float heightLength = 1.f;
         auto funcX = [numWidthVertices](int x, int z) {
@@ -526,23 +527,31 @@ namespace KT {
         }
     }
 
-    std::vector<glm::vec3> TriangleSurface::CalculateNormals() {
+    // Exam task 10
+    void TriangleSurface::CalculateNormals() {
         std::vector<glm::vec3> retVal = std::vector<glm::vec3>();
+
+        
         for (int vertex = 0; vertex < mVertices.size(); ++vertex) {
+
+            // find triangles with this vertex
             std::vector<unsigned int> triangleIndices = GeometryHelpers::GetTrianglesWithVertex(
                 vertexTriangleIndexes, vertex);
 
+            // calcualate the weighted triangle and add to normal n vector
             glm::vec3 n = glm::vec3(0.f);
             for (int i = 0; i < triangleIndices.size(); ++i) {
                 n += GeometryHelpers::calculate_normal_of_triangle_weighted(
                     triangleIndices[i], mVertices, mIndices);
             }
 
+            // normalize and set normal
             n = glm::normalize(n);
             mVertices[vertex].set_normal(n);
         }
 
-        return retVal;
+        // old version
+        /*
         for (int i = 0; i < mVertices.size(); ++i) {
             int triIndexes[3];
             FindNeighbourTriangles(i, triIndexes);
@@ -560,9 +569,7 @@ namespace KT {
             mVertices[i].m_normal[1] = normal.y;
             mVertices[i].m_normal[2] = normal.z;
         }
-
-
-        return retVal;
+        */
     }
 
     void TriangleSurface::GetTrianglePositions(const int& i, glm::vec3 outPositions[3]) const {
@@ -647,9 +654,9 @@ namespace KT {
             return calcpos;
         }
         // search nearest neighbour
+        // ----------------------------------------
 
-        // find nearest
-        //todo use absolute - Staal
+        // find nearest edge
         int edgeIndices[2];
         if (baryc.x < baryc.y && baryc.x < baryc.z) {
             edgeIndices[0] = 1;
@@ -663,7 +670,7 @@ namespace KT {
             edgeIndices[0] = 0;
             edgeIndices[1] = 1;
         }
-
+        
         int neighbourTri = FindNeigbourTriangle(outCurrentTriangle, edgeIndices[0], edgeIndices[1]);
         if (neighbourTri != -1 && InTriangleXZ(neighbourTri, x)) {
             GetTrianglePositions(neighbourTri, pos);
@@ -672,13 +679,13 @@ namespace KT {
             outCurrentTriangle = neighbourTri;
             return baryc.x * pos[0] + baryc.y * pos[1] + baryc.z * pos[2];
         }
-        if (neighbourTri != -1) {
+        if (neighbourTri != -1) { // did not find triangle
             // not in triangle but found a neighbour
             outCurrentTriangle = neighbourTri;
-            // std::cout << "DID RECURSIVE SEARCH" << std::endl;
-            return SearchCurrentAndNearest(outCurrentTriangle, x);
+            return SearchCurrentAndNearest(outCurrentTriangle, x); // recursivley seach until we reach a valid triangle
         }
 
+        
         tri_data triData = mTriDatas_[outCurrentTriangle];
         glm::vec3 p1 = mVertices[triData.vertex_indices[edgeIndices[0]]].posToVec3();
         glm::vec3 p2 = mVertices[triData.vertex_indices[edgeIndices[1]]].posToVec3();

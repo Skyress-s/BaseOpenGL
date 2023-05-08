@@ -9,7 +9,7 @@ namespace KT {
     class TriangleSurface : public VisualObject {
     private:
         std::vector<tri_data> mTriDatas_{};
-        std::vector<std::vector<unsigned int>> vertexTriangleIndexes{};
+        std::vector<std::vector<unsigned int>> vertexTriangleIndexes{}; // each vertex has a list of triangles it is part of
 
     public:
         TriangleSurface();
@@ -32,7 +32,7 @@ namespace KT {
 
         void FindNeighbourTriangles(const int& currentTriangleIndex, int triIndexes[3]);
 
-        std::vector<glm::vec3> CalculateNormals();
+        void CalculateNormals();
 
         // void GetTrianglePositions(const int& i, vector<glm::vec3>& outPositions) {
         void GetTrianglePositions(const int& i, glm::vec3 outPositions[3]) const;

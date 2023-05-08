@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "FirstPersonController.h"
-
+// Exam task 1
 KT::FirstPersonController::FirstPersonController(std::shared_ptr<Camera> camera, InteractiveObject* targetPlayer)
     : mCamera(camera), mTargetPlayer(targetPlayer), speed(SPEED), sensetivity(SENSETIVITY) {
 }
@@ -72,6 +72,6 @@ void KT::FirstPersonController::ProcessMouseMovement(float xoffset, float yoffse
 
 
     mCamera->UpdateCameraVectors();
-    glm::vec3 pos = mTargetPlayer->GetPosition() + glm::vec3(0,0.001f,0); //- mCamera->forward * 0.4f;
+    glm::vec3 pos = mTargetPlayer->GetPosition() + glm::vec3(0,0.014f,0); //- mCamera->forward * 0.4f;
     mCamera->position = pos;
 }
