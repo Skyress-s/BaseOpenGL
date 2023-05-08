@@ -29,6 +29,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Assets/House.h"
+#include "Assets/Key.h"
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Camera/FirstPersonController.h"
 #include "Assets/Camera/FlyCameraController.h"
@@ -300,6 +301,7 @@ int main() {
     mMap.insert(MapPair("model_vis", modelVis));
 
 
+
     std::vector<glm::vec3> splinePoints{};
     splinePoints.push_back(glm::vec3(0, 0, 0));
     splinePoints.push_back(glm::vec3(1, 0, 0));
@@ -330,11 +332,13 @@ int main() {
     
     camera_controller = firstPersonController;
     // camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
-    /*
 
-    // PROG3D 
-    // ----------------------------------------
-    */
+    // EXAM 2023 RELATED
+    
+    KT::VisualObject* key = new KT::Key(cube, "Assets/Art/Models/key.obj");
+    key->SetPosition(0.1, 0.01, 0.1);
+    mMap.insert(MapPair("key", key));
+    
     // TROPHIES
     // ----------------------------------------
     for (int i = 0; i < 6; ++i) {
@@ -391,16 +395,12 @@ int main() {
 
         
     
-    // HOUSE
-    // -----------------------------------------------------------------------------------------------------------------
-    // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    vertices.clear();
-    indices.clear();
-    // KT::FileHandler::FromAssimp("Assets/Art/Models/objcube.obj", vertices, indices);
-    KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
-    KT::GeneralVisualObject* house = new KT::GeneralVisualObject(vertices, indices);
-    house->SetPosition(glm::vec3(0, 0, 1.5f));
-    mMap.insert(MapPair("house", house));
+    // // HOUSE
+    // // -----------------------------------------------------------------------------------------------------------------
+    // KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
+    // KT::GeneralVisualObject* house = new KT::GeneralVisualObject(vertices, indices);
+    // house->SetPosition(glm::vec3(0, 0, 1.5f));
+    // mMap.insert(MapPair("house", house));
 
     /*
     // IN HOUSE OBJECT

@@ -166,6 +166,7 @@
     <ClCompile Include="Assets\Gizmo\GizmoDrawer.cpp" />
     <ClCompile Include="Assets\House.cpp" />
     <ClCompile Include="Assets\IO\FileHandler.cpp" />
+    <ClCompile Include="Assets\Key.cpp" />
     <ClCompile Include="Assets\Math\MathHelpers.cpp" />
     <ClCompile Include="Assets\Math\TriangulationHandler.cpp" />
     <ClCompile Include="Assets\Shader\Shader.cpp" />
@@ -254,6 +255,7 @@
     <ClInclude Include="Assets\Gizmo\GizmoDrawer.h" />
     <ClInclude Include="Assets\House.h" />
     <ClInclude Include="Assets\IO\FileHandler.h" />
+    <ClInclude Include="Assets\Key.h" />
     <ClInclude Include="Assets\Math\Graphs.h" />
     <ClInclude Include="Assets\Math\MathHelpers.h" />
     <ClInclude Include="Assets\Math\TriangulationHandler.h" />
