@@ -60,6 +60,7 @@ public:
         width = other.width;
         height = other.height;
         nrChannels = other.nrChannels;
+        textureID = other.textureID;
         
         data = new unsigned char[width * height * nrChannels];
         memcpy(data, other.data, width * height * nrChannels); 
@@ -71,6 +72,7 @@ public:
     unsigned int width;
     unsigned int height;
     unsigned int nrChannels;
+    unsigned int textureID;
 
     std::vector<int> ValueAt(float u, float v) {
         // clamp u and v to [0, 1]

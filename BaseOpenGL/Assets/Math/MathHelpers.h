@@ -20,7 +20,59 @@ namespace KT {
 
         static float ReScale(const float& val, const float& startLow, const float& startHigh, const float& endLow,
                              const float& endHigh);
+        
+        template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+        void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals);
     };
+
+    template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+    void MathHelpers::SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
+        static_assert(R == C, "Rows and Collums has to be equal!");
+        // example how to do it
+        // glm::mat3 testMat = glm::mat3(1.f);
+        // testMat[0][0] = 1.f;
+        // testMat[1][0] = 1.f;
+        // testMat[2][0] = 1.f;
+        //
+        // testMat[0][1] = 5.f;
+        // testMat[1][1] = 3.f;
+        // testMat[2][1] = 2.f;
+        //
+        // testMat[0][2] = 1.f;
+        // testMat[1][2] = 3.f;
+        // testMat[2][2] = 2.f;
+        std::cout << "MATRIX" << std::endl;
+        print(mat);
+        
+        glm::mat<C, R, T, Q> inv = inverse(mat);
+        
+        
+        glm::vec<R, T, Q> res = inv * equals;
+        std::cout << "RESULTS XYZW VALUES" << std::endl;
+        for (int i = 0; i < R; ++i) {
+            std::cout << res[i] << " ";
+        }
+        std::cout << std::endl;
+        
+        std::cout << "RECALCULATE" << std::endl;
+        for (int y = 0; y < C; ++y) {
+            float plane = 0.f;
+            for (int x = 0; x < C; ++x) {
+                plane += mat[x][y] * res[x];
+            }
+            std::cout << plane << " ";
+        }
+        std::cout << std::endl;
+        
+        std::cout << "SHOULD EQUAL" << std::endl;
+        for (int i = 0; i < R; ++i) {
+            std::cout << equals[i] << " ";
+        }
+        std::cout << std::endl;
+        
+        
+        return;
+    }
 
 
     static glm::vec3 BarycentricCoordinates3d(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,

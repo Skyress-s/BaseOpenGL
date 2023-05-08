@@ -226,6 +226,7 @@ KTTexture2D KTTextureFromFile(const string& directory, bool gamma) {
         texture_2d.width = width;
         texture_2d.height = height;
         texture_2d.nrChannels = nrComponents;
+        texture_2d.textureID = textureID;
 
         int num_pixels = texture_2d.width * texture_2d.height;
         int pixel_size = texture_2d.nrChannels * sizeof(unsigned char);
@@ -234,12 +235,12 @@ KTTexture2D KTTextureFromFile(const string& directory, bool gamma) {
         texture_2d.data = pixel_data;
         stbi_image_free(data);
 
+    std::cout <<"awdawd " <<  textureID << std::endl;
         return texture_2d;
     }
     else {
         std::cout << "Texture failed to load at path: " << directory << std::endl;
         stbi_image_free(data);
     }
-
     return KTTexture2D{};
 }

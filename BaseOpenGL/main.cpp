@@ -50,6 +50,7 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
+typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 // Camera camera = (glm::vec3(0.f, 2.f, -5.f));
 
@@ -82,7 +83,124 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 // decalring functions
 
 // SETUP AND CLEANUP
-void setupVisualObjects() {
+void setupVisualObjects(std::unordered_map<std::string, KT::VisualObject*>& mMap, const std::unordered_map<std::string, KTTexture2D>& textures,
+    unsigned int& currentPlayerScore, Shader* textureShader) {
+    // Shaders
+    
+    // Textures
+    // KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
+    //
+    // unsigned int wall = TextureFromFile("render.png", "Assets/Textures");
+    // unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
+    // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
+    // // textureShader->setInt("texture1", 0);
+    // // shaders
+    
+    // second surface
+    KT::TriangleSurface* surface1 = new KT::TriangleSurface(textureShader, textures.at("heightmap").textureID);
+    surface1->constructWithTexture(textures.at("heightmap"));
+    surface1->SetPosition(0, 0, 0);
+    surface1->SetupTriData();
+    surface1->CalculateNormals();
+    mMap.insert(MapPair("surface", surface1));
+
+    KT::ModelVisualObject* modelVis = new KT::ModelVisualObject("Assets/Art/Models/calc.fbx", *textureShader);
+    modelVis->SetPosition(0, 0.1f, 0);
+    modelVis->SetScale(0.1f);
+    modelVis->SetRotation(glm::vec3(180.f, 0, 0));
+    mMap.insert(MapPair("model_vis", modelVis));
+
+
+    std::vector<glm::vec3> splinePoints{};
+    splinePoints.push_back(glm::vec3(0, 0, 0));
+    splinePoints.push_back(glm::vec3(1, 0, 0));
+    splinePoints.push_back(glm::vec3(2, 1, 0));
+    splinePoints.push_back(glm::vec3(0, 2, 0));
+    splinePoints.push_back(glm::vec3(0, 4, 2));
+    splinePoints.push_back(glm::vec3(0, 4, 4));
+    KT::VisualObject* bSpline = new KT::BSpline(splinePoints, 3);
+    mMap.insert(MapPair("b_spline", bSpline));
+
+    KT::VisualObject* xyz = new KT::XYZ();
+    xyz->name = "XYZ";
+    xyz->SetPosition(glm::vec3(0, 0, 0));
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
+
+    std::vector<KT::Vertex> vertices{};
+    std::vector<int> indices{};
+    KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
+    KT::InteractiveObject* cube = new KT::Cube(surface1, vertices, indices, textureShader);
+    cube->AddTexture(textures.at("rick").textureID);
+    cube->SetScale(glm::vec3(0.010f));
+    cube->name = "CUBE";
+    mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
+    // std::shared_ptr<KT::InteractiveObject> aa(cube);
+
+    thirdPersonController = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
+    firstPersonController = std::make_unique<KT::FirstPersonController>(activeCamera, cube);
+
+    camera_controller = firstPersonController;
+    // camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
+
+    // EXAM 2023 RELATED
+
+    KT::KeySwitch* key = new KT::KeySwitch(cube, "Assets/Art/Models/key.obj");
+    key->SetPosition(0.1, 0.01, 0.1);
+    mMap.insert(MapPair("key", key));
+
+    // TROPHIES
+    // ----------------------------------------
+    for (int i = 0; i < 6; ++i) {
+        float x = KT::Random::Random(0, 1.f);
+
+        float z = KT::Random::Random(0, 1.f);
+
+        // std::cout << "xz : " << x << " " << z <<std::endl;
+        KT::Trophy* trophy = new KT::Trophy(cube, 0.01f, currentPlayerScore);
+        trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
+        mMap.insert(MapPair("t" + std::to_string(i), trophy));
+    }
+
+    // ENEMIES
+    // -----------------------------------------------------------------------------------------------------------------
+    for (int i = 0; i < 4; ++i) {
+        float x = KT::Random::Random(0, 1.f);
+
+        float z = KT::Random::Random(0, 1.f);
+
+        // std::cout << "xz : " << x << " " << z <<std::endl;
+        KT::Enemy* enemy = new KT::Enemy(cube, 0.01f);
+        enemy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
+        mMap.insert(MapPair("enemy_" + std::to_string(i), enemy));
+    }
+
+    std::vector<KT::Vertex> lightMeshVerts = KT::OctahedronBall::makeUnitBall(2);
+    for (int i = 0; i < lightMeshVerts.size(); ++i)
+        lightMeshVerts[i].set_normal(glm::vec3(1.f));
+
+    KT::VisualObject* lightMesh = new KT::GeneralVisualObject(lightMeshVerts);
+    lightMesh->SetPosition(0.5, 0.1f, 0.5);
+    lightMesh->SetScale(glm::vec3(0.01f));
+    mMap.insert(MapPair("light_mesh", lightMesh));
+
+    // counter
+    KT::GeneralVisualObject* counter = new KT::GeneralVisualObject(KT::GeometryHelpers::planeVertices(),
+                                                                   KT::GeometryHelpers::planeIndices());
+    counter->UseShader(textureShader);
+    counter->AddTexture(textures.at("123").textureID);
+    counter->SetPosition(0.5, 0.05f, 0.5);
+    counter->SetScale(0.05f);
+    mMap.insert(MapPair("counter", counter));
+    // DOOR
+    // -----------------------------------------------------------------------------------------------------------------
+
+    KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
+
+    KT::GeneralVisualObject* door = new KT::GeneralVisualObject(vertices, indices);
+    door->SetScale(0.5f);
+    door->UseShader(textureShader);
+    door->AddTexture(textures.at("rick").textureID);
+    mMap.insert(MapPair("door", door));
 }
 
 void cleanupVisualObjects() {
@@ -177,7 +295,6 @@ int setupGLFW_IMGUI_glad(GLFWwindow*& outWindow) {
     return 0;
 }
 
-
 void cleanupGLFW_IMGUI_glad(GLFWwindow* window) {
     // IMGUI CLEANUP
     ImGui_ImplOpenGL3_Shutdown();
@@ -190,62 +307,22 @@ void cleanupGLFW_IMGUI_glad(GLFWwindow* window) {
     glfwTerminate();
 }
 
-// falloff func
+// runtime setup and cleanup
+
+void setupRuntime() {
+    
+}
+
+void cleanupRuntime() {
+    // cleanup
+}
+
+
+/*// falloff func
 float falloffFunc(float x) {
     return cos(4.f * x) * 1.f / exp(x);
-}
+}*/
 
-
-template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-void SolveThreePlanes(glm::mat<C, R, T, Q> mat, glm::vec<R, T, Q> equals) {
-    static_assert(R == C, "Rows and Collums has to be equal!");
-    // example how to do it
-    // glm::mat3 testMat = glm::mat3(1.f);
-    // testMat[0][0] = 1.f;
-    // testMat[1][0] = 1.f;
-    // testMat[2][0] = 1.f;
-    //
-    // testMat[0][1] = 5.f;
-    // testMat[1][1] = 3.f;
-    // testMat[2][1] = 2.f;
-    //
-    // testMat[0][2] = 1.f;
-    // testMat[1][2] = 3.f;
-    // testMat[2][2] = 2.f;
-    std::cout << "MATRIX" << std::endl;
-    print(mat);
-
-    glm::mat<C, R, T, Q> inv = inverse(mat);
-
-
-    glm::vec<R, T, Q> res = inv * equals;
-    std::cout << "RESULTS XYZW VALUES" << std::endl;
-    for (int i = 0; i < R; ++i) {
-        std::cout << res[i] << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "RECALCULATE" << std::endl;
-    for (int y = 0; y < C; ++y) {
-        float plane = 0.f;
-        for (int x = 0; x < C; ++x) {
-            plane += mat[x][y] * res[x];
-        }
-        std::cout << plane << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "SHOULD EQUAL" << std::endl;
-    for (int i = 0; i < R; ++i) {
-        std::cout << equals[i] << " ";
-    }
-    std::cout << std::endl;
-
-
-    return;
-}
-
-typedef std::pair<std::string, KT::VisualObject*> MapPair;
 
 int main() {
     GLFWwindow* window{};
@@ -262,20 +339,33 @@ int main() {
     unsigned int currentPlayerScore = 0;
 
     // objects in scene
-    // std::vector<VisualObject*> mObjects{};
-    std::vector<KT::VisualObject*> mObjects{};
     std::unordered_map<std::string, KT::VisualObject*> mMap{};
+    std::unordered_map<std::string, KTTexture2D> mTextures{};
 
-
-    //Shader
+    // Shaders
     Shader leksjon2Shader = Shader("Assets/Art/Shaders/Lek2V.glsl",
                                    "Assets/Art/Shaders/Lek2F.glsl");
     leksjon2Shader.use();
     GLint matrixUniform = glGetUniformLocation(leksjon2Shader.ID, "matrix");
 
+    Shader* textureShader = new Shader("Assets/Art/Shaders/SimpleTexV.glsl",
+                                       "Assets/Art/Shaders/SimpleTexF.glsl");
+    textureShader->use();
+    // Textures
+    
+    mTextures.insert(std::pair<std::string, KTTexture2D>("123", KTTextureFromFile( "Assets/Textures/123.png")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("rick", KTTextureFromFile( "Assets/Textures/rick.jpg")));
+    mTextures.insert(std::pair<std::string, KTTexture2D>("heightmap", KTTextureFromFile( "Assets/Textures/render.png")));
+    std::cout << mTextures.at("123").textureID << " " << mTextures.at("rick").textureID << " " << mTextures.at("heightmap").textureID << std::endl;
+    // unsigned int calcTexture = TextureFromFile("123.png", "Assets/Textures");
+    // unsigned int rick = TextureFromFile("rick.jpg", "Assets/Textures");
 
+    
+    
+    setupVisualObjects(mMap, mTextures, currentPlayerScore, textureShader);
+
+    /*
     // print the info
-    // KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
     KTTexture2D texture_2d = KTTextureFromFile("Assets/Textures/render.png");
 
 
@@ -404,6 +494,7 @@ int main() {
     // KT::GeneralVisualObject* house = new KT::GeneralVisualObject(vertices, indices);
     // house->SetPosition(glm::vec3(0, 0, 1.5f));
     // mMap.insert(MapPair("house", house));
+    */
 
     /*
     // IN HOUSE OBJECT
@@ -550,13 +641,14 @@ int main() {
         // setting shader light uniforms
         glm::vec3 lightPos = glm::vec3(0.5f * sin(glfwGetTime() + 0.5f), 0.3f, 0.5f * cos(glfwGetTime() + 0.5f));
         lightPos += glm::vec3(0.5f, 0.f, 0.5f);
-        lightMesh->SetPosition(lightPos);
+        mMap.at("light_mesh")->SetPosition(lightPos);
 
         textureShader->use();
         textureShader->setVec3("objectColor", 1.0f, 1.f, 1.f);
         
         // Task 9
-        if (key->IsOn())
+        
+        if (((KT::KeySwitch*)(mMap.at("key")))->IsOn())
             textureShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         else 
             textureShader->setVec3("lightColor", 0.1f, 0.1f, 0.1f);
@@ -604,8 +696,8 @@ int main() {
     cleanupGLFW_IMGUI_glad(window);
 
     // other cleanup
-    delete textureShader;
-    delete[] texture_2d.data;
+    // delete textureShader;
+    // delete[] texture_2d.data;
 
     return 0;
 }
