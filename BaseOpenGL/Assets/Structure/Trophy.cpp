@@ -13,7 +13,9 @@ void KT::Trophy::init(GLint matrixUniform) {
 
 void KT::Trophy::Update(float deltaTime) {
     VisualObject::Update(deltaTime);
-    if (IsInRange()) {
+    if (IsInRange() && !_collected) {
         _collected = true;
+        mCurrentPlayerScore++;
+        std::cout << "Trophy was collected! Current score: " << mCurrentPlayerScore << std::endl;
     }
 }

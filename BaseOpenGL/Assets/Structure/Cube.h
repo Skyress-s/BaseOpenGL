@@ -9,7 +9,7 @@ namespace KT {
         TriangleSurface* mTarget{};
         unsigned int mCurrentTriangle = 0;
     public:
-        Cube(TriangleSurface* target);
+        Cube(TriangleSurface* target, std::vector<Vertex> vertices, std::vector<int> indices, Shader* shader);
         void init(GLint matrixUniform) override;
         void draw() override;
 

@@ -2,9 +2,10 @@
 #include <functional>
 
 #include "VisualObject.h"
+#include "../Structure/GeneralVisualObject.h"
 
 namespace KT {
-    class InteractiveObject : public VisualObject {
+    class InteractiveObject : public GeneralVisualObject {
     public:
         InteractiveObject();
         ~InteractiveObject() override;

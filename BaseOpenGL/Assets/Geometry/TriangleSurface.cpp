@@ -675,7 +675,7 @@ namespace KT {
         if (neighbourTri != -1) {
             // not in triangle but found a neighbour
             outCurrentTriangle = neighbourTri;
-            std::cout << "DID RECURSIVE SEARCH" << std::endl;
+            // std::cout << "DID RECURSIVE SEARCH" << std::endl;
             return SearchCurrentAndNearest(outCurrentTriangle, x);
         }
 

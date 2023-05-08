@@ -53,6 +53,133 @@ namespace KT {
             }
         }
 
+    static void Import_obj_importer(std::string filename, std::vector<Vertex>& vertices, std::vector<int>& indices) {
+        std::ifstream fileIn;
+        fileIn.open(filename, std::ifstream::in);
+        if (!fileIn) {
+            std::cout << "OBJIMPORTER::ERROR::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+            return;
+        }
+        // One line at a time variable
+        std::string oneLine;
+        // One word at a time variable
+        std::string oneWord;
+
+        std::vector<glm::vec3> tempVertices;
+        std::vector<glm::vec3> tempNormals;
+        std::vector<glm::vec3> tempUVs;
+
+        // Variable for constructing the indices vector
+        unsigned int temp_index = 0;
+
+        while (std::getline(fileIn, oneLine)) {
+            // Doing a trick to get one word at a time
+            std::stringstream sStream;
+            // Pushing line into stream
+            sStream << oneLine;
+            // Streaming one word out of line
+            oneWord = ""; // resetting the value or else the last value might survive!
+            sStream >> oneWord;
+
+            if (oneWord == "#") {
+                //qDebug() << "Line is comment";
+                continue;
+            }
+            if (oneWord == "") {
+                //qDebug() << "Line is blank";
+                continue;
+            }
+            if (oneWord == "v") {
+                //qDebug() << "Line is vertex " << QString::fromStdString(oneWord) << " ";
+                glm::vec3 tempVertex;
+                sStream >> oneWord;
+                tempVertex.x = stof(oneWord);
+                sStream >> oneWord;
+                tempVertex.y = stof(oneWord);
+                sStream >> oneWord;
+                tempVertex.z = stof(oneWord);
+
+                // Vertex made - pushing it into vertex-vector
+                tempVertices.push_back(tempVertex);
+
+                continue;
+            }
+            if (oneWord == "vt") {
+                //qDebug() << "Line is UV-coordinate " << QString::fromStdString(oneWord) << " ";
+                glm::vec3 tempUV;
+                sStream >> oneWord;
+                tempUV.x = stof(oneWord);
+                sStream >> oneWord;
+                tempUV.y = stof(oneWord);
+
+                // UV made - pushing it into UV-vector
+                tempUVs.push_back(tempUV);
+
+                continue;
+            }
+            if (oneWord == "vn") {
+                //qDebug() << "Line is normal " << QString::fromStdString(oneWord) << " ";
+                glm::vec3 tempNormal;
+                sStream >> oneWord;
+                tempNormal.x = stof(oneWord);
+                sStream >> oneWord;
+                tempNormal.y = stof(oneWord);
+                sStream >> oneWord;
+                tempNormal.z = stof(oneWord);
+
+                // Normal made - pushing it into normal-vector
+                tempNormals.push_back(tempNormal);
+
+                continue;
+            }
+            if (oneWord == "f") {
+                //qDebug() << "Line is a face " << QString::fromStdString(oneWord) << " ";
+                int index, normal, uv;
+                for (int i = 0; i < 3; i++) {
+                    sStream >> oneWord; // one word read
+                    std::stringstream tempWord(oneWord); // to use getline on this one word
+                    std::string segment; // the numbers in the f-line
+                    std::vector<std::string> segmentArray; // temp array of the numbers
+                    while (std::getline(tempWord, segment, '/')) // splitting word in segments
+                    {
+                        segmentArray.push_back(segment);
+                    }
+                    index = std::stoi(segmentArray[0]); // first is vertex
+                    if (segmentArray[1] != "") // second is uv
+                    {
+                        uv = std::stoi(segmentArray[1]);
+                    }
+                    else {
+                        //qDebug() << "No uvs in mesh";
+                        uv = 0;
+                    }
+                    normal = std::stoi(segmentArray[2]); // third is normal
+
+                    // Fixing the indices
+                    // because obj f-lines starts with 1, not 0
+                    --index;
+                    --uv;
+                    --normal;
+
+                    if (uv > -1) // uv present!
+                    {
+                        vertices.push_back(Vertex(tempVertices[index].x, tempVertices[index].y, tempVertices[index].z,
+                                                   tempNormals[normal].x, tempNormals[normal].y, tempNormals[normal].z,
+                                                   tempUVs[uv].x, tempUVs[uv].y));
+                    }
+                    else {
+                        vertices.push_back(Vertex(tempVertices[index].x, tempVertices[index].y, tempVertices[index].z,
+                                                   tempNormals[normal].x, tempNormals[normal].y, tempNormals[normal].z,
+                                                   0.0f, 0.0f));
+                    }
+                    indices.push_back(temp_index++);
+                }
+                continue;
+            }
+        }
+        fileIn.close();
+    }
+
         
     };
 }

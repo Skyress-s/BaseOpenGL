@@ -153,6 +153,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Assets\Camera\FirstPersonController.cpp" />
     <ClCompile Include="Assets\Camera\FlyCameraController.cpp" />
     <ClCompile Include="Assets\Camera\ThirdPersonController.cpp" />
     <ClCompile Include="Assets\Courses\3DProgCourse\GraphNPCWalker.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="Assets\Axis\InteractiveObject.h" />
     <ClInclude Include="Assets\Axis\VisualObject.h" />
     <ClInclude Include="Assets\Camera\Camera.h" />
+    <ClInclude Include="Assets\Camera\FirstPersonController.h" />
     <ClInclude Include="Assets\Camera\FollowCamera.h" />
     <ClInclude Include="Assets\Camera\FlyCameraController.h" />
     <ClInclude Include="Assets\Camera\IController.h" />
@@ -294,6 +296,7 @@
     <Content Include="Assets\Art\Models\cube.fbx" />
     <Content Include="Assets\Art\Models\cubee.fbx" />
     <Content Include="Assets\Art\Models\Door.fbx" />
+    <Content Include="Assets\Art\Models\objcube.obj" />
     <Content Include="Assets\Art\Shaders\Lek2F.glsl" />
     <Content Include="Assets\Art\Shaders\Lek2V.glsl" />
     <Content Include="Assets\Art\Shaders\NormalGeoF.glsl" />

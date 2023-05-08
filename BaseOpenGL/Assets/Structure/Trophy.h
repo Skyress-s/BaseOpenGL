@@ -8,8 +8,9 @@ namespace KT {
         InteractiveObject* _target;
         float _range;
         bool _collected = false;
+        unsigned int& mCurrentPlayerScore;
     public:
-        Trophy(InteractiveObject* player, const float& range) {
+        Trophy(InteractiveObject* player, const float& range, unsigned int& currentPlayerScore) : mCurrentPlayerScore(currentPlayerScore) {
             _target = player;
             _range = range;
             mVertices = std::vector<Vertex>();

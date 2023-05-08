@@ -9,24 +9,26 @@ namespace KT {
         const float k_tolerance = 0.0000001f;
         std::vector<glm::vec3> mControlPoints;
         std::vector<float> mKnots;
+        int degree = -1;
 
-        
-        BSpline(std::vector<glm::vec3> splinePoints) {
+
+        BSpline(std::vector<glm::vec3> splinePoints, const int& d) {
+            degree = d;
             mControlPoints = splinePoints;
-            constexpr unsigned int d = 3;
             const unsigned int knots = splinePoints.size() + d + 1;
             mKnots = std::vector<float>();
-
+            int sideKnots = knots - splinePoints.size();
+            
             // ts.push_back(0);
-            mKnots.push_back(0);
-            mKnots.push_back(0);
-            for (int i = 0; i < splinePoints.size(); ++i) {
+            for (int i = 0; i < 2; ++i)
+                mKnots.push_back(0);
+            for (int i = 0; i < splinePoints.size(); ++i)
                 mKnots.push_back(i);
-            }
-            mKnots.push_back(splinePoints.size() - 1);
-            // ts.push_back(splinePoints.size() - 1);
-            mKnots.push_back(splinePoints.size() - 1);
+            for (int i = 0; i < 2; ++i)
+                mKnots.push_back(splinePoints.size() - 1);
 
+            std::cout << "knots needed : " << knots << "  current knots : " << mKnots.size() << std::endl;
+            std::cout << "side knots : " << sideKnots << std::endl;
             const int points = 100;
             for (int j = 0; j < splinePoints.size()/*ts.size() - d - 1*/; ++j) {
                 for (int i = 0; i < points; ++i) {
@@ -58,17 +60,16 @@ namespace KT {
         }
 
         void init(GLint matrixUniform) override {
-            mVertices.clear();
+            // mVertices.clear();
 
             const int points = 100;
             for (int i = 0; i < points; ++i) {
                 float t = i / ((float)points - 1.f);
                 glm::vec3 pos = Evaluate(t);
                 std::cout << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
-                mVertices.push_back(Vertex(pos, glm::vec3(0,1,0)));
+                mVertices.push_back(Vertex(pos, glm::vec3(0, 1, 0)));
             }
 
-            
 
             VisualObject::init(matrixUniform);
         }
@@ -76,21 +77,20 @@ namespace KT {
         void draw() override {
             // draw spline weights   
             DrawVertices(GL_LINE_STRIP, GetModelMatrix());
-            
+
             float t = sin(glfwGetTime() * 0.8f) * 0.5f + 0.5f; // 0-1
-            
-            
+
+
             glm::vec3 tPosition = Evaluate(t);
-            
+
             // draw tPosition
-            geometry_helpers::DrawSphere(tPosition, glm::identity<glm::quat>(), glm::vec3(0.01f));
+            geometry_helpers::DrawSphere(tPosition, glm::identity<glm::quat>(), glm::vec3(0.05f));
 
             const glm::quat rot = glm::identity<glm::quat>();
             const glm::vec3 scale = glm::vec3(0.1f);
             for (int i = 0; i < mControlPoints.size(); ++i) {
                 geometry_helpers::DrawSphere(mControlPoints[i], rot, scale);
             }
-            
         }
 
         /**
@@ -102,17 +102,17 @@ namespace KT {
             // resize
             float val = MathHelpers::ReScale(
                 t, 0, 1, mKnots[0] + 1.f, mKnots[mKnots.size() - 1] - 1.f
-                );
+            );
             val = MathHelpers::ReScale(t, 0, 1, 0 + 1.f, mKnots[mKnots.size() - 1] - 1.f);
 
             glm::vec3 position{};
             for (int i = 0; i < mControlPoints.size(); ++i) {
-                position += mControlPoints[i] * BSplineB(mKnots, val, i, 3);
+                position += mControlPoints[i] * BSplineB(mKnots, val, i, degree);
             }
 
             return position;
         }
-        
+
         float BSplineB(std::vector<float> ts, float t, int i, int d) {
             if (d == 0) {
                 if (ts[i] <= (t) && (t) < ts[i + 1])

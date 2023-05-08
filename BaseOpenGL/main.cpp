@@ -30,6 +30,7 @@
 
 #include "Assets/House.h"
 #include "Assets/Axis/InteractiveObject.h"
+#include "Assets/Camera/FirstPersonController.h"
 #include "Assets/Camera/FlyCameraController.h"
 #include "Assets/Camera/ThirdPersonController.h"
 #include "Assets/Structure/BSpline.h"
@@ -55,7 +56,9 @@ const unsigned int SCR_HEIGHT = 800;
 // std::shared_ptr<Camera> camera1;
 // std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
 std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 3.f));
-std::unique_ptr<IController> camera_controller;
+std::shared_ptr<IController> camera_controller;
+std::shared_ptr<IController> thirdPersonController; 
+std::shared_ptr<IController> firstPersonController; 
 
 float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
@@ -69,6 +72,8 @@ float lastFrame = 0.0f; // the of last frame
 KT::InteractiveObject* currentPossesedObject = nullptr;
 bool bDrawNormals = false;
 float drawNormalLength = 0.3f;
+
+
 
 // Our state
 bool show_demo_window = true;
@@ -248,6 +253,8 @@ int main() {
     // USER STUFF
     // ----------------------------------------
 
+    unsigned int currentPlayerScore = 0;
+    
     // objects in scene
     // std::vector<VisualObject*> mObjects{};
     std::vector<KT::VisualObject*> mObjects{};
@@ -289,33 +296,40 @@ int main() {
     KT::ModelVisualObject* modelVis = new KT::ModelVisualObject("Assets/Art/Models/calc.fbx", *textureShader);
     modelVis->SetPosition(0, 0.1f, 0);
     modelVis->SetScale(0.1f);
-    modelVis->SetRotation(glm::vec3(180.f, 0,0));
+    modelVis->SetRotation(glm::vec3(180.f, 0, 0));
     mMap.insert(MapPair("model_vis", modelVis));
 
 
     std::vector<glm::vec3> splinePoints{};
-    splinePoints.push_back(glm::vec3(0,0,0));
-    splinePoints.push_back(glm::vec3(1,0,0));
-    splinePoints.push_back(glm::vec3(2,1,0));
-    splinePoints.push_back(glm::vec3(0,2,0));
-    splinePoints.push_back(glm::vec3(0,4,2));
-    KT::VisualObject* bSpline = new KT::BSpline(splinePoints);
+    splinePoints.push_back(glm::vec3(0, 0, 0));
+    splinePoints.push_back(glm::vec3(1, 0, 0));
+    splinePoints.push_back(glm::vec3(2, 1, 0));
+    splinePoints.push_back(glm::vec3(0, 2, 0));
+    splinePoints.push_back(glm::vec3(0, 4, 2));
+    splinePoints.push_back(glm::vec3(0, 4, 4));
+    KT::VisualObject* bSpline = new KT::BSpline(splinePoints, 3);
     mMap.insert(MapPair("b_spline", bSpline));
-    
-    
-    
+
     KT::VisualObject* xyz = new KT::XYZ();
     xyz->name = "XYZ";
     xyz->SetPosition(glm::vec3(0, 0, 0));
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"xyz", xyz});
 
-    KT::InteractiveObject* cube = new KT::Cube(surface1);
-    cube->SetScale(glm::vec3(0.005f));
+    std::vector<KT::Vertex> vertices{};
+    std::vector<int> indices{};
+    KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
+    KT::InteractiveObject* cube = new KT::Cube(surface1, vertices, indices, textureShader);
+    cube->AddTexture(rick);
+    cube->SetScale(glm::vec3(0.010f));
     cube->name = "CUBE";
     mMap.insert(std::pair<std::string, KT::VisualObject*>{"cube", cube});
     // std::shared_ptr<KT::InteractiveObject> aa(cube);
-    camera_controller = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
-    camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
+
+    thirdPersonController = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
+    firstPersonController = std::make_unique<KT::FirstPersonController>(activeCamera, cube);
+    
+    camera_controller = firstPersonController;
+    // camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
     /*
 
     // PROG3D 
@@ -329,7 +343,7 @@ int main() {
         float z = KT::Random::Random(0, 1.f);
 
         // std::cout << "xz : " << x << " " << z <<std::endl;
-        KT::Trophy* trophy = new KT::Trophy(cube, 0.01f);
+        KT::Trophy* trophy = new KT::Trophy(cube, 0.01f, currentPlayerScore);
         trophy->SetPosition(surface1->FindPointOnSurfaceXZ(glm::vec3(x, 0, z)));
         mMap.insert(MapPair("t" + std::to_string(i), trophy));
     }
@@ -357,7 +371,8 @@ int main() {
     mMap.insert(MapPair("light", lightMesh));
 
     // counter
-    KT::GeneralVisualObject* counter = new KT::GeneralVisualObject(KT::GeometryHelpers::planeVertices(), KT::GeometryHelpers::planeIndices());
+    KT::GeneralVisualObject* counter = new KT::GeneralVisualObject(KT::GeometryHelpers::planeVertices(),
+                                                                   KT::GeometryHelpers::planeIndices());
     counter->UseShader(textureShader);
     counter->AddTexture(calcTexture);
     counter->SetPosition(0.5, 0.05f, 0.5);
@@ -365,25 +380,29 @@ int main() {
     mMap.insert(MapPair("counter", counter));
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
-    std::vector<KT::Vertex> vertices{};
-    std::vector<int> indices{};
-    KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
     
+    KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
+
     KT::GeneralVisualObject* door = new KT::GeneralVisualObject(vertices, indices);
     door->SetScale(0.5f);
     door->UseShader(textureShader);
     door->AddTexture(rick);
     mMap.insert(MapPair("door", door));
 
-    /*
+        
+    
     // HOUSE
     // -----------------------------------------------------------------------------------------------------------------
     // KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    KT::House* house = new KT::House("Assets/Art/Models/cube.fbx", leksjon2Shader);
-    house->SetPosition(glm::vec3(0, 0.2 - 5.2f, 1.5f));
-    house->SetScale(0.5f);
+    vertices.clear();
+    indices.clear();
+    // KT::FileHandler::FromAssimp("Assets/Art/Models/objcube.obj", vertices, indices);
+    KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
+    KT::GeneralVisualObject* house = new KT::GeneralVisualObject(vertices, indices);
+    house->SetPosition(glm::vec3(0, 0, 1.5f));
     mMap.insert(MapPair("house", house));
 
+    /*
     // IN HOUSE OBJECT
     // -----------------------------------------------------------------------------------------------------------------
     KT::ModelVisualObject* houseObject = new KT::ModelVisualObject("Assets/Art/Models/HouseObject.fbx", leksjon2Shader);
@@ -466,7 +485,7 @@ int main() {
             if (bDrawNormals) {
                 ImGui::SliderFloat("NormalVectorLength", &drawNormalLength, 0.01f, 2.f);
             }
-            
+
             // ImGui::Checkbox("GraphToggle", &graphNPCWalker->toggle);
             ImGui::End();
             /*
@@ -536,7 +555,7 @@ int main() {
         textureShader->setVec3("lightPos", lightPos);
         textureShader->setVec3("viewPos", CameraPosition);
 
-        
+
         for (auto object : mMap) {
             leksjon2Shader.use();
             object.second->draw();
@@ -596,7 +615,7 @@ int main() {
 // ---------------------------------------------------------------------------------------------------------
 static bool UI_enabled;
 static bool bbbb = false;
-
+bool cameraSwitchButton = false;
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -631,6 +650,19 @@ void processInput(GLFWwindow* window) {
         keyboardAxis.y += -1.f;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         keyboardAxis.y += 1.f;
+
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+        if (!cameraSwitchButton) {
+            if (camera_controller == firstPersonController) 
+                camera_controller = thirdPersonController;
+            else 
+                camera_controller = firstPersonController;
+            cameraSwitchButton = true;
+        }
+    }
+    else {
+        cameraSwitchButton = false;
+    }
     camera_controller->ProcessKeyboard(keyboardAxis, deltaTime);
 
     // possesed object
