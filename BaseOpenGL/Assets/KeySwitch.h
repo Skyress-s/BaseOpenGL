@@ -4,13 +4,14 @@
 #include "Structure/GeneralVisualObject.h"
 
 namespace KT {
-    class Key : public KT::GeneralVisualObject {
+    class KeySwitch : public KT::GeneralVisualObject {
     private:
         KT::InteractiveObject* mTarget;
         bool mInKey = false;
+        bool mIsOn = true;
 
     public:
-        Key(KT::InteractiveObject* target, const std::string& filepath) {
+        KeySwitch(KT::InteractiveObject* target, const std::string& filepath) {
             KT::FileHandler::Import_obj_importer(filepath, mVertices, mIndices);
             std::cout << "vertices : " << mVertices.size() << " " << "indices : " << mIndices.size() << std::endl;
             mTarget = target;
@@ -21,14 +22,21 @@ namespace KT {
         }
 
         bool IsInRange() {
-            if (glm::distance(GetPosition(), mTarget->GetPosition()) < 0.04) 
+            if (glm::distance(GetPosition(), mTarget->GetPosition()) < 0.04)
                 return true;
             return false;
         }
-        
+
+        bool IsOn() {
+            return mIsOn;
+        }
+
         void Update(float deltaTime) override {
-            if (IsInRange() && !mInKey) {
-                mInKey = true;
+            if (IsInRange()) {
+                if (!mInKey) {
+                    mInKey = true;
+                    mIsOn = !mIsOn;
+                }
             }
             else {
                 mInKey = false;

@@ -29,7 +29,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Assets/House.h"
-#include "Assets/Key.h"
+#include "Assets/KeySwitch.h"
 #include "Assets/Axis/InteractiveObject.h"
 #include "Assets/Camera/FirstPersonController.h"
 #include "Assets/Camera/FlyCameraController.h"
@@ -58,8 +58,8 @@ const unsigned int SCR_HEIGHT = 800;
 // std::shared_ptr<Camera> camera2 = std::make_shared<Camera>(glm::vec3(0.f, 2.f, -5.f));
 std::shared_ptr<Camera> activeCamera = std::make_unique<Camera>(glm::vec3(0.f, 2.f, 3.f));
 std::shared_ptr<IController> camera_controller;
-std::shared_ptr<IController> thirdPersonController; 
-std::shared_ptr<IController> firstPersonController; 
+std::shared_ptr<IController> thirdPersonController;
+std::shared_ptr<IController> firstPersonController;
 
 float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
@@ -73,7 +73,6 @@ float lastFrame = 0.0f; // the of last frame
 KT::InteractiveObject* currentPossesedObject = nullptr;
 bool bDrawNormals = false;
 float drawNormalLength = 0.3f;
-
 
 
 // Our state
@@ -102,6 +101,12 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 // GENEREAL SETUP
+
+/**
+ * \brief This sets up the backend of the program, need only be called once
+ * \param outWindow 
+ * \return a
+ */
 int setupGLFW_IMGUI_glad(GLFWwindow*& outWindow) {
     // glfw: initialize and configure
     // ------------------------------
@@ -255,7 +260,7 @@ int main() {
     // ----------------------------------------
 
     unsigned int currentPlayerScore = 0;
-    
+
     // objects in scene
     // std::vector<VisualObject*> mObjects{};
     std::vector<KT::VisualObject*> mObjects{};
@@ -301,7 +306,6 @@ int main() {
     mMap.insert(MapPair("model_vis", modelVis));
 
 
-
     std::vector<glm::vec3> splinePoints{};
     splinePoints.push_back(glm::vec3(0, 0, 0));
     splinePoints.push_back(glm::vec3(1, 0, 0));
@@ -329,16 +333,16 @@ int main() {
 
     thirdPersonController = std::make_unique<KT::ThirdPersonController>(activeCamera, cube);
     firstPersonController = std::make_unique<KT::FirstPersonController>(activeCamera, cube);
-    
+
     camera_controller = firstPersonController;
     // camera_controller = std::make_unique<KT::FlyCameraController>(activeCamera);
 
     // EXAM 2023 RELATED
-    
-    KT::VisualObject* key = new KT::Key(cube, "Assets/Art/Models/key.obj");
+
+    KT::KeySwitch* key = new KT::KeySwitch(cube, "Assets/Art/Models/key.obj");
     key->SetPosition(0.1, 0.01, 0.1);
     mMap.insert(MapPair("key", key));
-    
+
     // TROPHIES
     // ----------------------------------------
     for (int i = 0; i < 6; ++i) {
@@ -384,7 +388,7 @@ int main() {
     mMap.insert(MapPair("counter", counter));
     // DOOR
     // -----------------------------------------------------------------------------------------------------------------
-    
+
     KT::FileHandler::FromAssimp("Assets/Art/Models/Door.fbx", vertices, indices);
 
     KT::GeneralVisualObject* door = new KT::GeneralVisualObject(vertices, indices);
@@ -393,8 +397,7 @@ int main() {
     door->AddTexture(rick);
     mMap.insert(MapPair("door", door));
 
-        
-    
+
     // // HOUSE
     // // -----------------------------------------------------------------------------------------------------------------
     // KT::FileHandler::Import_obj_importer("Assets/Art/Models/objcube.obj", vertices, indices);
@@ -430,7 +433,7 @@ int main() {
 
     glm::mat4x4 model = glm::mat4x4(1.f);
     glm::mat4x4 projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT,
-                                              0.1f,
+                                              0.001f,
                                               100.f);
 
     // LEKSJON 2
@@ -513,7 +516,7 @@ int main() {
 
         glm::mat4x4 view = activeCamera->GetViewMatrix();
         CameraPosition = activeCamera->position;
-        projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+        projection = glm::perspective(glm::radians(activeCamera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.01f,
                                       100.f);
         // INPUT
         // ----------------------------------------
@@ -551,7 +554,13 @@ int main() {
 
         textureShader->use();
         textureShader->setVec3("objectColor", 1.0f, 1.f, 1.f);
-        textureShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        
+        // Task 9
+        if (key->IsOn())
+            textureShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        else 
+            textureShader->setVec3("lightColor", 0.1f, 0.1f, 0.1f);
+            
         textureShader->setVec3("lightPos", lightPos);
         textureShader->setVec3("viewPos", CameraPosition);
 
@@ -560,17 +569,7 @@ int main() {
             leksjon2Shader.use();
             object.second->draw();
         }
-
-        // glm::mat4 matrix = KT::MathHelpers::TRS(glm::vec3(0,0,5), glm::quat(1,0,0,0), glm::vec3(1,1,1));
-        // leksjon2Shader.setMat4("matrix", matrix);
-        // modela.Draw(leksjon2Shader);
-        // doorr.Draw(leksjon2Shader);
-        /*
-        for (std::vector<VisualObject*>::iterator it = mObjects.begin(); it != mObjects.end(); it++) {
-            (*it)->draw();
-        }
-        */
-
+        
         if (bDrawNormals) {
             normalGeoShader.use();
             normalGeoShader.setFloat("MAGNITUDE", drawNormalLength);
@@ -616,6 +615,7 @@ int main() {
 static bool UI_enabled;
 static bool bbbb = false;
 bool cameraSwitchButton = false;
+
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -653,9 +653,9 @@ void processInput(GLFWwindow* window) {
 
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
         if (!cameraSwitchButton) {
-            if (camera_controller == firstPersonController) 
+            if (camera_controller == firstPersonController)
                 camera_controller = thirdPersonController;
-            else 
+            else
                 camera_controller = firstPersonController;
             cameraSwitchButton = true;
         }
